@@ -1,366 +1,250 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
-<head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>My School Tracker</title>
-
-<link rel="stylesheet" href="style.css">
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My School Tracker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>My School Tracker</h1>
-<p class="subtitle">Assignments & Class Schedule</p>
+    <h1>My School Tracker</h1>
+    <p class="subtitle">Assignments & Class Schedule</p>
 
-<!-- MAIN TABS -->
+    <!-- MAIN TABS -->
+    <div class="main-tabs">
+        <button class="main-tab active" onclick="showMainTab('assignments')">
+            📝 Assignments
+        </button>
 
-<div class="main-tabs">
-
-    <button class="main-tab active" onclick="showMainTab('assignments')">
-        📝 Assignments
-    </button>
-
-    <button class="main-tab" onclick="showMainTab('schedule')">
-        📅 Class Schedule
-    </button>
-
-</div>
+        <button class="main-tab" onclick="showMainTab('schedule')">
+            📅 Class Schedule
+        </button>
+    </div>
 
 
-<!-- ============================= -->
-<!-- ASSIGNMENT TRACKER -->
-<!-- ============================= -->
-
-<div id="assignmentsTab">
-
-    <div class="tracker-card">
-
-        <h2>Today's Progress</h2>
+    <!-- =========================
+         ASSIGNMENTS TAB
+    ========================== -->
+    <div id="assignmentsTab" class="main-section">
 
         <div class="progress-summary">
 
-            <div class="progress-box">
-                <span id="totalTasks">0</span>
-                <small>Total</small>
+            <div class="progress-card">
+                <span>Total</span>
+                <strong id="totalTasks">0</strong>
             </div>
 
-            <div class="progress-box">
-                <span id="completedTasks">0</span>
-                <small>Completed</small>
+            <div class="progress-card completed">
+                <span>Completed</span>
+                <strong id="completedTasks">0</strong>
             </div>
 
-            <div class="progress-box">
-                <span id="pendingTasks">0</span>
-                <small>Pending</small>
+            <div class="progress-card pending">
+                <span>Pending</span>
+                <strong id="pendingTasks">0</strong>
             </div>
 
         </div>
 
-        <div class="progress-bar">
-            <div id="progressFill"></div>
+        <div class="progress-bar-container">
+            <div id="progressFill" class="progress-fill"></div>
         </div>
 
-        <p id="progressText">0% Complete</p>
+        <p id="progressText" class="progress-text">0% Complete</p>
 
 
-        <label for="subject">Subject</label>
+        <!-- ADD ASSIGNMENT -->
+        <div class="form-section">
 
-        <select id="subject">
+            <h2>➕ Add Assignment</h2>
 
-            <option value="CHEM 001 - General Chemistry">
-                CHEM 001 - General Chemistry
-            </option>
+            <div class="form-grid">
 
-            <option value="MATH 003 - Basic Calculus">
-                MATH 003 - Basic Calculus
-            </option>
+                <select id="subject">
+                    <option value="">Select Subject</option>
 
-            <option value="CMPE 011 - Computer Fundamentals and Programming">
-                CMPE 011 - Computer Fundamentals and Programming
-            </option>
+                    <option value="CHEM 001 - General Chemistry">
+                        CHEM 001 - General Chemistry
+                    </option>
 
-            <option value="CWTS 001 - Civic Welfare Training Service 1">
-                CWTS 001 - Civic Welfare Training Service 1
-            </option>
+                    <option value="MATH 003 - Basic Calculus">
+                        MATH 003 - Basic Calculus
+                    </option>
 
-            <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
-                GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
-            </option>
+                    <option value="CMPE 011 - Computer Fundamentals and Programming">
+                        CMPE 011 - Computer Fundamentals and Programming
+                    </option>
 
-            <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
-                GEED 032 - Filipinolohiya at Pambansang Kaunlaran
-            </option>
+                    <option value="CWTS 001 - Civic Welfare Training Service 1">
+                        CWTS 001 - Civic Welfare Training Service 1
+                    </option>
 
-            <option value="INEN 101 - Introduction to Industrial Engineering">
-                INEN 101 - Introduction to Industrial Engineering
-            </option>
+                    <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
+                        GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
+                    </option>
 
-            <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
-                PATHFIT 1 - Physical Activity Towards Health and Fitness 1
-            </option>
+                    <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
+                        GEED 032 - Filipinolohiya at Pambansang Kaunlaran
+                    </option>
 
-        </select>
+                    <option value="INEN 101 - Introduction to Industrial Engineering">
+                        INEN 101 - Introduction to Industrial Engineering
+                    </option>
 
+                    <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
+                        PATHFIT 1 - Physical Activity Towards Health and Fitness 1
+                    </option>
+                </select>
 
-        <label for="task">Topic</label>
+                <input
+                    type="text"
+                    id="task"
+                    placeholder="Assignment / Activity"
+                >
 
-        <input
-            type="text"
-            id="task"
-            placeholder="Enter a school topic"
-        >
+                <input
+                    type="date"
+                    id="dueDate"
+                >
 
+                <select id="priority">
+                    <option value="Low">Low Priority</option>
+                    <option value="Medium" selected>Medium Priority</option>
+                    <option value="High">High Priority</option>
+                </select>
 
-        <label for="dueDate">Due Date</label>
+                <button id="addTaskButton" onclick="addTask()">
+                    Add Assignment
+                </button>
 
-        <input
-            type="date"
-            id="dueDate"
-        >
+            </div>
 
-
-        <label for="priority">Priority</label>
-
-        <select id="priority">
-
-            <option value="High">High</option>
-            <option value="Medium" selected>Medium</option>
-            <option value="Low">Low</option>
-
-        </select>
-
-
-        <button
-            id="addTaskButton"
-            onclick="addTask()"
-        >
-            Add Task
-        </button>
+        </div>
 
 
-        <label for="dateFilter">Filter by Date</label>
+        <!-- FILTER -->
+        <div class="filter-section">
 
-        <select
-            id="dateFilter"
-            onchange="handleDateFilter()"
-        >
+            <label for="dateFilter">Filter:</label>
 
-            <option value="All">All Dates</option>
-            <option value="Today">Today</option>
-            <option value="Next7">Next 7 Days</option>
-            <option value="Overdue">Overdue</option>
-            <option value="Specific">Specific Date</option>
+            <select id="dateFilter" onchange="handleDateFilter()">
+                <option value="all">All Dates</option>
+                <option value="today">Today</option>
+                <option value="tomorrow">Tomorrow</option>
+                <option value="week">Next 7 Days</option>
+                <option value="specific">Specific Date</option>
+            </select>
 
-        </select>
+            <input
+                type="date"
+                id="specificDate"
+                onchange="displayTasks()"
+                style="display:none;"
+            >
 
-
-        <input
-            type="date"
-            id="specificDate"
-            onchange="displayTasks()"
-            style="display: none;"
-        >
+        </div>
 
 
-        <ul id="taskList"></ul>
+        <!-- ASSIGNMENT LIST -->
+        <div class="task-header">
+            <h2>📋 Assignments</h2>
+            <span id="taskCounter">0 assignments</span>
+        </div>
 
-        <p id="taskCounter">0 Tasks</p>
+        <div id="taskList"></div>
 
     </div>
 
-</div>
 
 
-
-<!-- ============================= -->
-<!-- CLASS SCHEDULE -->
-<!-- ============================= -->
-
-<div id="scheduleTab" style="display: none;">
-
-    <div class="tracker-card">
+    <!-- =========================
+         CLASS SCHEDULE TAB
+    ========================== -->
+    <div id="scheduleTab" class="main-section" style="display:none;">
 
         <h2>📅 Class Schedule</h2>
 
         <p class="section-description">
-            Set your online class schedule here. You can change it anytime.
+            Add your online class schedule using the exact date of the class.
         </p>
 
 
-        <!-- SCHEDULE FORM -->
-
+        <!-- ADD SCHEDULE FORM -->
         <div class="schedule-form">
 
-            <label for="scheduleSubject">
-                Subject
-            </label>
+            <div class="schedule-form-grid">
 
-            <select id="scheduleSubject">
+                <select id="scheduleSubject">
 
-                <option value="CHEM 001 - General Chemistry">
-                    CHEM 001 - General Chemistry
-                </option>
+                    <option value="">Select Subject</option>
 
-                <option value="MATH 003 - Basic Calculus">
-                    MATH 003 - Basic Calculus
-                </option>
+                    <option value="CHEM 001 - General Chemistry">
+                        CHEM 001 - General Chemistry
+                    </option>
 
-                <option value="CMPE 011 - Computer Fundamentals and Programming">
-                    CMPE 011 - Computer Fundamentals and Programming
-                </option>
+                    <option value="MATH 003 - Basic Calculus">
+                        MATH 003 - Basic Calculus
+                    </option>
 
-                <option value="CWTS 001 - Civic Welfare Training Service 1">
-                    CWTS 001 - Civic Welfare Training Service 1
-                </option>
+                    <option value="CMPE 011 - Computer Fundamentals and Programming">
+                        CMPE 011 - Computer Fundamentals and Programming
+                    </option>
 
-                <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
-                    GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
-                </option>
+                    <option value="CWTS 001 - Civic Welfare Training Service 1">
+                        CWTS 001 - Civic Welfare Training Service 1
+                    </option>
 
-                <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
-                    GEED 032 - Filipinolohiya at Pambansang Kaunlaran
-                </option>
+                    <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
+                        GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
+                    </option>
 
-                <option value="INEN 101 - Introduction to Industrial Engineering">
-                    INEN 101 - Introduction to Industrial Engineering
-                </option>
+                    <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
+                        GEED 032 - Filipinolohiya at Pambansang Kaunlaran
+                    </option>
 
-                <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
-                    PATHFIT 1 - Physical Activity Towards Health and Fitness 1
-                </option>
+                    <option value="INEN 101 - Introduction to Industrial Engineering">
+                        INEN 101 - Introduction to Industrial Engineering
+                    </option>
 
-            </select>
+                    <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
+                        PATHFIT 1 - Physical Activity Towards Health and Fitness 1
+                    </option>
 
-
-            <label for="scheduleDay">
-                Day
-            </label>
-
-            <select id="scheduleDay">
-
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
-
-            </select>
+                </select>
 
 
-            <div class="time-row">
-
-                <div>
-
-                    <label for="startTime">
-                        Start Time
-                    </label>
-
-                    <select id="startTime">
-
-                        <option value="7:00 AM">7:00 AM</option>
-                        <option value="7:30 AM">7:30 AM</option>
-                        <option value="8:00 AM">8:00 AM</option>
-                        <option value="8:30 AM">8:30 AM</option>
-                        <option value="9:00 AM">9:00 AM</option>
-                        <option value="9:30 AM">9:30 AM</option>
-                        <option value="10:00 AM">10:00 AM</option>
-                        <option value="10:30 AM">10:30 AM</option>
-                        <option value="11:00 AM">11:00 AM</option>
-                        <option value="11:30 AM">11:30 AM</option>
-                        <option value="12:00 PM">12:00 PM</option>
-                        <option value="12:30 PM">12:30 PM</option>
-                        <option value="1:00 PM">1:00 PM</option>
-                        <option value="1:30 PM">1:30 PM</option>
-                        <option value="2:00 PM">2:00 PM</option>
-                        <option value="2:30 PM">2:30 PM</option>
-                        <option value="3:00 PM">3:00 PM</option>
-                        <option value="3:30 PM">3:30 PM</option>
-                        <option value="4:00 PM">4:00 PM</option>
-                        <option value="4:30 PM">4:30 PM</option>
-                        <option value="5:00 PM">5:00 PM</option>
-                        <option value="5:30 PM">5:30 PM</option>
-                        <option value="6:00 PM">6:00 PM</option>
-                        <option value="6:30 PM">6:30 PM</option>
-                        <option value="7:00 PM">7:00 PM</option>
-                        <option value="7:30 PM">7:30 PM</option>
-                        <option value="8:00 PM">8:00 PM</option>
-                        <option value="8:30 PM">8:30 PM</option>
-                        <option value="9:00 PM">9:00 PM</option>
-                        <option value="9:30 PM">9:30 PM</option>
-                        <option value="10:00 PM">10:00 PM</option>
-
-                    </select>
-
-                </div>
+                <!-- DATE INSTEAD OF DAY -->
+                <input
+                    type="date"
+                    id="scheduleDate"
+                >
 
 
-                <div>
+                <select id="startTime">
+                    <option value="">Start Time</option>
+                </select>
 
-                    <label for="endTime">
-                        End Time
-                    </label>
 
-                    <select id="endTime">
+                <select id="endTime">
+                    <option value="">End Time</option>
+                </select>
 
-                        <option value="7:30 AM">7:30 AM</option>
-                        <option value="8:00 AM">8:00 AM</option>
-                        <option value="8:30 AM">8:30 AM</option>
-                        <option value="9:00 AM">9:00 AM</option>
-                        <option value="9:30 AM">9:30 AM</option>
-                        <option value="10:00 AM">10:00 AM</option>
-                        <option value="10:30 AM">10:30 AM</option>
-                        <option value="11:00 AM">11:00 AM</option>
-                        <option value="11:30 AM">11:30 AM</option>
-                        <option value="12:00 PM">12:00 PM</option>
-                        <option value="12:30 PM">12:30 PM</option>
-                        <option value="1:00 PM">1:00 PM</option>
-                        <option value="1:30 PM">1:30 PM</option>
-                        <option value="2:00 PM">2:00 PM</option>
-                        <option value="2:30 PM">2:30 PM</option>
-                        <option value="3:00 PM">3:00 PM</option>
-                        <option value="3:30 PM">3:30 PM</option>
-                        <option value="4:00 PM">4:00 PM</option>
-                        <option value="4:30 PM">4:30 PM</option>
-                        <option value="5:00 PM">5:00 PM</option>
-                        <option value="5:30 PM">5:30 PM</option>
-                        <option value="6:00 PM">6:00 PM</option>
-                        <option value="6:30 PM">6:30 PM</option>
-                        <option value="7:00 PM">7:00 PM</option>
-                        <option value="7:30 PM">7:30 PM</option>
-                        <option value="8:00 PM">8:00 PM</option>
-                        <option value="8:30 PM">8:30 PM</option>
-                        <option value="9:00 PM">9:00 PM</option>
-                        <option value="9:30 PM">9:30 PM</option>
-                        <option value="10:00 PM">10:00 PM</option>
-                        <option value="10:30 PM">10:30 PM</option>
-                        <option value="11:00 PM">11:00 PM</option>
 
-                    </select>
-
-                </div>
+                <button id="addScheduleButton" onclick="addSchedule()">
+                    Add Schedule
+                </button>
 
             </div>
-
-
-            <button
-                id="addScheduleButton"
-                onclick="addSchedule()"
-            >
-                Add Schedule
-            </button>
 
         </div>
 
 
-        <!-- SCHEDULE VIEW TABS -->
 
+        <!-- SCHEDULE VIEW TABS -->
         <div class="schedule-tabs">
 
             <button
@@ -380,28 +264,22 @@
         </div>
 
 
-        <!-- CALENDAR VIEW -->
 
+        <!-- =========================
+             CALENDAR VIEW
+        ========================== -->
         <div id="calendarView">
 
             <div class="calendar-header">
 
-                <button
-                    class="calendar-nav"
-                    onclick="changeMonth(-1)"
-                >
-                    ‹
+                <button onclick="changeMonth(-1)">
+                    ◀
                 </button>
 
-                <h3 id="calendarMonth">
-                    September 2026
-                </h3>
+                <h3 id="calendarMonth"></h3>
 
-                <button
-                    class="calendar-nav"
-                    onclick="changeMonth(1)"
-                >
-                    ›
+                <button onclick="changeMonth(1)">
+                    ▶
                 </button>
 
             </div>
@@ -409,7 +287,7 @@
 
             <div class="calendar-layout">
 
-                <div>
+                <div class="calendar-main">
 
                     <div class="calendar-weekdays">
 
@@ -423,24 +301,18 @@
 
                     </div>
 
-                    <div
-                        id="calendarGrid"
-                        class="calendar-grid"
-                    ></div>
+                    <div id="calendarGrid" class="calendar-grid"></div>
 
                 </div>
 
 
-                <div
-                    id="scheduleDetails"
-                    class="schedule-details"
-                >
+                <!-- DETAILS -->
+                <div id="scheduleDetails" class="schedule-details">
 
-                    <h3>Schedule Details</h3>
-
-                    <p class="empty-details">
-                        Select a class from the calendar.
-                    </p>
+                    <div class="empty-details">
+                        <div>📅</div>
+                        <p>Select a class from the calendar to see details.</p>
+                    </div>
 
                 </div>
 
@@ -449,49 +321,40 @@
         </div>
 
 
-        <!-- WEEKLY VIEW -->
 
-        <div
-            id="weeklyView"
-            style="display: none;"
-        >
+        <!-- =========================
+             WEEKLY VIEW
+        ========================== -->
+        <div id="weeklyView" style="display:none;">
 
             <div class="weekly-header">
 
-                <button
-                    class="calendar-nav"
-                    onclick="changeWeek(-1)"
-                >
-                    ‹
+                <button onclick="changeWeek(-1)">
+                    ◀
                 </button>
 
-                <h3 id="weeklyTitle">
-                    Weekly Schedule
-                </h3>
+                <h3 id="weeklyTitle"></h3>
 
-                <button
-                    class="calendar-nav"
-                    onclick="changeWeek(1)"
-                >
-                    ›
+                <button onclick="changeWeek(1)">
+                    ▶
                 </button>
 
             </div>
 
-
-            <div
-                id="weeklyGrid"
-                class="weekly-grid"
-            ></div>
+            <div id="weeklyGrid" class="weekly-grid"></div>
 
         </div>
 
 
-        <!-- SAVED SCHEDULES -->
 
+        <!-- =========================
+             SAVED SCHEDULES
+        ========================== -->
         <div class="saved-schedules">
 
-            <h3>Saved Schedules</h3>
+            <div class="saved-schedule-header">
+                <h2>📋 Saved Schedules</h2>
+            </div>
 
             <div id="savedScheduleList"></div>
 
@@ -499,10 +362,10 @@
 
     </div>
 
-</div></div>
+</div>
+
 
 <script src="script.js"></script>
 
 </body>
-
 </html>
