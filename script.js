@@ -2387,3 +2387,36 @@ document.addEventListener(
 
     }
 );
+
+
+// ============================================================
+// PWA SERVICE WORKER
+// ============================================================
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", function () {
+
+        navigator.serviceWorker.register(
+            "./service-worker.js"
+        )
+        .then(function (registration) {
+
+            console.log(
+                "PWA Service Worker registered:",
+                registration.scope
+            );
+
+        })
+        .catch(function (error) {
+
+            console.error(
+                "PWA Service Worker registration failed:",
+                error
+            );
+
+        });
+
+    });
+
+}
