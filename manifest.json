@@ -1,7 +1,7 @@
 {
   "id": "/assignment-schedule-tracker/",
   "name": "Eran's Study Hub",
-  "short_name": "Study Hub",
+  "short_name": "Eran's Study Hub",
   "description": "Assignments and Class Schedule Tracker",
   "start_url": "/assignment-schedule-tracker/",
   "scope": "/assignment-schedule-tracker/",
