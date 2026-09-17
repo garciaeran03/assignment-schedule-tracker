@@ -2164,7 +2164,7 @@ function updateCozyHeader() {
 
 
     let greeting =
-        "Good Evening 🌙";
+        "Good Evening, Sir Eran 🌙";
 
 
     if (
@@ -2173,7 +2173,7 @@ function updateCozyHeader() {
     ) {
 
         greeting =
-            "Good Morning ☀️";
+            "Good Morning, Sir Eran ☀️";
 
     } else if (
         hour >= 12 &&
@@ -2181,7 +2181,7 @@ function updateCozyHeader() {
     ) {
 
         greeting =
-            "Good Afternoon 🌤️";
+            "Good Afternoon, Sir Eran 🌤️";
     }
 
 
