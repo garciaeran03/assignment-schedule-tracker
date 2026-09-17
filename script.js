@@ -22,156 +22,82 @@ let selectedCalendarDate = null;
 
 function createLoginScreen() {
 
+    if (document.getElementById("loginScreen")) {
+        return;
+    }
+
     const loginScreen = document.createElement("div");
 
     loginScreen.id = "loginScreen";
 
     loginScreen.innerHTML = `
 
-        <div style="
-            position:fixed;
-            inset:0;
-            background:#081A2F;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            z-index:99999;
-            padding:20px;
-            box-sizing:border-box;
-        ">
+        <div class="login-card">
 
-            <div style="
-                width:100%;
-                max-width:420px;
-                background:#122B4A;
-                border-radius:20px;
-                padding:32px;
-                box-sizing:border-box;
-                box-shadow:0 20px 50px rgba(0,0,0,.35);
-                color:#F5F7FA;
-            ">
-
-                <div style="
-                    text-align:center;
-                    font-size:48px;
-                    margin-bottom:10px;
-                ">
-                    📚
-                </div>
-
-                <h2 style="
-                    text-align:center;
-                    margin:0 0 8px;
-                    font-size:28px;
-                ">
-                    My School Tracker
-                </h2>
-
-                <p style="
-                    text-align:center;
-                    margin:0 0 28px;
-                    color:#AAB8C8;
-                ">
-                    Login to sync your school data
-                </p>
-
-
-                <label
-                    for="loginEmail"
-                    style="
-                        display:block;
-                        margin-bottom:7px;
-                        font-weight:600;
-                    "
-                >
-                    Email
-                </label>
-
-                <input
-                    type="email"
-                    id="loginEmail"
-                    placeholder="Enter your email"
-                    autocomplete="email"
-                    style="
-                        width:100%;
-                        box-sizing:border-box;
-                        padding:13px 14px;
-                        margin-bottom:16px;
-                        border-radius:10px;
-                        border:1px solid #355574;
-                        background:#0B2038;
-                        color:#F5F7FA;
-                        font-size:15px;
-                    "
-                >
-
-
-                <label
-                    for="loginPassword"
-                    style="
-                        display:block;
-                        margin-bottom:7px;
-                        font-weight:600;
-                    "
-                >
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="loginPassword"
-                    placeholder="Enter your password"
-                    autocomplete="current-password"
-                    style="
-                        width:100%;
-                        box-sizing:border-box;
-                        padding:13px 14px;
-                        margin-bottom:18px;
-                        border-radius:10px;
-                        border:1px solid #355574;
-                        background:#0B2038;
-                        color:#F5F7FA;
-                        font-size:15px;
-                    "
-                >
-
-
-                <button
-                    id="loginButton"
-                    onclick="loginUser()"
-                    style="
-                        width:100%;
-                        padding:14px;
-                        border:0;
-                        border-radius:10px;
-                        background:#5B9BD5;
-                        color:white;
-                        font-size:16px;
-                        font-weight:700;
-                        cursor:pointer;
-                    "
-                >
-                    Login
-                </button>
-
-
-                <p
-                    id="loginMessage"
-                    style="
-                        text-align:center;
-                        margin:16px 0 0;
-                        min-height:20px;
-                        color:#FFB4B4;
-                        font-size:14px;
-                    "
-                ></p>
-
+            <div class="login-icon">
+                📚
             </div>
+
+            <h1>
+                My School Tracker
+            </h1>
+
+            <p class="login-subtitle">
+                Login to sync your school data
+            </p>
+
+            <label for="loginEmail">
+                Email
+            </label>
+
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="Enter your email"
+                autocomplete="email"
+            >
+
+            <label for="loginPassword">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+            >
+
+            <button
+                id="loginButton"
+                onclick="loginUser()"
+            >
+                Login
+            </button>
+
+            <p id="loginError"></p>
 
         </div>
     `;
 
     document.body.appendChild(loginScreen);
+
+    const passwordInput =
+        document.getElementById("loginPassword");
+
+    if (passwordInput) {
+
+        passwordInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+                    loginUser();
+                }
+
+            }
+        );
+    }
 }
 
 
@@ -181,12 +107,21 @@ function showLoginScreen() {
         document.getElementById("loginScreen");
 
     if (!loginScreen) {
+
         createLoginScreen();
+
         loginScreen =
             document.getElementById("loginScreen");
     }
 
     loginScreen.style.display = "flex";
+
+    const container =
+        document.querySelector(".container");
+
+    if (container) {
+        container.style.display = "none";
+    }
 }
 
 
@@ -198,13 +133,20 @@ function hideLoginScreen() {
     if (loginScreen) {
         loginScreen.style.display = "none";
     }
+
+    const container =
+        document.querySelector(".container");
+
+    if (container) {
+        container.style.display = "";
+    }
 }
 
 
 function showLoginMessage(message) {
 
     const messageElement =
-        document.getElementById("loginMessage");
+        document.getElementById("loginError");
 
     if (messageElement) {
         messageElement.textContent = message;
@@ -218,14 +160,38 @@ function showLoginMessage(message) {
 
 async function loginUser() {
 
-    const email =
-        document.getElementById("loginEmail").value.trim();
+    if (
+        !window.supabaseClient ||
+        !supabaseClient.auth
+    ) {
 
-    const password =
-        document.getElementById("loginPassword").value;
+        showLoginMessage(
+            "Supabase is not connected. Please check supabase-config.js."
+        );
+
+        return;
+    }
+
+
+    const emailElement =
+        document.getElementById("loginEmail");
+
+    const passwordElement =
+        document.getElementById("loginPassword");
 
     const loginButton =
         document.getElementById("loginButton");
+
+
+    const email =
+        emailElement
+            ? emailElement.value.trim()
+            : "";
+
+    const password =
+        passwordElement
+            ? passwordElement.value
+            : "";
 
 
     if (!email || !password) {
@@ -238,48 +204,128 @@ async function loginUser() {
     }
 
 
-    loginButton.disabled = true;
-    loginButton.textContent = "Logging in...";
+    if (loginButton) {
+
+        loginButton.disabled = true;
+        loginButton.textContent = "Logging in...";
+    }
+
 
     showLoginMessage("");
 
 
-    const {
-        data,
-        error
-    } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
 
 
-    if (error) {
+        if (error) {
 
-        console.error(error);
+            console.error(
+                "Supabase login error:",
+                error
+            );
 
-        showLoginMessage(
-            error.message
+            showLoginMessage(
+                error.message
+            );
+
+            if (loginButton) {
+
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+
+            return;
+        }
+
+
+        if (
+            !data ||
+            !data.user
+        ) {
+
+            showLoginMessage(
+                "Login failed. No user session was returned."
+            );
+
+            if (loginButton) {
+
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+
+            return;
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        const initialized =
+            await initializeCloudData();
+
+
+        if (!initialized) {
+
+            await supabaseClient.auth.signOut();
+
+            currentUser = null;
+
+            if (loginButton) {
+
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+
+            return;
+        }
+
+
+        hideLoginScreen();
+
+        showLogoutButton();
+
+
+        if (loginButton) {
+
+            loginButton.disabled = false;
+            loginButton.textContent = "Login";
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Login exception:",
+            error
         );
 
-        loginButton.disabled = false;
-        loginButton.textContent = "Login";
+        showLoginMessage(
+            error.message ||
+            "Unable to login. Please try again."
+        );
 
-        return;
+        if (loginButton) {
+
+            loginButton.disabled = false;
+            loginButton.textContent = "Login";
+        }
     }
-
-
-    currentUser =
-        data.user;
-
-
-    await initializeCloudData();
-
-
-    hideLoginScreen();
-
-    showLogoutButton();
 }
 
+
+/* =========================================================
+   LOGOUT
+========================================================= */
 
 async function logoutUser() {
 
@@ -294,21 +340,44 @@ async function logoutUser() {
     }
 
 
-    await supabaseClient.auth.signOut();
+    try {
+
+        await supabaseClient.auth.signOut();
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+    }
+
 
     currentUser = null;
 
     tasks = [];
+
     schedules = [];
 
+    editingIndex = -1;
+
+    editingScheduleIndex = -1;
+
+
     const logoutButton =
-        document.getElementById("logoutButton");
+        document.getElementById(
+            "logoutButton"
+        );
+
 
     if (logoutButton) {
         logoutButton.remove();
     }
 
+
     showLoginScreen();
+
+    showLoginMessage("");
 }
 
 
@@ -319,7 +388,9 @@ async function logoutUser() {
 function showLogoutButton() {
 
     if (
-        document.getElementById("logoutButton")
+        document.getElementById(
+            "logoutButton"
+        )
     ) {
         return;
     }
@@ -368,7 +439,7 @@ function showLogoutButton() {
 async function initializeCloudData() {
 
     if (!currentUser) {
-        return;
+        return false;
     }
 
 
@@ -419,7 +490,7 @@ async function initializeCloudData() {
 
 
         /* =========================================
-           MIGRATE OLD LOCAL ASSIGNMENTS
+           MIGRATE LOCAL ASSIGNMENTS
            ONLY IF CLOUD IS EMPTY
         ========================================= */
 
@@ -429,8 +500,13 @@ async function initializeCloudData() {
         ) {
 
             const rows =
-                localTasks.map(
-                    task => ({
+                localTasks
+                    .filter(task =>
+                        task.subject &&
+                        task.task &&
+                        task.dueDate
+                    )
+                    .map(task => ({
 
                         user_id:
                             currentUser.id,
@@ -445,56 +521,62 @@ async function initializeCloudData() {
                             task.dueDate,
 
                         priority:
-                            task.priority,
+                            task.priority || "Medium",
 
                         completed:
                             Boolean(
                                 task.completed
                             )
 
-                    })
-                );
+                    }));
 
 
-            const {
-                data: insertedTasks,
-                error: insertTaskError
-            } =
-                await supabaseClient
-                    .from("assignments")
-                    .insert(rows)
-                    .select();
+            if (rows.length > 0) {
+
+                const {
+                    data: insertedTasks,
+                    error: insertTaskError
+                } =
+                    await supabaseClient
+                        .from("assignments")
+                        .insert(rows)
+                        .select();
 
 
-            if (insertTaskError) {
-                throw insertTaskError;
+                if (insertTaskError) {
+                    throw insertTaskError;
+                }
+
+
+                tasks =
+                    insertedTasks.map(
+                        task => ({
+
+                            id:
+                                task.id,
+
+                            subject:
+                                task.subject,
+
+                            task:
+                                task.task,
+
+                            dueDate:
+                                task.due_date,
+
+                            priority:
+                                task.priority,
+
+                            completed:
+                                task.completed
+
+                        })
+                    );
+
+            } else {
+
+                tasks = [];
             }
-
-
-            tasks =
-                insertedTasks.map(
-                    task => ({
-
-                        id:
-                            task.id,
-
-                        subject:
-                            task.subject,
-
-                        task:
-                            task.task,
-
-                        dueDate:
-                            task.due_date,
-
-                        priority:
-                            task.priority,
-
-                        completed:
-                            task.completed
-
-                    })
-                );
 
         } else {
 
@@ -554,7 +636,7 @@ async function initializeCloudData() {
 
 
         /* =========================================
-           MIGRATE OLD LOCAL SCHEDULES
+           MIGRATE LOCAL SCHEDULES
            ONLY IF CLOUD IS EMPTY
         ========================================= */
 
@@ -564,8 +646,14 @@ async function initializeCloudData() {
         ) {
 
             const rows =
-                localSchedules.map(
-                    schedule => ({
+                localSchedules
+                    .filter(schedule =>
+                        schedule.subject &&
+                        schedule.date &&
+                        schedule.startTime &&
+                        schedule.endTime
+                    )
+                    .map(schedule => ({
 
                         user_id:
                             currentUser.id,
@@ -582,46 +670,52 @@ async function initializeCloudData() {
                         end_time:
                             schedule.endTime
 
-                    })
-                );
+                    }));
 
 
-            const {
-                data: insertedSchedules,
-                error: insertScheduleError
-            } =
-                await supabaseClient
-                    .from("class_schedules")
-                    .insert(rows)
-                    .select();
+            if (rows.length > 0) {
+
+                const {
+                    data: insertedSchedules,
+                    error: insertScheduleError
+                } =
+                    await supabaseClient
+                        .from("class_schedules")
+                        .insert(rows)
+                        .select();
 
 
-            if (insertScheduleError) {
-                throw insertScheduleError;
+                if (insertScheduleError) {
+                    throw insertScheduleError;
+                }
+
+
+                schedules =
+                    insertedSchedules.map(
+                        schedule => ({
+
+                            id:
+                                schedule.id,
+
+                            subject:
+                                schedule.subject,
+
+                            date:
+                                schedule.schedule_date,
+
+                            startTime:
+                                schedule.start_time,
+
+                            endTime:
+                                schedule.end_time
+
+                        })
+                    );
+
+            } else {
+
+                schedules = [];
             }
-
-
-            schedules =
-                insertedSchedules.map(
-                    schedule => ({
-
-                        id:
-                            schedule.id,
-
-                        subject:
-                            schedule.subject,
-
-                        date:
-                            schedule.schedule_date,
-
-                        startTime:
-                            schedule.start_time,
-
-                        endTime:
-                            schedule.end_time
-
-                    })
-                );
 
         } else {
 
@@ -650,7 +744,7 @@ async function initializeCloudData() {
 
 
         /* =========================================
-           KEEP LOCAL STORAGE AS BACKUP CACHE
+           LOCAL CACHE
         ========================================= */
 
         localStorage.setItem(
@@ -673,6 +767,10 @@ async function initializeCloudData() {
 
         displaySavedSchedules();
 
+
+        return true;
+
+
     } catch (error) {
 
         console.error(
@@ -680,9 +778,14 @@ async function initializeCloudData() {
             error
         );
 
+
         alert(
-            "Unable to load your cloud data. Please check your internet connection and try again."
+            "Unable to load your cloud data.\n\n" +
+            error.message
         );
+
+
+        return false;
     }
 }
 
@@ -726,9 +829,12 @@ function showMainTab(tab) {
         scheduleTab.style.display =
             "none";
 
-        mainTabs[0].classList.add(
-            "active"
-        );
+        if (mainTabs[0]) {
+
+            mainTabs[0].classList.add(
+                "active"
+            );
+        }
 
         displayTasks();
 
@@ -740,9 +846,12 @@ function showMainTab(tab) {
         scheduleTab.style.display =
             "block";
 
-        mainTabs[1].classList.add(
-            "active"
-        );
+        if (mainTabs[1]) {
+
+            mainTabs[1].classList.add(
+                "active"
+            );
+        }
 
         renderCalendar();
 
@@ -802,12 +911,6 @@ async function addTask() {
     }
 
 
-    const completed =
-        editingIndex >= 0
-            ? tasks[editingIndex].completed
-            : false;
-
-
     try {
 
         if (editingIndex >= 0) {
@@ -837,7 +940,7 @@ async function addTask() {
                             priority,
 
                         completed:
-                            completed
+                            existingTask.completed
 
                     })
                     .eq(
@@ -976,12 +1079,18 @@ async function addTask() {
 
         displayTasks();
 
+
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Assignment save error:",
+            error
+        );
+
 
         alert(
-            "Unable to save assignment. Please try again."
+            "Unable to save assignment.\n\n" +
+            error.message
         );
     }
 }
@@ -1328,6 +1437,11 @@ async function toggleTask(index) {
         tasks[index];
 
 
+    if (!task) {
+        return;
+    }
+
+
     const newCompleted =
         !task.completed;
 
@@ -1366,12 +1480,21 @@ async function toggleTask(index) {
 
         displayTasks();
 
+
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Assignment update error:",
+            error
+        );
+
+
+        displayTasks();
+
 
         alert(
-            "Unable to update assignment."
+            "Unable to update assignment.\n\n" +
+            error.message
         );
     }
 }
@@ -1381,6 +1504,11 @@ function editTask(index) {
 
     const task =
         tasks[index];
+
+
+    if (!task) {
+        return;
+    }
 
 
     document.getElementById(
@@ -1442,6 +1570,11 @@ async function deleteTask(index) {
         tasks[index];
 
 
+    if (!task) {
+        return;
+    }
+
+
     try {
 
         const {
@@ -1475,12 +1608,18 @@ async function deleteTask(index) {
 
         displayTasks();
 
+
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Assignment delete error:",
+            error
+        );
+
 
         alert(
-            "Unable to delete assignment."
+            "Unable to delete assignment.\n\n" +
+            error.message
         );
     }
 }
@@ -2171,12 +2310,18 @@ async function addSchedule() {
 
         displaySavedSchedules();
 
+
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Schedule save error:",
+            error
+        );
+
 
         alert(
-            "Unable to save class schedule. Please try again."
+            "Unable to save class schedule.\n\n" +
+            error.message
         );
     }
 }
@@ -2197,6 +2342,11 @@ function editSchedule(index) {
 
     const schedule =
         schedules[index];
+
+
+    if (!schedule) {
+        return;
+    }
 
 
     document.getElementById(
@@ -2258,6 +2408,11 @@ async function deleteSchedule(index) {
         schedules[index];
 
 
+    if (!schedule) {
+        return;
+    }
+
+
     try {
 
         const {
@@ -2300,12 +2455,18 @@ async function deleteSchedule(index) {
 
         showScheduleDetails(null);
 
+
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Schedule delete error:",
+            error
+        );
+
 
         alert(
-            "Unable to delete class schedule."
+            "Unable to delete class schedule.\n\n" +
+            error.message
         );
     }
 }
@@ -2356,9 +2517,12 @@ function showScheduleView(view) {
             "none";
 
 
-        tabs[0].classList.add(
-            "active"
-        );
+        if (tabs[0]) {
+
+            tabs[0].classList.add(
+                "active"
+            );
+        }
 
 
         renderCalendar();
@@ -2373,9 +2537,12 @@ function showScheduleView(view) {
             "block";
 
 
-        tabs[1].classList.add(
-            "active"
-        );
+        if (tabs[1]) {
+
+            tabs[1].classList.add(
+                "active"
+            );
+        }
 
 
         renderWeeklySchedule();
@@ -2669,6 +2836,11 @@ function showScheduleDetails(schedule) {
         document.getElementById(
             "scheduleDetails"
         );
+
+
+    if (!details) {
+        return;
+    }
 
 
     if (!schedule) {
@@ -3273,12 +3445,48 @@ document.addEventListener(
         generateTimeOptions();
 
 
+        /* =========================================
+           CHECK SUPABASE CONNECTION
+        ========================================= */
+
+        if (
+            !window.supabaseClient
+        ) {
+
+            showLoginMessage(
+                "Supabase configuration is missing. Please check supabase-config.js."
+            );
+
+            console.error(
+                "supabaseClient was not found."
+            );
+
+            return;
+        }
+
+
         try {
 
             const {
-                data
+                data,
+                error
             } =
                 await supabaseClient.auth.getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "Session error:",
+                    error
+                );
+
+                showLoginMessage(
+                    error.message
+                );
+
+                return;
+            }
 
 
             if (
@@ -3291,18 +3499,35 @@ document.addEventListener(
                     data.session.user;
 
 
-                await initializeCloudData();
+                const initialized =
+                    await initializeCloudData();
 
-                hideLoginScreen();
 
-                showLogoutButton();
+                if (initialized) {
+
+                    hideLoginScreen();
+
+                    showLogoutButton();
+
+                } else {
+
+                    await supabaseClient.auth.signOut();
+
+                    currentUser = null;
+                }
             }
+
 
         } catch (error) {
 
             console.error(
                 "Session check error:",
                 error
+            );
+
+            showLoginMessage(
+                error.message ||
+                "Unable to connect to Supabase."
             );
         }
     }
@@ -3313,36 +3538,60 @@ document.addEventListener(
    AUTH STATE LISTENER
 ========================================================= */
 
-supabaseClient.auth.onAuthStateChange(
-    async function (
-        event,
-        session
-    ) {
+if (
+    window.supabaseClient
+) {
 
-        if (
-            event === "SIGNED_OUT"
+    supabaseClient.auth.onAuthStateChange(
+        async function (
+            event,
+            session
         ) {
 
-            currentUser = null;
+            console.log(
+                "Auth event:",
+                event
+            );
 
-            tasks = [];
 
-            schedules = [];
+            if (
+                event === "SIGNED_OUT"
+            ) {
 
-            showLoginScreen();
+                currentUser = null;
 
-            return;
+                tasks = [];
+
+                schedules = [];
+
+                editingIndex = -1;
+
+                editingScheduleIndex = -1;
+
+                const logoutButton =
+                    document.getElementById(
+                        "logoutButton"
+                    );
+
+                if (logoutButton) {
+                    logoutButton.remove();
+                }
+
+                showLoginScreen();
+
+                return;
+            }
+
+
+            if (
+                event === "SIGNED_IN" &&
+                session &&
+                session.user
+            ) {
+
+                currentUser =
+                    session.user;
+            }
         }
-
-
-        if (
-            event === "SIGNED_IN" &&
-            session &&
-            session.user
-        ) {
-
-            currentUser =
-                session.user;
-        }
-    }
-);
+    );
+}
