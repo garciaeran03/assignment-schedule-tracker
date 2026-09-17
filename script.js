@@ -17,6 +17,23 @@ let selectedCalendarDate = null;
 
 
 /* =========================================================
+   SUPABASE CLIENT HELPER
+========================================================= */
+
+function getSupabaseClient() {
+
+    if (
+        !window.supabaseClient ||
+        !window.supabaseClient.auth
+    ) {
+        return null;
+    }
+
+    return window.supabaseClient;
+}
+
+
+/* =========================================================
    AUTH UI
 ========================================================= */
 
@@ -26,9 +43,11 @@ function createLoginScreen() {
         return;
     }
 
-    const loginScreen = document.createElement("div");
+    const loginScreen =
+        document.createElement("div");
 
-    loginScreen.id = "loginScreen";
+    loginScreen.id =
+        "loginScreen";
 
     loginScreen.innerHTML = `
 
@@ -80,10 +99,14 @@ function createLoginScreen() {
         </div>
     `;
 
-    document.body.appendChild(loginScreen);
+    document.body.appendChild(
+        loginScreen
+    );
 
     const passwordInput =
-        document.getElementById("loginPassword");
+        document.getElementById(
+            "loginPassword"
+        );
 
     if (passwordInput) {
 
@@ -104,23 +127,31 @@ function createLoginScreen() {
 function showLoginScreen() {
 
     let loginScreen =
-        document.getElementById("loginScreen");
+        document.getElementById(
+            "loginScreen"
+        );
 
     if (!loginScreen) {
 
         createLoginScreen();
 
         loginScreen =
-            document.getElementById("loginScreen");
+            document.getElementById(
+                "loginScreen"
+            );
     }
 
-    loginScreen.style.display = "flex";
+    loginScreen.style.display =
+        "flex";
 
     const container =
-        document.querySelector(".container");
+        document.querySelector(
+            ".container"
+        );
 
     if (container) {
-        container.style.display = "none";
+        container.style.display =
+            "none";
     }
 }
 
@@ -128,17 +159,23 @@ function showLoginScreen() {
 function hideLoginScreen() {
 
     const loginScreen =
-        document.getElementById("loginScreen");
+        document.getElementById(
+            "loginScreen"
+        );
 
     if (loginScreen) {
-        loginScreen.style.display = "none";
+        loginScreen.style.display =
+            "none";
     }
 
     const container =
-        document.querySelector(".container");
+        document.querySelector(
+            ".container"
+        );
 
     if (container) {
-        container.style.display = "";
+        container.style.display =
+            "";
     }
 }
 
@@ -146,10 +183,13 @@ function hideLoginScreen() {
 function showLoginMessage(message) {
 
     const messageElement =
-        document.getElementById("loginError");
+        document.getElementById(
+            "loginError"
+        );
 
     if (messageElement) {
-        messageElement.textContent = message;
+        messageElement.textContent =
+            message || "";
     }
 }
 
@@ -160,13 +200,17 @@ function showLoginMessage(message) {
 
 async function loginUser() {
 
-    if (
-        !window.supabaseClient ||
-        !supabaseClient.auth
-    ) {
+    const client =
+        getSupabaseClient();
+
+    if (!client) {
 
         showLoginMessage(
             "Supabase is not connected. Please check supabase-config.js."
+        );
+
+        console.error(
+            "Supabase client was not found."
         );
 
         return;
@@ -174,13 +218,19 @@ async function loginUser() {
 
 
     const emailElement =
-        document.getElementById("loginEmail");
+        document.getElementById(
+            "loginEmail"
+        );
 
     const passwordElement =
-        document.getElementById("loginPassword");
+        document.getElementById(
+            "loginPassword"
+        );
 
     const loginButton =
-        document.getElementById("loginButton");
+        document.getElementById(
+            "loginButton"
+        );
 
 
     const email =
@@ -206,8 +256,11 @@ async function loginUser() {
 
     if (loginButton) {
 
-        loginButton.disabled = true;
-        loginButton.textContent = "Logging in...";
+        loginButton.disabled =
+            true;
+
+        loginButton.textContent =
+            "Logging in...";
     }
 
 
@@ -220,9 +273,14 @@ async function loginUser() {
             data,
             error
         } =
-            await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
+            await client.auth.signInWithPassword({
+
+                email:
+                    email,
+
+                password:
+                    password
+
             });
 
 
@@ -234,13 +292,17 @@ async function loginUser() {
             );
 
             showLoginMessage(
-                error.message
+                error.message ||
+                "Login failed."
             );
 
             if (loginButton) {
 
-                loginButton.disabled = false;
-                loginButton.textContent = "Login";
+                loginButton.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "Login";
             }
 
             return;
@@ -258,8 +320,11 @@ async function loginUser() {
 
             if (loginButton) {
 
-                loginButton.disabled = false;
-                loginButton.textContent = "Login";
+                loginButton.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "Login";
             }
 
             return;
@@ -276,14 +341,18 @@ async function loginUser() {
 
         if (!initialized) {
 
-            await supabaseClient.auth.signOut();
+            await client.auth.signOut();
 
-            currentUser = null;
+            currentUser =
+                null;
 
             if (loginButton) {
 
-                loginButton.disabled = false;
-                loginButton.textContent = "Login";
+                loginButton.disabled =
+                    false;
+
+                loginButton.textContent =
+                    "Login";
             }
 
             return;
@@ -297,8 +366,11 @@ async function loginUser() {
 
         if (loginButton) {
 
-            loginButton.disabled = false;
-            loginButton.textContent = "Login";
+            loginButton.disabled =
+                false;
+
+            loginButton.textContent =
+                "Login";
         }
 
 
@@ -310,14 +382,17 @@ async function loginUser() {
         );
 
         showLoginMessage(
-            error.message ||
+            error?.message ||
             "Unable to login. Please try again."
         );
 
         if (loginButton) {
 
-            loginButton.disabled = false;
-            loginButton.textContent = "Login";
+            loginButton.disabled =
+                false;
+
+            loginButton.textContent =
+                "Login";
         }
     }
 }
@@ -340,9 +415,15 @@ async function logoutUser() {
     }
 
 
+    const client =
+        getSupabaseClient();
+
+
     try {
 
-        await supabaseClient.auth.signOut();
+        if (client) {
+            await client.auth.signOut();
+        }
 
     } catch (error) {
 
@@ -353,15 +434,20 @@ async function logoutUser() {
     }
 
 
-    currentUser = null;
+    currentUser =
+        null;
 
-    tasks = [];
+    tasks =
+        [];
 
-    schedules = [];
+    schedules =
+        [];
 
-    editingIndex = -1;
+    editingIndex =
+        -1;
 
-    editingScheduleIndex = -1;
+    editingScheduleIndex =
+        -1;
 
 
     const logoutButton =
@@ -397,7 +483,9 @@ function showLogoutButton() {
 
 
     const button =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
 
     button.id =
@@ -428,7 +516,9 @@ function showLogoutButton() {
     `;
 
 
-    document.body.appendChild(button);
+    document.body.appendChild(
+        button
+    );
 }
 
 
@@ -439,6 +529,20 @@ function showLogoutButton() {
 async function initializeCloudData() {
 
     if (!currentUser) {
+        return false;
+    }
+
+
+    const client =
+        getSupabaseClient();
+
+
+    if (!client) {
+
+        alert(
+            "Supabase is not connected. Please check supabase-config.js."
+        );
+
         return false;
     }
 
@@ -469,7 +573,7 @@ async function initializeCloudData() {
             data: cloudTasks,
             error: taskError
         } =
-            await supabaseClient
+            await client
                 .from("assignments")
                 .select("*")
                 .eq(
@@ -491,7 +595,6 @@ async function initializeCloudData() {
 
         /* =========================================
            MIGRATE LOCAL ASSIGNMENTS
-           ONLY IF CLOUD IS EMPTY
         ========================================= */
 
         if (
@@ -501,43 +604,48 @@ async function initializeCloudData() {
 
             const rows =
                 localTasks
-                    .filter(task =>
-                        task.subject &&
-                        task.task &&
-                        task.dueDate
+                    .filter(
+                        task =>
+                            task.subject &&
+                            task.task &&
+                            task.dueDate
                     )
-                    .map(task => ({
+                    .map(
+                        task => ({
 
-                        user_id:
-                            currentUser.id,
+                            user_id:
+                                currentUser.id,
 
-                        subject:
-                            task.subject,
+                            subject:
+                                task.subject,
 
-                        task:
-                            task.task,
+                            task:
+                                task.task,
 
-                        due_date:
-                            task.dueDate,
+                            due_date:
+                                task.dueDate,
 
-                        priority:
-                            task.priority || "Medium",
+                            priority:
+                                task.priority ||
+                                "Medium",
 
-                        completed:
-                            Boolean(
-                                task.completed
-                            )
+                            completed:
+                                Boolean(
+                                    task.completed
+                                )
 
-                    }));
+                        })
+                    );
 
 
             if (rows.length > 0) {
 
                 const {
                     data: insertedTasks,
-                    error: insertTaskError
+                    error:
+                        insertTaskError
                 } =
-                    await supabaseClient
+                    await client
                         .from("assignments")
                         .insert(rows)
                         .select();
@@ -615,7 +723,7 @@ async function initializeCloudData() {
             data: cloudSchedules,
             error: scheduleError
         } =
-            await supabaseClient
+            await client
                 .from("class_schedules")
                 .select("*")
                 .eq(
@@ -637,7 +745,6 @@ async function initializeCloudData() {
 
         /* =========================================
            MIGRATE LOCAL SCHEDULES
-           ONLY IF CLOUD IS EMPTY
         ========================================= */
 
         if (
@@ -647,40 +754,47 @@ async function initializeCloudData() {
 
             const rows =
                 localSchedules
-                    .filter(schedule =>
-                        schedule.subject &&
-                        schedule.date &&
-                        schedule.startTime &&
-                        schedule.endTime
-                    )
-                    .map(schedule => ({
-
-                        user_id:
-                            currentUser.id,
-
-                        subject:
-                            schedule.subject,
-
-                        schedule_date:
-                            schedule.date,
-
-                        start_time:
-                            schedule.startTime,
-
-                        end_time:
+                    .filter(
+                        schedule =>
+                            schedule.subject &&
+                            schedule.date &&
+                            schedule.startTime &&
                             schedule.endTime
+                    )
+                    .map(
+                        schedule => ({
 
-                    }));
+                            user_id:
+                                currentUser.id,
+
+                            subject:
+                                schedule.subject,
+
+                            schedule_date:
+                                schedule.date,
+
+                            start_time:
+                                schedule.startTime,
+
+                            end_time:
+                                schedule.endTime
+
+                        })
+                    );
 
 
             if (rows.length > 0) {
 
                 const {
-                    data: insertedSchedules,
-                    error: insertScheduleError
+                    data:
+                        insertedSchedules,
+                    error:
+                        insertScheduleError
                 } =
-                    await supabaseClient
-                        .from("class_schedules")
+                    await client
+                        .from(
+                            "class_schedules"
+                        )
                         .insert(rows)
                         .select();
 
@@ -749,13 +863,17 @@ async function initializeCloudData() {
 
         localStorage.setItem(
             "schoolTasks",
-            JSON.stringify(tasks)
+            JSON.stringify(
+                tasks
+            )
         );
 
 
         localStorage.setItem(
             "classSchedules",
-            JSON.stringify(schedules)
+            JSON.stringify(
+                schedules
+            )
         );
 
 
@@ -781,7 +899,10 @@ async function initializeCloudData() {
 
         alert(
             "Unable to load your cloud data.\n\n" +
-            error.message
+            (
+                error?.message ||
+                "Unknown Supabase error."
+            )
         );
 
 
@@ -812,16 +933,20 @@ function showMainTab(tab) {
         );
 
 
-    mainTabs.forEach(button => {
+    mainTabs.forEach(
+        button => {
 
-        button.classList.remove(
-            "active"
-        );
+            button.classList.remove(
+                "active"
+            );
 
-    });
+        }
+    );
 
 
-    if (tab === "assignments") {
+    if (
+        tab === "assignments"
+    ) {
 
         assignmentsTab.style.display =
             "block";
@@ -829,12 +954,14 @@ function showMainTab(tab) {
         scheduleTab.style.display =
             "none";
 
+
         if (mainTabs[0]) {
 
             mainTabs[0].classList.add(
                 "active"
             );
         }
+
 
         displayTasks();
 
@@ -846,12 +973,14 @@ function showMainTab(tab) {
         scheduleTab.style.display =
             "block";
 
+
         if (mainTabs[1]) {
 
             mainTabs[1].classList.add(
                 "active"
             );
         }
+
 
         renderCalendar();
 
@@ -869,6 +998,18 @@ function showMainTab(tab) {
 async function addTask() {
 
     if (!currentUser) {
+        return;
+    }
+
+
+    const client =
+        getSupabaseClient();
+
+
+    if (!client) {
+        alert(
+            "Supabase is not connected."
+        );
         return;
     }
 
@@ -913,7 +1054,9 @@ async function addTask() {
 
     try {
 
-        if (editingIndex >= 0) {
+        if (
+            editingIndex >= 0
+        ) {
 
             const existingTask =
                 tasks[editingIndex];
@@ -923,7 +1066,7 @@ async function addTask() {
                 data,
                 error
             } =
-                await supabaseClient
+                await client
                     .from("assignments")
                     .update({
 
@@ -983,7 +1126,8 @@ async function addTask() {
             };
 
 
-            editingIndex = -1;
+            editingIndex =
+                -1;
 
 
             document.getElementById(
@@ -997,7 +1141,7 @@ async function addTask() {
                 data,
                 error
             } =
-                await supabaseClient
+                await client
                     .from("assignments")
                     .insert({
 
@@ -1090,7 +1234,10 @@ async function addTask() {
 
         alert(
             "Unable to save assignment.\n\n" +
-            error.message
+            (
+                error?.message ||
+                "Unknown error."
+            )
         );
     }
 }
@@ -1142,149 +1289,161 @@ function displayTasks() {
             : "";
 
 
-    taskList.innerHTML = "";
+    taskList.innerHTML =
+        "";
 
 
     let filteredTasks =
-        tasks.filter(task => {
+        tasks.filter(
+            task => {
 
-            if (
-                filter === "all" ||
-                filter === ""
-            ) {
+                if (
+                    filter === "all" ||
+                    filter === ""
+                ) {
 
-                return true;
-            }
-
-
-            if (
-                filter === "today"
-            ) {
-
-                return (
-                    task.dueDate ===
-                    getTodayString()
-                );
-            }
-
-
-            if (
-                filter === "next7" ||
-                filter === "week"
-            ) {
-
-                const today =
-                    new Date();
-
-                today.setHours(
-                    0,
-                    0,
-                    0,
-                    0
-                );
-
-
-                const endDate =
-                    new Date(today);
-
-                endDate.setDate(
-                    today.getDate() + 6
-                );
-
-                endDate.setHours(
-                    23,
-                    59,
-                    59,
-                    999
-                );
-
-
-                if (!task.dueDate) {
-                    return false;
+                    return true;
                 }
-
-
-                const taskDate =
-                    new Date(
-                        task.dueDate +
-                        "T00:00:00"
-                    );
 
 
                 if (
-                    isNaN(
-                        taskDate.getTime()
-                    )
+                    filter === "today"
                 ) {
-                    return false;
+
+                    return (
+                        task.dueDate ===
+                        getTodayString()
+                    );
                 }
 
 
-                return (
-                    taskDate >= today &&
-                    taskDate <= endDate
-                );
-            }
+                if (
+                    filter === "next7" ||
+                    filter === "week"
+                ) {
+
+                    const today =
+                        new Date();
 
 
-            if (
-                filter === "tomorrow"
-            ) {
-
-                return (
-                    task.dueDate ===
-                    getDateAfterDays(1)
-                );
-            }
-
-
-            if (
-                filter === "overdue"
-            ) {
-
-                const today =
-                    new Date();
-
-                today.setHours(
-                    0,
-                    0,
-                    0,
-                    0
-                );
-
-
-                if (!task.dueDate) {
-                    return false;
-                }
-
-
-                const taskDate =
-                    new Date(
-                        task.dueDate +
-                        "T00:00:00"
+                    today.setHours(
+                        0,
+                        0,
+                        0,
+                        0
                     );
 
 
-                return (
-                    taskDate < today
-                );
+                    const endDate =
+                        new Date(
+                            today
+                        );
+
+
+                    endDate.setDate(
+                        today.getDate() +
+                        6
+                    );
+
+
+                    endDate.setHours(
+                        23,
+                        59,
+                        59,
+                        999
+                    );
+
+
+                    if (!task.dueDate) {
+                        return false;
+                    }
+
+
+                    const taskDate =
+                        new Date(
+                            task.dueDate +
+                            "T00:00:00"
+                        );
+
+
+                    if (
+                        isNaN(
+                            taskDate.getTime()
+                        )
+                    ) {
+                        return false;
+                    }
+
+
+                    return (
+                        taskDate >= today &&
+                        taskDate <= endDate
+                    );
+                }
+
+
+                if (
+                    filter === "tomorrow"
+                ) {
+
+                    return (
+                        task.dueDate ===
+                        getDateAfterDays(
+                            1
+                        )
+                    );
+                }
+
+
+                if (
+                    filter === "overdue"
+                ) {
+
+                    const today =
+                        new Date();
+
+
+                    today.setHours(
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+
+
+                    if (!task.dueDate) {
+                        return false;
+                    }
+
+
+                    const taskDate =
+                        new Date(
+                            task.dueDate +
+                            "T00:00:00"
+                        );
+
+
+                    return (
+                        taskDate < today
+                    );
+                }
+
+
+                if (
+                    filter === "specific"
+                ) {
+
+                    return (
+                        specificDate !== "" &&
+                        task.dueDate ===
+                        specificDate
+                    );
+                }
+
+
+                return false;
             }
-
-
-            if (
-                filter === "specific"
-            ) {
-
-                return (
-                    specificDate !== "" &&
-                    task.dueDate ===
-                    specificDate
-                );
-            }
-
-
-            return false;
-        });
+        );
 
 
     filteredTasks.sort(
@@ -1315,101 +1474,108 @@ function displayTasks() {
 
     } else {
 
-        filteredTasks.forEach(task => {
+        filteredTasks.forEach(
+            task => {
 
-            const originalIndex =
-                tasks.indexOf(task);
-
-
-            const taskItem =
-                document.createElement(
-                    "div"
-                );
+                const originalIndex =
+                    tasks.indexOf(
+                        task
+                    );
 
 
-            taskItem.className =
-                "task-item" +
-                (
-                    task.completed
-                        ? " completed"
-                        : ""
-                );
+                const taskItem =
+                    document.createElement(
+                        "div"
+                    );
 
 
-            const priorityClass =
-
-                task.priority === "High"
-                    ? "priority-high"
-
-                    : task.priority === "Medium"
-                        ? "priority-medium"
-
-                        : "priority-low";
+                taskItem.className =
+                    "task-item" +
+                    (
+                        task.completed
+                            ? " completed"
+                            : ""
+                    );
 
 
-            taskItem.innerHTML = `
+                const priorityClass =
+                    task.priority ===
+                    "High"
 
-                <input
-                    type="checkbox"
-                    class="task-checkbox"
-                    ${task.completed ? "checked" : ""}
-                    onchange="toggleTask(${originalIndex})"
-                >
+                        ? "priority-high"
 
-                <div class="task-info">
+                        : task.priority ===
+                          "Medium"
 
-                    <div class="task-subject">
-                        ${escapeHtml(
-                            task.subject
-                        )}
-                    </div>
+                            ? "priority-medium"
 
-                    <div class="task-name">
-                        ${escapeHtml(
-                            task.task
-                        )}
-                    </div>
+                            : "priority-low";
 
-                    <div class="task-due">
-                        Due:
-                        ${formatDate(
-                            task.dueDate
-                        )}
-                    </div>
 
-                </div>
+                taskItem.innerHTML = `
 
-                <span class="priority ${priorityClass}">
-                    ${escapeHtml(
-                        task.priority
-                    )}
-                </span>
-
-                <div class="task-actions">
-
-                    <button
-                        class="edit-button"
-                        onclick="editTask(${originalIndex})"
+                    <input
+                        type="checkbox"
+                        class="task-checkbox"
+                        ${task.completed ? "checked" : ""}
+                        onchange="toggleTask(${originalIndex})"
                     >
-                        Edit
-                    </button>
 
-                    <button
-                        class="delete-button"
-                        onclick="deleteTask(${originalIndex})"
-                    >
-                        Delete
-                    </button>
+                    <div class="task-info">
 
-                </div>
+                        <div class="task-subject">
+                            ${escapeHtml(
+                                task.subject
+                            )}
+                        </div>
 
-            `;
+                        <div class="task-name">
+                            ${escapeHtml(
+                                task.task
+                            )}
+                        </div>
+
+                        <div class="task-due">
+                            Due:
+                            ${formatDate(
+                                task.dueDate
+                            )}
+                        </div>
+
+                    </div>
+
+                    <span class="priority ${priorityClass}">
+                        ${escapeHtml(
+                            task.priority
+                        )}
+                    </span>
+
+                    <div class="task-actions">
+
+                        <button
+                            class="edit-button"
+                            onclick="editTask(${originalIndex})"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            class="delete-button"
+                            onclick="deleteTask(${originalIndex})"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                `;
 
 
-            taskList.appendChild(
-                taskItem
-            );
-        });
+                taskList.appendChild(
+                    taskItem
+                );
+            }
+        );
     }
 
 
@@ -1433,6 +1599,15 @@ async function toggleTask(index) {
     }
 
 
+    const client =
+        getSupabaseClient();
+
+
+    if (!client) {
+        return;
+    }
+
+
     const task =
         tasks[index];
 
@@ -1451,11 +1626,13 @@ async function toggleTask(index) {
         const {
             error
         } =
-            await supabaseClient
+            await client
                 .from("assignments")
                 .update({
+
                     completed:
                         newCompleted
+
                 })
                 .eq(
                     "id",
@@ -1494,7 +1671,10 @@ async function toggleTask(index) {
 
         alert(
             "Unable to update assignment.\n\n" +
-            error.message
+            (
+                error?.message ||
+                "Unknown error."
+            )
         );
     }
 }
@@ -1547,9 +1727,11 @@ function editTask(index) {
 
     window.scrollTo({
 
-        top: 0,
+        top:
+            0,
 
-        behavior: "smooth"
+        behavior:
+            "smooth"
 
     });
 }
@@ -1562,6 +1744,15 @@ async function deleteTask(index) {
             "Delete this assignment?"
         )
     ) {
+        return;
+    }
+
+
+    const client =
+        getSupabaseClient();
+
+
+    if (!client) {
         return;
     }
 
@@ -1580,7 +1771,7 @@ async function deleteTask(index) {
         const {
             error
         } =
-            await supabaseClient
+            await client
                 .from("assignments")
                 .delete()
                 .eq(
@@ -1619,7 +1810,10 @@ async function deleteTask(index) {
 
         alert(
             "Unable to delete assignment.\n\n" +
-            error.message
+            (
+                error?.message ||
+                "Unknown error."
+            )
         );
     }
 }
@@ -1672,7 +1866,8 @@ function handleDateFilter() {
             specificDate.style.display =
                 "none";
 
-            specificDate.value = "";
+            specificDate.value =
+                "";
         }
     }
 
@@ -1689,7 +1884,9 @@ function saveTasks() {
 
     localStorage.setItem(
         "schoolTasks",
-        JSON.stringify(tasks)
+        JSON.stringify(
+            tasks
+        )
     );
 }
 
@@ -1883,9 +2080,14 @@ function formatDate(dateString) {
     return date.toLocaleDateString(
         "en-US",
         {
-            month: "long",
-            day: "numeric",
-            year: "numeric"
+            month:
+                "long",
+
+            day:
+                "numeric",
+
+            year:
+                "numeric"
         }
     );
 }
@@ -1963,7 +2165,9 @@ function generateTimeOptions() {
 
 
             const label =
-                formatTime(value);
+                formatTime(
+                    value
+                );
 
 
             startTime.innerHTML +=
@@ -2003,7 +2207,9 @@ function generateTimeOptions() {
 
 
             const label =
-                formatTime(value);
+                formatTime(
+                    value
+                );
 
 
             endTime.innerHTML +=
@@ -2041,13 +2247,15 @@ function formatTime(time) {
 
     if (hour === 0) {
 
-        hour = 12;
+        hour =
+            12;
 
     } else if (
         hour > 12
     ) {
 
-        hour -= 12;
+        hour -=
+            12;
     }
 
 
@@ -2080,6 +2288,18 @@ function convertTimeToMinutes(time) {
 async function addSchedule() {
 
     if (!currentUser) {
+        return;
+    }
+
+
+    const client =
+        getSupabaseClient();
+
+
+    if (!client) {
+        alert(
+            "Supabase is not connected."
+        );
         return;
     }
 
@@ -2156,7 +2376,7 @@ async function addSchedule() {
                 data,
                 error
             } =
-                await supabaseClient
+                await client
                     .from(
                         "class_schedules"
                     )
@@ -2229,7 +2449,7 @@ async function addSchedule() {
                 data,
                 error
             } =
-                await supabaseClient
+                await client
                     .from(
                         "class_schedules"
                     )
@@ -2286,22 +2506,26 @@ async function addSchedule() {
 
         document.getElementById(
             "scheduleSubject"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "scheduleDate"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "startTime"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
             "endTime"
-        ).value = "";
+        ).value =
+            "";
 
 
         renderCalendar();
@@ -2321,7 +2545,10 @@ async function addSchedule() {
 
         alert(
             "Unable to save class schedule.\n\n" +
-            error.message
+            (
+                error?.message ||
+                "Unknown error."
+            )
         );
     }
 }
@@ -2385,9 +2612,11 @@ function editSchedule(index) {
 
     window.scrollTo({
 
-        top: 0,
+        top:
+            0,
 
-        behavior: "smooth"
+        behavior:
+            "smooth"
 
     });
 }
@@ -2400,6 +2629,15 @@ async function deleteSchedule(index) {
             "Delete this class schedule?"
         )
     ) {
+        return;
+    }
+
+
+    const client =
+        getSupabaseClient();
+
+
+    if (!client) {
         return;
     }
 
@@ -2418,7 +2656,7 @@ async function deleteSchedule(index) {
         const {
             error
         } =
-            await supabaseClient
+            await client
                 .from(
                     "class_schedules"
                 )
@@ -2453,7 +2691,9 @@ async function deleteSchedule(index) {
 
         displaySavedSchedules();
 
-        showScheduleDetails(null);
+        showScheduleDetails(
+            null
+        );
 
 
     } catch (error) {
@@ -2466,7 +2706,10 @@ async function deleteSchedule(index) {
 
         alert(
             "Unable to delete class schedule.\n\n" +
-            error.message
+            (
+                error?.message ||
+                "Unknown error."
+            )
         );
     }
 }
@@ -2496,13 +2739,15 @@ function showScheduleView(view) {
         );
 
 
-    tabs.forEach(tab => {
+    tabs.forEach(
+        tab => {
 
-        tab.classList.remove(
-            "active"
-        );
+            tab.classList.remove(
+                "active"
+            );
 
-    });
+        }
+    );
 
 
     if (
@@ -2576,7 +2821,8 @@ function renderCalendar() {
     }
 
 
-    grid.innerHTML = "";
+    grid.innerHTML =
+        "";
 
 
     const year =
@@ -2591,8 +2837,11 @@ function renderCalendar() {
         calendarDate.toLocaleDateString(
             "en-US",
             {
-                month: "long",
-                year: "numeric"
+                month:
+                    "long",
+
+                year:
+                    "numeric"
             }
         );
 
@@ -2822,7 +3071,9 @@ function changeMonth(amount) {
 
     renderCalendar();
 
-    showScheduleDetails(null);
+    showScheduleDetails(
+        null
+    );
 }
 
 
@@ -2830,7 +3081,9 @@ function changeMonth(amount) {
    CALENDAR DETAILS
 ========================================================= */
 
-function showScheduleDetails(schedule) {
+function showScheduleDetails(
+    schedule
+) {
 
     const details =
         document.getElementById(
@@ -2944,7 +3197,9 @@ function showScheduleDetailsForDate(
 function getStartOfWeek(date) {
 
     const result =
-        new Date(date);
+        new Date(
+            date
+        );
 
 
     const day =
@@ -2991,7 +3246,8 @@ function renderWeeklySchedule() {
     }
 
 
-    grid.innerHTML = "";
+    grid.innerHTML =
+        "";
 
 
     const weekStart =
@@ -3067,7 +3323,8 @@ function renderWeeklySchedule() {
             currentDate.toLocaleDateString(
                 "en-US",
                 {
-                    weekday: "short"
+                    weekday:
+                        "short"
                 }
             );
 
@@ -3076,8 +3333,11 @@ function renderWeeklySchedule() {
             currentDate.toLocaleDateString(
                 "en-US",
                 {
-                    month: "short",
-                    day: "numeric"
+                    month:
+                        "short",
+
+                    day:
+                        "numeric"
                 }
             );
 
@@ -3226,7 +3486,9 @@ function changeWeek(amount) {
 
     weeklyDate.setDate(
         weeklyDate.getDate() +
-        (amount * 7)
+        (
+            amount * 7
+        )
     );
 
 
@@ -3243,8 +3505,11 @@ function formatWeekRange(
         start.toLocaleDateString(
             "en-US",
             {
-                month: "short",
-                day: "numeric"
+                month:
+                    "short",
+
+                day:
+                    "numeric"
             }
         );
 
@@ -3253,9 +3518,14 @@ function formatWeekRange(
         end.toLocaleDateString(
             "en-US",
             {
-                month: "short",
-                day: "numeric",
-                year: "numeric"
+                month:
+                    "short",
+
+                day:
+                    "numeric",
+
+                year:
+                    "numeric"
             }
         );
 
@@ -3281,7 +3551,8 @@ function displaySavedSchedules() {
     }
 
 
-    list.innerHTML = "";
+    list.innerHTML =
+        "";
 
 
     if (
@@ -3309,9 +3580,14 @@ function displaySavedSchedules() {
     const sortedSchedules =
         schedules
             .map(
-                (schedule, index) => ({
+                (
                     schedule,
                     index
+                ) => ({
+
+                    schedule,
+                    index
+
                 })
             )
             .sort(
@@ -3378,7 +3654,6 @@ function displaySavedSchedules() {
                     </div>
 
                 </div>
-
 
                 <div class="saved-schedule-actions">
 
@@ -3449,20 +3724,27 @@ document.addEventListener(
            CHECK SUPABASE CONNECTION
         ========================================= */
 
-        if (
-            !window.supabaseClient
-        ) {
+        const client =
+            getSupabaseClient();
+
+
+        if (!client) {
 
             showLoginMessage(
                 "Supabase configuration is missing. Please check supabase-config.js."
             );
 
             console.error(
-                "supabaseClient was not found."
+                "supabaseClient was not found. Check supabase-config.js and index.html."
             );
 
             return;
         }
+
+
+        console.log(
+            "Supabase client detected."
+        );
 
 
         try {
@@ -3471,7 +3753,7 @@ document.addEventListener(
                 data,
                 error
             } =
-                await supabaseClient.auth.getSession();
+                await client.auth.getSession();
 
 
             if (error) {
@@ -3482,7 +3764,8 @@ document.addEventListener(
                 );
 
                 showLoginMessage(
-                    error.message
+                    error.message ||
+                    "Unable to check login session."
                 );
 
                 return;
@@ -3511,9 +3794,10 @@ document.addEventListener(
 
                 } else {
 
-                    await supabaseClient.auth.signOut();
+                    await client.auth.signOut();
 
-                    currentUser = null;
+                    currentUser =
+                        null;
                 }
             }
 
@@ -3526,7 +3810,7 @@ document.addEventListener(
             );
 
             showLoginMessage(
-                error.message ||
+                error?.message ||
                 "Unable to connect to Supabase."
             );
         }
@@ -3538,60 +3822,81 @@ document.addEventListener(
    AUTH STATE LISTENER
 ========================================================= */
 
-if (
-    window.supabaseClient
-) {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    supabaseClient.auth.onAuthStateChange(
-        async function (
-            event,
-            session
-        ) {
-
-            console.log(
-                "Auth event:",
-                event
-            );
+        const client =
+            getSupabaseClient();
 
 
-            if (
-                event === "SIGNED_OUT"
+        if (!client) {
+            return;
+        }
+
+
+        client.auth.onAuthStateChange(
+            async function (
+                event,
+                session
             ) {
 
-                currentUser = null;
+                console.log(
+                    "Auth event:",
+                    event
+                );
 
-                tasks = [];
 
-                schedules = [];
+                if (
+                    event ===
+                    "SIGNED_OUT"
+                ) {
 
-                editingIndex = -1;
+                    currentUser =
+                        null;
 
-                editingScheduleIndex = -1;
+                    tasks =
+                        [];
 
-                const logoutButton =
-                    document.getElementById(
-                        "logoutButton"
-                    );
+                    schedules =
+                        [];
 
-                if (logoutButton) {
-                    logoutButton.remove();
+                    editingIndex =
+                        -1;
+
+                    editingScheduleIndex =
+                        -1;
+
+
+                    const logoutButton =
+                        document.getElementById(
+                            "logoutButton"
+                        );
+
+
+                    if (logoutButton) {
+                        logoutButton.remove();
+                    }
+
+
+                    showLoginScreen();
+
+                    return;
                 }
 
-                showLoginScreen();
 
-                return;
+                if (
+                    event ===
+                        "SIGNED_IN" &&
+                    session &&
+                    session.user
+                ) {
+
+                    currentUser =
+                        session.user;
+                }
+
             }
-
-
-            if (
-                event === "SIGNED_IN" &&
-                session &&
-                session.user
-            ) {
-
-                currentUser =
-                    session.user;
-            }
-        }
-    );
-}
+        );
+    }
+);
