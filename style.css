@@ -1,3 +1,4 @@
+```css
 /* ============================================================
    GLOBAL
 ============================================================ */
@@ -417,11 +418,50 @@ button:active {
     margin: 0;
 }
 
+
+/* ============================================================
+   CALENDAR WEEKDAYS
+   IMPORTANT:
+   Uses the exact same 7-column structure as calendar-grid
+============================================================ */
+
+.calendar-weekdays {
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, minmax(0, 1fr));
+
+    gap: 7px;
+
+    margin-bottom: 6px;
+}
+
+.calendar-weekdays div {
+    text-align: center;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    color: #82766c;
+
+    padding: 7px 3px;
+
+    text-transform: uppercase;
+
+    min-width: 0;
+}
+
+
+/* ============================================================
+   CALENDAR GRID
+============================================================ */
+
 .calendar-grid {
     display: grid;
 
     grid-template-columns:
-        repeat(7, 1fr);
+        repeat(7, minmax(0, 1fr));
 
     gap: 7px;
 }
@@ -1463,6 +1503,20 @@ button:active {
     }
 
 
+    .calendar-weekdays {
+        gap: 3px;
+
+        margin-bottom: 4px;
+    }
+
+
+    .calendar-weekdays div {
+        font-size: 9px;
+
+        padding: 5px 1px;
+    }
+
+
     .calendar-grid {
         gap: 3px;
     }
@@ -1684,4 +1738,12 @@ button:active {
     .summary-calendar-header h3 {
         font-size: 14px;
     }
+
+
+    .calendar-weekdays div {
+        font-size: 8px;
+
+        padding: 4px 1px;
+    }
 }
+```
