@@ -1230,6 +1230,59 @@ function showScheduleView(view) {
 
 
 // ============================================================
+// SCHEDULE COLOR ORDER
+// ============================================================
+
+function getScheduleColorClass(
+    schedule,
+    daySchedules
+) {
+
+    const sortedSchedules =
+        [...daySchedules].sort(
+            (a, b) => {
+
+                const startCompare =
+                    a.startTime.localeCompare(
+                        b.startTime
+                    );
+
+                if (startCompare !== 0) {
+                    return startCompare;
+                }
+
+                return a.endTime.localeCompare(
+                    b.endTime
+                );
+            }
+        );
+
+
+    const index =
+        sortedSchedules.findIndex(
+            item =>
+                Number(item.id) ===
+                Number(schedule.id)
+        );
+
+
+    if (index === 0) {
+        return "schedule-color-1";
+    }
+
+    if (index === 1) {
+        return "schedule-color-2";
+    }
+
+    if (index === 2) {
+        return "schedule-color-3";
+    }
+
+    return "schedule-color-4";
+}
+
+
+// ============================================================
 // CALENDAR
 // ============================================================
 
@@ -1344,11 +1397,29 @@ function renderCalendar() {
 
 
         const daySchedules =
-            schedules.filter(
-                schedule =>
-                    schedule.scheduleDate ===
-                    dateString
-            );
+            schedules
+                .filter(
+                    schedule =>
+                        schedule.scheduleDate ===
+                        dateString
+                )
+                .sort(
+                    (a, b) => {
+
+                        const startCompare =
+                            a.startTime.localeCompare(
+                                b.startTime
+                            );
+
+                        if (startCompare !== 0) {
+                            return startCompare;
+                        }
+
+                        return a.endTime.localeCompare(
+                            b.endTime
+                        );
+                    }
+                );
 
 
         daySchedules.forEach(
@@ -1359,8 +1430,18 @@ function renderCalendar() {
                         "div"
                     );
 
+
+                const colorClass =
+                    getScheduleColorClass(
+                        schedule,
+                        daySchedules
+                    );
+
+
                 event.className =
-                    "calendar-event";
+                    "calendar-event " +
+                    colorClass;
+
 
                 event.textContent =
                     getSubjectCode(
@@ -1630,11 +1711,29 @@ function renderWeekly() {
 
 
             const daySchedules =
-                schedules.filter(
-                    schedule =>
-                        schedule.scheduleDate ===
-                        dateString
-                );
+                schedules
+                    .filter(
+                        schedule =>
+                            schedule.scheduleDate ===
+                            dateString
+                    )
+                    .sort(
+                        (a, b) => {
+
+                            const startCompare =
+                                a.startTime.localeCompare(
+                                    b.startTime
+                                );
+
+                            if (startCompare !== 0) {
+                                return startCompare;
+                            }
+
+                            return a.endTime.localeCompare(
+                                b.endTime
+                            );
+                        }
+                    );
 
 
             if (
@@ -1664,8 +1763,17 @@ function renderWeekly() {
                                 "div"
                             );
 
+
+                        const colorClass =
+                            getScheduleColorClass(
+                                schedule,
+                                daySchedules
+                            );
+
+
                         event.className =
-                            "weekly-event";
+                            "weekly-event " +
+                            colorClass;
 
 
                         event.innerHTML = `
