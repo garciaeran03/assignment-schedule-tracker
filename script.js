@@ -1,17 +1,13 @@
 /* =========================================================
-   ASSIGNMENT TRACKER
+   SUPABASE AUTH + CLOUD SYNC
 ========================================================= */
 
-let tasks = JSON.parse(localStorage.getItem("schoolTasks")) || [];
+let currentUser = null;
+
+let tasks = [];
+let schedules = [];
+
 let editingIndex = -1;
-
-
-/* =========================================================
-   CLASS SCHEDULE
-========================================================= */
-
-let schedules = JSON.parse(localStorage.getItem("classSchedules")) || [];
-
 let editingScheduleIndex = -1;
 
 let calendarDate = new Date();
@@ -21,44 +17,737 @@ let selectedCalendarDate = null;
 
 
 /* =========================================================
+   AUTH UI
+========================================================= */
+
+function createLoginScreen() {
+
+    const loginScreen = document.createElement("div");
+
+    loginScreen.id = "loginScreen";
+
+    loginScreen.innerHTML = `
+
+        <div style="
+            position:fixed;
+            inset:0;
+            background:#081A2F;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:99999;
+            padding:20px;
+            box-sizing:border-box;
+        ">
+
+            <div style="
+                width:100%;
+                max-width:420px;
+                background:#122B4A;
+                border-radius:20px;
+                padding:32px;
+                box-sizing:border-box;
+                box-shadow:0 20px 50px rgba(0,0,0,.35);
+                color:#F5F7FA;
+            ">
+
+                <div style="
+                    text-align:center;
+                    font-size:48px;
+                    margin-bottom:10px;
+                ">
+                    📚
+                </div>
+
+                <h2 style="
+                    text-align:center;
+                    margin:0 0 8px;
+                    font-size:28px;
+                ">
+                    My School Tracker
+                </h2>
+
+                <p style="
+                    text-align:center;
+                    margin:0 0 28px;
+                    color:#AAB8C8;
+                ">
+                    Login to sync your school data
+                </p>
+
+
+                <label
+                    for="loginEmail"
+                    style="
+                        display:block;
+                        margin-bottom:7px;
+                        font-weight:600;
+                    "
+                >
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    style="
+                        width:100%;
+                        box-sizing:border-box;
+                        padding:13px 14px;
+                        margin-bottom:16px;
+                        border-radius:10px;
+                        border:1px solid #355574;
+                        background:#0B2038;
+                        color:#F5F7FA;
+                        font-size:15px;
+                    "
+                >
+
+
+                <label
+                    for="loginPassword"
+                    style="
+                        display:block;
+                        margin-bottom:7px;
+                        font-weight:600;
+                    "
+                >
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    style="
+                        width:100%;
+                        box-sizing:border-box;
+                        padding:13px 14px;
+                        margin-bottom:18px;
+                        border-radius:10px;
+                        border:1px solid #355574;
+                        background:#0B2038;
+                        color:#F5F7FA;
+                        font-size:15px;
+                    "
+                >
+
+
+                <button
+                    id="loginButton"
+                    onclick="loginUser()"
+                    style="
+                        width:100%;
+                        padding:14px;
+                        border:0;
+                        border-radius:10px;
+                        background:#5B9BD5;
+                        color:white;
+                        font-size:16px;
+                        font-weight:700;
+                        cursor:pointer;
+                    "
+                >
+                    Login
+                </button>
+
+
+                <p
+                    id="loginMessage"
+                    style="
+                        text-align:center;
+                        margin:16px 0 0;
+                        min-height:20px;
+                        color:#FFB4B4;
+                        font-size:14px;
+                    "
+                ></p>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(loginScreen);
+}
+
+
+function showLoginScreen() {
+
+    let loginScreen =
+        document.getElementById("loginScreen");
+
+    if (!loginScreen) {
+        createLoginScreen();
+        loginScreen =
+            document.getElementById("loginScreen");
+    }
+
+    loginScreen.style.display = "flex";
+}
+
+
+function hideLoginScreen() {
+
+    const loginScreen =
+        document.getElementById("loginScreen");
+
+    if (loginScreen) {
+        loginScreen.style.display = "none";
+    }
+}
+
+
+function showLoginMessage(message) {
+
+    const messageElement =
+        document.getElementById("loginMessage");
+
+    if (messageElement) {
+        messageElement.textContent = message;
+    }
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function loginUser() {
+
+    const email =
+        document.getElementById("loginEmail").value.trim();
+
+    const password =
+        document.getElementById("loginPassword").value;
+
+    const loginButton =
+        document.getElementById("loginButton");
+
+
+    if (!email || !password) {
+
+        showLoginMessage(
+            "Please enter your email and password."
+        );
+
+        return;
+    }
+
+
+    loginButton.disabled = true;
+    loginButton.textContent = "Logging in...";
+
+    showLoginMessage("");
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+
+    if (error) {
+
+        console.error(error);
+
+        showLoginMessage(
+            error.message
+        );
+
+        loginButton.disabled = false;
+        loginButton.textContent = "Login";
+
+        return;
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    await initializeCloudData();
+
+
+    hideLoginScreen();
+
+    showLogoutButton();
+}
+
+
+async function logoutUser() {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to logout?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    await supabaseClient.auth.signOut();
+
+    currentUser = null;
+
+    tasks = [];
+    schedules = [];
+
+    const logoutButton =
+        document.getElementById("logoutButton");
+
+    if (logoutButton) {
+        logoutButton.remove();
+    }
+
+    showLoginScreen();
+}
+
+
+/* =========================================================
+   LOGOUT BUTTON
+========================================================= */
+
+function showLogoutButton() {
+
+    if (
+        document.getElementById("logoutButton")
+    ) {
+        return;
+    }
+
+
+    const button =
+        document.createElement("button");
+
+
+    button.id =
+        "logoutButton";
+
+
+    button.textContent =
+        "Logout";
+
+
+    button.onclick =
+        logoutUser;
+
+
+    button.style.cssText = `
+        position:fixed;
+        top:18px;
+        right:18px;
+        z-index:9998;
+        border:none;
+        border-radius:10px;
+        padding:9px 14px;
+        background:#193A5D;
+        color:#F5F7FA;
+        cursor:pointer;
+        font-weight:600;
+        box-shadow:0 4px 15px rgba(0,0,0,.15);
+    `;
+
+
+    document.body.appendChild(button);
+}
+
+
+/* =========================================================
+   CLOUD INITIALIZATION
+========================================================= */
+
+async function initializeCloudData() {
+
+    if (!currentUser) {
+        return;
+    }
+
+
+    try {
+
+        const localTasks =
+            JSON.parse(
+                localStorage.getItem(
+                    "schoolTasks"
+                )
+            ) || [];
+
+
+        const localSchedules =
+            JSON.parse(
+                localStorage.getItem(
+                    "classSchedules"
+                )
+            ) || [];
+
+
+        /* =========================================
+           LOAD CLOUD ASSIGNMENTS
+        ========================================= */
+
+        const {
+            data: cloudTasks,
+            error: taskError
+        } =
+            await supabaseClient
+                .from("assignments")
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order(
+                    "due_date",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (taskError) {
+            throw taskError;
+        }
+
+
+        /* =========================================
+           MIGRATE OLD LOCAL ASSIGNMENTS
+           ONLY IF CLOUD IS EMPTY
+        ========================================= */
+
+        if (
+            cloudTasks.length === 0 &&
+            localTasks.length > 0
+        ) {
+
+            const rows =
+                localTasks.map(
+                    task => ({
+
+                        user_id:
+                            currentUser.id,
+
+                        subject:
+                            task.subject,
+
+                        task:
+                            task.task,
+
+                        due_date:
+                            task.dueDate,
+
+                        priority:
+                            task.priority,
+
+                        completed:
+                            Boolean(
+                                task.completed
+                            )
+
+                    })
+                );
+
+
+            const {
+                data: insertedTasks,
+                error: insertTaskError
+            } =
+                await supabaseClient
+                    .from("assignments")
+                    .insert(rows)
+                    .select();
+
+
+            if (insertTaskError) {
+                throw insertTaskError;
+            }
+
+
+            tasks =
+                insertedTasks.map(
+                    task => ({
+
+                        id:
+                            task.id,
+
+                        subject:
+                            task.subject,
+
+                        task:
+                            task.task,
+
+                        dueDate:
+                            task.due_date,
+
+                        priority:
+                            task.priority,
+
+                        completed:
+                            task.completed
+
+                    })
+                );
+
+        } else {
+
+            tasks =
+                cloudTasks.map(
+                    task => ({
+
+                        id:
+                            task.id,
+
+                        subject:
+                            task.subject,
+
+                        task:
+                            task.task,
+
+                        dueDate:
+                            task.due_date,
+
+                        priority:
+                            task.priority,
+
+                        completed:
+                            task.completed
+
+                    })
+                );
+        }
+
+
+        /* =========================================
+           LOAD CLOUD SCHEDULES
+        ========================================= */
+
+        const {
+            data: cloudSchedules,
+            error: scheduleError
+        } =
+            await supabaseClient
+                .from("class_schedules")
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order(
+                    "schedule_date",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (scheduleError) {
+            throw scheduleError;
+        }
+
+
+        /* =========================================
+           MIGRATE OLD LOCAL SCHEDULES
+           ONLY IF CLOUD IS EMPTY
+        ========================================= */
+
+        if (
+            cloudSchedules.length === 0 &&
+            localSchedules.length > 0
+        ) {
+
+            const rows =
+                localSchedules.map(
+                    schedule => ({
+
+                        user_id:
+                            currentUser.id,
+
+                        subject:
+                            schedule.subject,
+
+                        schedule_date:
+                            schedule.date,
+
+                        start_time:
+                            schedule.startTime,
+
+                        end_time:
+                            schedule.endTime
+
+                    })
+                );
+
+
+            const {
+                data: insertedSchedules,
+                error: insertScheduleError
+            } =
+                await supabaseClient
+                    .from("class_schedules")
+                    .insert(rows)
+                    .select();
+
+
+            if (insertScheduleError) {
+                throw insertScheduleError;
+            }
+
+
+            schedules =
+                insertedSchedules.map(
+                    schedule => ({
+
+                        id:
+                            schedule.id,
+
+                        subject:
+                            schedule.subject,
+
+                        date:
+                            schedule.schedule_date,
+
+                        startTime:
+                            schedule.start_time,
+
+                        endTime:
+                            schedule.end_time
+
+                    })
+                );
+
+        } else {
+
+            schedules =
+                cloudSchedules.map(
+                    schedule => ({
+
+                        id:
+                            schedule.id,
+
+                        subject:
+                            schedule.subject,
+
+                        date:
+                            schedule.schedule_date,
+
+                        startTime:
+                            schedule.start_time,
+
+                        endTime:
+                            schedule.end_time
+
+                    })
+                );
+        }
+
+
+        /* =========================================
+           KEEP LOCAL STORAGE AS BACKUP CACHE
+        ========================================= */
+
+        localStorage.setItem(
+            "schoolTasks",
+            JSON.stringify(tasks)
+        );
+
+
+        localStorage.setItem(
+            "classSchedules",
+            JSON.stringify(schedules)
+        );
+
+
+        displayTasks();
+
+        renderCalendar();
+
+        renderWeeklySchedule();
+
+        displaySavedSchedules();
+
+    } catch (error) {
+
+        console.error(
+            "Cloud initialization error:",
+            error
+        );
+
+        alert(
+            "Unable to load your cloud data. Please check your internet connection and try again."
+        );
+    }
+}
+
+
+/* =========================================================
    MAIN TABS
 ========================================================= */
 
 function showMainTab(tab) {
 
     const assignmentsTab =
-        document.getElementById("assignmentsTab");
+        document.getElementById(
+            "assignmentsTab"
+        );
 
     const scheduleTab =
-        document.getElementById("scheduleTab");
+        document.getElementById(
+            "scheduleTab"
+        );
 
     const mainTabs =
-        document.querySelectorAll(".main-tab");
+        document.querySelectorAll(
+            ".main-tab"
+        );
 
 
     mainTabs.forEach(button => {
-        button.classList.remove("active");
+
+        button.classList.remove(
+            "active"
+        );
+
     });
 
 
     if (tab === "assignments") {
 
-        assignmentsTab.style.display = "block";
-        scheduleTab.style.display = "none";
+        assignmentsTab.style.display =
+            "block";
 
-        mainTabs[0].classList.add("active");
+        scheduleTab.style.display =
+            "none";
+
+        mainTabs[0].classList.add(
+            "active"
+        );
 
         displayTasks();
 
     } else {
 
-        assignmentsTab.style.display = "none";
-        scheduleTab.style.display = "block";
+        assignmentsTab.style.display =
+            "none";
 
-        mainTabs[1].classList.add("active");
+        scheduleTab.style.display =
+            "block";
+
+        mainTabs[1].classList.add(
+            "active"
+        );
 
         renderCalendar();
+
         renderWeeklySchedule();
+
         displaySavedSchedules();
     }
 }
@@ -68,22 +757,42 @@ function showMainTab(tab) {
    ASSIGNMENT FUNCTIONS
 ========================================================= */
 
-function addTask() {
+async function addTask() {
+
+    if (!currentUser) {
+        return;
+    }
+
 
     const subject =
-        document.getElementById("subject").value;
+        document.getElementById(
+            "subject"
+        ).value;
+
 
     const task =
-        document.getElementById("task").value.trim();
+        document.getElementById(
+            "task"
+        ).value.trim();
+
 
     const dueDate =
-        document.getElementById("dueDate").value;
+        document.getElementById(
+            "dueDate"
+        ).value;
+
 
     const priority =
-        document.getElementById("priority").value;
+        document.getElementById(
+            "priority"
+        ).value;
 
 
-    if (!subject || !task || !dueDate) {
+    if (
+        !subject ||
+        !task ||
+        !dueDate
+    ) {
 
         alert(
             "Please complete all assignment fields."
@@ -93,64 +802,188 @@ function addTask() {
     }
 
 
-    const taskData = {
-
-        subject: subject,
-
-        task: task,
-
-        dueDate: dueDate,
-
-        priority: priority,
-
-        completed: false
-
-    };
+    const completed =
+        editingIndex >= 0
+            ? tasks[editingIndex].completed
+            : false;
 
 
-    if (editingIndex >= 0) {
+    try {
 
-        taskData.completed =
-            tasks[editingIndex].completed;
+        if (editingIndex >= 0) {
 
-        tasks[editingIndex] =
-            taskData;
+            const existingTask =
+                tasks[editingIndex];
 
-        editingIndex = -1;
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("assignments")
+                    .update({
+
+                        subject:
+                            subject,
+
+                        task:
+                            task,
+
+                        due_date:
+                            dueDate,
+
+                        priority:
+                            priority,
+
+                        completed:
+                            completed
+
+                    })
+                    .eq(
+                        "id",
+                        existingTask.id
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    )
+                    .select()
+                    .single();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            tasks[editingIndex] = {
+
+                id:
+                    data.id,
+
+                subject:
+                    data.subject,
+
+                task:
+                    data.task,
+
+                dueDate:
+                    data.due_date,
+
+                priority:
+                    data.priority,
+
+                completed:
+                    data.completed
+
+            };
+
+
+            editingIndex = -1;
+
+
+            document.getElementById(
+                "addTaskButton"
+            ).textContent =
+                "Add Task";
+
+        } else {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("assignments")
+                    .insert({
+
+                        user_id:
+                            currentUser.id,
+
+                        subject:
+                            subject,
+
+                        task:
+                            task,
+
+                        due_date:
+                            dueDate,
+
+                        priority:
+                            priority,
+
+                        completed:
+                            false
+
+                    })
+                    .select()
+                    .single();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            tasks.push({
+
+                id:
+                    data.id,
+
+                subject:
+                    data.subject,
+
+                task:
+                    data.task,
+
+                dueDate:
+                    data.due_date,
+
+                priority:
+                    data.priority,
+
+                completed:
+                    data.completed
+
+            });
+        }
+
+
+        saveTasks();
 
 
         document.getElementById(
-            "addTaskButton"
-        ).textContent =
-            "Add Task";
+            "subject"
+        ).value = "";
 
-    } else {
 
-        tasks.push(taskData);
+        document.getElementById(
+            "task"
+        ).value = "";
+
+
+        document.getElementById(
+            "dueDate"
+        ).value = "";
+
+
+        document.getElementById(
+            "priority"
+        ).value =
+            "Medium";
+
+
+        displayTasks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to save assignment. Please try again."
+        );
     }
-
-
-    saveTasks();
-
-
-    document.getElementById(
-        "subject"
-    ).value = "";
-
-    document.getElementById(
-        "task"
-    ).value = "";
-
-    document.getElementById(
-        "dueDate"
-    ).value = "";
-
-    document.getElementById(
-        "priority"
-    ).value = "Medium";
-
-
-    displayTasks();
 }
 
 
@@ -161,16 +994,25 @@ function addTask() {
 function displayTasks() {
 
     const taskList =
-        document.getElementById("taskList");
+        document.getElementById(
+            "taskList"
+        );
 
     const dateFilterElement =
-        document.getElementById("dateFilter");
+        document.getElementById(
+            "dateFilter"
+        );
 
     const specificDateElement =
-        document.getElementById("specificDate");
+        document.getElementById(
+            "specificDate"
+        );
 
 
-    if (!taskList || !dateFilterElement) {
+    if (
+        !taskList ||
+        !dateFilterElement
+    ) {
         return;
     }
 
@@ -197,14 +1039,6 @@ function displayTasks() {
     let filteredTasks =
         tasks.filter(task => {
 
-            /* =========================================
-               ALL DATES
-
-               Supports:
-               all
-               All
-            ========================================= */
-
             if (
                 filter === "all" ||
                 filter === ""
@@ -213,10 +1047,6 @@ function displayTasks() {
                 return true;
             }
 
-
-            /* =========================================
-               TODAY
-            ========================================= */
 
             if (
                 filter === "today"
@@ -228,24 +1058,6 @@ function displayTasks() {
                 );
             }
 
-
-            /* =========================================
-               NEXT 7 DAYS
-
-               IMPORTANT:
-
-               If today is Sept 17:
-
-               Sept 17 = Day 1
-               Sept 18 = Day 2
-               Sept 19 = Day 3
-               Sept 20 = Day 4
-               Sept 21 = Day 5
-               Sept 22 = Day 6
-               Sept 23 = Day 7
-
-               Sept 30 = OUTSIDE RANGE
-            ========================================= */
 
             if (
                 filter === "next7" ||
@@ -278,9 +1090,7 @@ function displayTasks() {
                 );
 
 
-                if (
-                    !task.dueDate
-                ) {
+                if (!task.dueDate) {
                     return false;
                 }
 
@@ -308,10 +1118,6 @@ function displayTasks() {
             }
 
 
-            /* =========================================
-               TOMORROW
-            ========================================= */
-
             if (
                 filter === "tomorrow"
             ) {
@@ -322,10 +1128,6 @@ function displayTasks() {
                 );
             }
 
-
-            /* =========================================
-               OVERDUE
-            ========================================= */
 
             if (
                 filter === "overdue"
@@ -342,9 +1144,7 @@ function displayTasks() {
                 );
 
 
-                if (
-                    !task.dueDate
-                ) {
+                if (!task.dueDate) {
                     return false;
                 }
 
@@ -362,10 +1162,6 @@ function displayTasks() {
             }
 
 
-            /* =========================================
-               SPECIFIC DATE
-            ========================================= */
-
             if (
                 filter === "specific"
             ) {
@@ -378,20 +1174,9 @@ function displayTasks() {
             }
 
 
-            /* =========================================
-               UNKNOWN FILTER
-
-               IMPORTANT:
-               Do NOT show everything.
-            ========================================= */
-
             return false;
         });
 
-
-    /* =========================================
-       SORT BY DUE DATE
-    ========================================= */
 
     filteredTasks.sort(
         (a, b) =>
@@ -400,10 +1185,6 @@ function displayTasks() {
             )
     );
 
-
-    /* =========================================
-       NO RESULTS
-    ========================================= */
 
     if (
         filteredTasks.length === 0
@@ -425,11 +1206,6 @@ function displayTasks() {
 
     } else {
 
-
-        /* =========================================
-           DISPLAY TASKS
-        ========================================= */
-
         filteredTasks.forEach(task => {
 
             const originalIndex =
@@ -437,7 +1213,9 @@ function displayTasks() {
 
 
             const taskItem =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             taskItem.className =
@@ -472,21 +1250,30 @@ function displayTasks() {
                 <div class="task-info">
 
                     <div class="task-subject">
-                        ${escapeHtml(task.subject)}
+                        ${escapeHtml(
+                            task.subject
+                        )}
                     </div>
 
                     <div class="task-name">
-                        ${escapeHtml(task.task)}
+                        ${escapeHtml(
+                            task.task
+                        )}
                     </div>
 
                     <div class="task-due">
-                        Due: ${formatDate(task.dueDate)}
+                        Due:
+                        ${formatDate(
+                            task.dueDate
+                        )}
                     </div>
 
                 </div>
 
                 <span class="priority ${priorityClass}">
-                    ${escapeHtml(task.priority)}
+                    ${escapeHtml(
+                        task.priority
+                    )}
                 </span>
 
                 <div class="task-actions">
@@ -530,15 +1317,63 @@ function displayTasks() {
    TASK ACTIONS
 ========================================================= */
 
-function toggleTask(index) {
+async function toggleTask(index) {
 
-    tasks[index].completed =
-        !tasks[index].completed;
+    if (!currentUser) {
+        return;
+    }
 
 
-    saveTasks();
+    const task =
+        tasks[index];
 
-    displayTasks();
+
+    const newCompleted =
+        !task.completed;
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("assignments")
+                .update({
+                    completed:
+                        newCompleted
+                })
+                .eq(
+                    "id",
+                    task.id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        task.completed =
+            newCompleted;
+
+
+        saveTasks();
+
+        displayTasks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to update assignment."
+        );
+    }
 }
 
 
@@ -592,7 +1427,7 @@ function editTask(index) {
 }
 
 
-function deleteTask(index) {
+async function deleteTask(index) {
 
     if (
         !confirm(
@@ -603,15 +1438,51 @@ function deleteTask(index) {
     }
 
 
-    tasks.splice(
-        index,
-        1
-    );
+    const task =
+        tasks[index];
 
 
-    saveTasks();
+    try {
 
-    displayTasks();
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("assignments")
+                .delete()
+                .eq(
+                    "id",
+                    task.id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        tasks.splice(
+            index,
+            1
+        );
+
+
+        saveTasks();
+
+        displayTasks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to delete assignment."
+        );
+    }
 }
 
 
@@ -720,14 +1591,13 @@ function updateProgress() {
 
 
     const pending =
-        total - completed;
+        total -
+        completed;
 
 
     const percentage =
         total === 0
-
             ? 0
-
             : Math.round(
                 (
                     completed /
@@ -931,10 +1801,6 @@ function generateTimeOptions() {
         `<option value="">End Time</option>`;
 
 
-    /* START TIME
-       7:00 AM - 10:00 PM
-    */
-
     for (
         let hour = 7;
         hour <= 22;
@@ -966,10 +1832,6 @@ function generateTimeOptions() {
         }
     }
 
-
-    /* END TIME
-       7:30 AM - 11:00 PM
-    */
 
     for (
         let hour = 7;
@@ -1076,7 +1938,12 @@ function convertTimeToMinutes(time) {
    ADD / EDIT / DELETE SCHEDULE
 ========================================================= */
 
-function addSchedule() {
+async function addSchedule() {
+
+    if (!currentUser) {
+        return;
+    }
+
 
     const subject =
         document.getElementById(
@@ -1134,74 +2001,184 @@ function addSchedule() {
     }
 
 
-    const scheduleData = {
+    try {
 
-        subject: subject,
+        if (
+            editingScheduleIndex >= 0
+        ) {
 
-        date: date,
-
-        startTime: startTime,
-
-        endTime: endTime
-
-    };
-
-
-    if (
-        editingScheduleIndex >= 0
-    ) {
-
-        schedules[
-            editingScheduleIndex
-        ] =
-            scheduleData;
+            const existingSchedule =
+                schedules[
+                    editingScheduleIndex
+                ];
 
 
-        editingScheduleIndex =
-            -1;
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "class_schedules"
+                    )
+                    .update({
+
+                        subject:
+                            subject,
+
+                        schedule_date:
+                            date,
+
+                        start_time:
+                            startTime,
+
+                        end_time:
+                            endTime
+
+                    })
+                    .eq(
+                        "id",
+                        existingSchedule.id
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    )
+                    .select()
+                    .single();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            schedules[
+                editingScheduleIndex
+            ] = {
+
+                id:
+                    data.id,
+
+                subject:
+                    data.subject,
+
+                date:
+                    data.schedule_date,
+
+                startTime:
+                    data.start_time,
+
+                endTime:
+                    data.end_time
+
+            };
+
+
+            editingScheduleIndex =
+                -1;
+
+
+            document.getElementById(
+                "addScheduleButton"
+            ).textContent =
+                "Add Schedule";
+
+        } else {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "class_schedules"
+                    )
+                    .insert({
+
+                        user_id:
+                            currentUser.id,
+
+                        subject:
+                            subject,
+
+                        schedule_date:
+                            date,
+
+                        start_time:
+                            startTime,
+
+                        end_time:
+                            endTime
+
+                    })
+                    .select()
+                    .single();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            schedules.push({
+
+                id:
+                    data.id,
+
+                subject:
+                    data.subject,
+
+                date:
+                    data.schedule_date,
+
+                startTime:
+                    data.start_time,
+
+                endTime:
+                    data.end_time
+
+            });
+        }
+
+
+        saveSchedules();
 
 
         document.getElementById(
-            "addScheduleButton"
-        ).textContent =
-            "Add Schedule";
+            "scheduleSubject"
+        ).value = "";
 
-    } else {
 
-        schedules.push(
-            scheduleData
+        document.getElementById(
+            "scheduleDate"
+        ).value = "";
+
+
+        document.getElementById(
+            "startTime"
+        ).value = "";
+
+
+        document.getElementById(
+            "endTime"
+        ).value = "";
+
+
+        renderCalendar();
+
+        renderWeeklySchedule();
+
+        displaySavedSchedules();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to save class schedule. Please try again."
         );
     }
-
-
-    saveSchedules();
-
-
-    document.getElementById(
-        "scheduleSubject"
-    ).value = "";
-
-
-    document.getElementById(
-        "scheduleDate"
-    ).value = "";
-
-
-    document.getElementById(
-        "startTime"
-    ).value = "";
-
-
-    document.getElementById(
-        "endTime"
-    ).value = "";
-
-
-    renderCalendar();
-
-    renderWeeklySchedule();
-
-    displaySavedSchedules();
 }
 
 
@@ -1266,7 +2243,7 @@ function editSchedule(index) {
 }
 
 
-function deleteSchedule(index) {
+async function deleteSchedule(index) {
 
     if (
         !confirm(
@@ -1277,22 +2254,60 @@ function deleteSchedule(index) {
     }
 
 
-    schedules.splice(
-        index,
-        1
-    );
+    const schedule =
+        schedules[index];
 
 
-    saveSchedules();
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "class_schedules"
+                )
+                .delete()
+                .eq(
+                    "id",
+                    schedule.id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
 
 
-    renderCalendar();
+        if (error) {
+            throw error;
+        }
 
-    renderWeeklySchedule();
 
-    displaySavedSchedules();
+        schedules.splice(
+            index,
+            1
+        );
 
-    showScheduleDetails(null);
+
+        saveSchedules();
+
+
+        renderCalendar();
+
+        renderWeeklySchedule();
+
+        displaySavedSchedules();
+
+        showScheduleDetails(null);
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to delete class schedule."
+        );
+    }
 }
 
 
@@ -1325,6 +2340,7 @@ function showScheduleView(view) {
         tab.classList.remove(
             "active"
         );
+
     });
 
 
@@ -2246,12 +3262,87 @@ function getShortSubject(subject) {
    INITIALIZE
 ========================================================= */
 
-generateTimeOptions();
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
 
-displayTasks();
+        createLoginScreen();
 
-renderCalendar();
+        showLoginScreen();
 
-renderWeeklySchedule();
+        generateTimeOptions();
 
-displaySavedSchedules();
+
+        try {
+
+            const {
+                data
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (
+                data &&
+                data.session &&
+                data.session.user
+            ) {
+
+                currentUser =
+                    data.session.user;
+
+
+                await initializeCloudData();
+
+                hideLoginScreen();
+
+                showLogoutButton();
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Session check error:",
+                error
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   AUTH STATE LISTENER
+========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+    async function (
+        event,
+        session
+    ) {
+
+        if (
+            event === "SIGNED_OUT"
+        ) {
+
+            currentUser = null;
+
+            tasks = [];
+
+            schedules = [];
+
+            showLoginScreen();
+
+            return;
+        }
+
+
+        if (
+            event === "SIGNED_IN" &&
+            session &&
+            session.user
+        ) {
+
+            currentUser =
+                session.user;
+        }
+    }
+);
