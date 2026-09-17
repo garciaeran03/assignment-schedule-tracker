@@ -165,6 +165,7 @@ async function logoutUser() {
 
 // ============================================================
 // LOAD CLOUD DATA
+// SUPABASE IS THE SOURCE OF TRUTH
 // ============================================================
 
 async function loadCloudData() {
@@ -199,12 +200,12 @@ async function loadCloudData() {
 
         } else {
 
-            if (
-                cloudTasks &&
-                cloudTasks.length > 0
-            ) {
+            // ------------------------------------------------
+            // SUPABASE IS ALWAYS THE SOURCE OF TRUTH
+            // ------------------------------------------------
 
-                tasks = cloudTasks.map(task => ({
+            tasks =
+                (cloudTasks || []).map(task => ({
 
                     id: task.id,
 
@@ -221,44 +222,6 @@ async function loadCloudData() {
                     createdAt: task.created_at
 
                 }));
-
-            } else {
-
-                const localTasks =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "schoolTasks"
-                        )
-                    ) || [];
-
-                tasks = localTasks;
-
-                if (localTasks.length > 0) {
-
-                    for (const task of localTasks) {
-
-                        await supabase
-                            .from("assignments")
-                            .insert({
-
-                                subject: task.subject,
-
-                                task: task.task,
-
-                                due_date: task.dueDate,
-
-                                priority: task.priority,
-
-                                completed:
-                                    task.completed || false,
-
-                                user_id:
-                                    currentUser.id
-
-                            });
-                    }
-                }
-            }
         }
 
 
@@ -286,78 +249,35 @@ async function loadCloudData() {
 
         } else {
 
-            if (
-                cloudSchedules &&
-                cloudSchedules.length > 0
-            ) {
+            // ------------------------------------------------
+            // SUPABASE IS ALWAYS THE SOURCE OF TRUTH
+            // ------------------------------------------------
 
-                schedules =
-                    cloudSchedules.map(schedule => ({
+            schedules =
+                (cloudSchedules || []).map(schedule => ({
 
-                        id: schedule.id,
+                    id: schedule.id,
 
-                        subject: schedule.subject,
+                    subject: schedule.subject,
 
-                        scheduleDate:
-                            schedule.schedule_date,
+                    scheduleDate:
+                        schedule.schedule_date,
 
-                        startTime:
-                            schedule.start_time,
+                    startTime:
+                        schedule.start_time,
 
-                        endTime:
-                            schedule.end_time,
+                    endTime:
+                        schedule.end_time,
 
-                        createdAt:
-                            schedule.created_at
+                    createdAt:
+                        schedule.created_at
 
-                    }));
-
-            } else {
-
-                const localSchedules =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "classSchedules"
-                        )
-                    ) || [];
-
-                schedules = localSchedules;
-
-                if (localSchedules.length > 0) {
-
-                    for (
-                        const schedule
-                        of localSchedules
-                    ) {
-
-                        await supabase
-                            .from("class_schedules")
-                            .insert({
-
-                                subject:
-                                    schedule.subject,
-
-                                schedule_date:
-                                    schedule.scheduleDate,
-
-                                start_time:
-                                    schedule.startTime,
-
-                                end_time:
-                                    schedule.endTime,
-
-                                user_id:
-                                    currentUser.id
-
-                            });
-                    }
-                }
-            }
+                }));
         }
 
 
         // ====================================================
-        // LOCAL STORAGE
+        // UPDATE LOCAL STORAGE
         // ====================================================
 
         localStorage.setItem(
@@ -1062,6 +982,7 @@ function editTask(index) {
 
 // ============================================================
 // DELETE TASK
+// FIXED: VERIFY ACTUAL SUPABASE DELETE
 // ============================================================
 
 async function deleteTask(index) {
@@ -1089,6 +1010,7 @@ async function deleteTask(index) {
 
 
     const {
+        data: deletedRows,
         error
     } = await supabase
         .from("assignments")
@@ -1100,7 +1022,8 @@ async function deleteTask(index) {
         .eq(
             "user_id",
             currentUser.id
-        );
+        )
+        .select("id");
 
 
     if (error) {
@@ -1113,6 +1036,30 @@ async function deleteTask(index) {
         return;
     }
 
+
+    // --------------------------------------------------------
+    // IMPORTANT:
+    // Supabase may return NO ERROR even if 0 rows were deleted.
+    // Verify that an actual row was deleted.
+    // --------------------------------------------------------
+
+    if (
+        !deletedRows ||
+        deletedRows.length === 0
+    ) {
+
+        alert(
+            "The assignment was not deleted from Supabase. Please refresh and try again."
+        );
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // DELETE FROM LOCAL MEMORY ONLY AFTER CLOUD DELETE
+    // SUCCESS
+    // --------------------------------------------------------
 
     tasks.splice(index, 1);
 
@@ -2387,6 +2334,7 @@ function editScheduleById(id) {
 
 // ============================================================
 // DELETE SCHEDULE
+// FIXED: VERIFY ACTUAL SUPABASE DELETE
 // ============================================================
 
 async function deleteSchedule(index) {
@@ -2416,6 +2364,7 @@ async function deleteSchedule(index) {
 
 
     const {
+        data: deletedRows,
         error
     } = await supabase
         .from("class_schedules")
@@ -2427,7 +2376,8 @@ async function deleteSchedule(index) {
         .eq(
             "user_id",
             currentUser.id
-        );
+        )
+        .select("id");
 
 
     if (error) {
@@ -2440,6 +2390,29 @@ async function deleteSchedule(index) {
         return;
     }
 
+
+    // --------------------------------------------------------
+    // IMPORTANT:
+    // Verify that an actual row was deleted.
+    // --------------------------------------------------------
+
+    if (
+        !deletedRows ||
+        deletedRows.length === 0
+    ) {
+
+        alert(
+            "The class schedule was not deleted from Supabase. Please refresh and try again."
+        );
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // DELETE FROM LOCAL MEMORY ONLY AFTER CLOUD DELETE
+    // SUCCESS
+    // --------------------------------------------------------
 
     schedules.splice(index, 1);
 
@@ -2934,8 +2907,6 @@ function renderSummaryCalendar() {
                     }
                 );
 
-
-                // Helpful browser tooltip
 
                 event.title =
                     `${schedule.subject} • ${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}`;
