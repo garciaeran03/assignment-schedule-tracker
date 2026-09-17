@@ -200,28 +200,23 @@ async function loadCloudData() {
 
         } else {
 
-            // ------------------------------------------------
-            // SUPABASE IS ALWAYS THE SOURCE OF TRUTH
-            // ------------------------------------------------
+            tasks = (cloudTasks || []).map(task => ({
 
-            tasks =
-                (cloudTasks || []).map(task => ({
+                id: task.id,
 
-                    id: task.id,
+                subject: task.subject,
 
-                    subject: task.subject,
+                task: task.task,
 
-                    task: task.task,
+                dueDate: task.due_date,
 
-                    dueDate: task.due_date,
+                priority: task.priority,
 
-                    priority: task.priority,
+                completed: task.completed,
 
-                    completed: task.completed,
+                createdAt: task.created_at
 
-                    createdAt: task.created_at
-
-                }));
+            }));
         }
 
 
@@ -249,10 +244,6 @@ async function loadCloudData() {
 
         } else {
 
-            // ------------------------------------------------
-            // SUPABASE IS ALWAYS THE SOURCE OF TRUTH
-            // ------------------------------------------------
-
             schedules =
                 (cloudSchedules || []).map(schedule => ({
 
@@ -277,7 +268,7 @@ async function loadCloudData() {
 
 
         // ====================================================
-        // UPDATE LOCAL STORAGE
+        // UPDATE LOCAL CACHE FROM CLOUD
         // ====================================================
 
         localStorage.setItem(
@@ -982,7 +973,7 @@ function editTask(index) {
 
 // ============================================================
 // DELETE TASK
-// FIXED: VERIFY ACTUAL SUPABASE DELETE
+// VERIFIED SUPABASE DELETE
 // ============================================================
 
 async function deleteTask(index) {
@@ -1028,8 +1019,13 @@ async function deleteTask(index) {
 
     if (error) {
 
+        console.error(
+            "Assignment delete error:",
+            error
+        );
+
         alert(
-            "Unable to delete task: " +
+            "Unable to delete task:\n\n" +
             error.message
         );
 
@@ -1037,29 +1033,35 @@ async function deleteTask(index) {
     }
 
 
-    // --------------------------------------------------------
     // IMPORTANT:
-    // Supabase may return NO ERROR even if 0 rows were deleted.
-    // Verify that an actual row was deleted.
-    // --------------------------------------------------------
+    // If Supabase returns zero deleted rows,
+    // do NOT remove it from the local UI.
 
     if (
         !deletedRows ||
         deletedRows.length === 0
     ) {
 
+        console.error(
+            "Assignment was not deleted from Supabase.",
+            {
+                taskId: task.id,
+                userId: currentUser.id,
+                deletedRows: deletedRows
+            }
+        );
+
         alert(
-            "The assignment was not deleted from Supabase. Please refresh and try again."
+            "The assignment was NOT deleted from the cloud.\n\n" +
+            "Nothing was removed from the tracker.\n\n" +
+            "Please check the browser console for details."
         );
 
         return;
     }
 
 
-    // --------------------------------------------------------
-    // DELETE FROM LOCAL MEMORY ONLY AFTER CLOUD DELETE
-    // SUCCESS
-    // --------------------------------------------------------
+    // Actual cloud deletion confirmed.
 
     tasks.splice(index, 1);
 
@@ -2334,7 +2336,7 @@ function editScheduleById(id) {
 
 // ============================================================
 // DELETE SCHEDULE
-// FIXED: VERIFY ACTUAL SUPABASE DELETE
+// VERIFIED SUPABASE DELETE
 // ============================================================
 
 async function deleteSchedule(index) {
@@ -2382,8 +2384,13 @@ async function deleteSchedule(index) {
 
     if (error) {
 
+        console.error(
+            "Schedule delete error:",
+            error
+        );
+
         alert(
-            "Unable to delete schedule: " +
+            "Unable to delete schedule:\n\n" +
             error.message
         );
 
@@ -2391,28 +2398,35 @@ async function deleteSchedule(index) {
     }
 
 
-    // --------------------------------------------------------
     // IMPORTANT:
-    // Verify that an actual row was deleted.
-    // --------------------------------------------------------
+    // If Supabase returns zero deleted rows,
+    // do NOT remove it from the local UI.
 
     if (
         !deletedRows ||
         deletedRows.length === 0
     ) {
 
+        console.error(
+            "Schedule was not deleted from Supabase.",
+            {
+                scheduleId: schedule.id,
+                userId: currentUser.id,
+                deletedRows: deletedRows
+            }
+        );
+
         alert(
-            "The class schedule was not deleted from Supabase. Please refresh and try again."
+            "The class schedule was NOT deleted from the cloud.\n\n" +
+            "Nothing was removed from the tracker.\n\n" +
+            "Please check the browser console for details."
         );
 
         return;
     }
 
 
-    // --------------------------------------------------------
-    // DELETE FROM LOCAL MEMORY ONLY AFTER CLOUD DELETE
-    // SUCCESS
-    // --------------------------------------------------------
+    // Actual cloud deletion confirmed.
 
     schedules.splice(index, 1);
 
