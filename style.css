@@ -5,27 +5,34 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 24px;
     background: #eef3f9;
     color: #1e293b;
 }
 
 .container {
-    max-width: 1000px;
-    margin: 40px auto;
+    max-width: 1050px;
+    margin: 35px auto;
 }
+
+
+/* =========================
+   HEADER
+========================= */
 
 h1 {
     text-align: center;
-    margin-bottom: 6px;
+    margin: 0;
     color: #0b1f3a;
-    font-size: 32px;
+    font-size: 34px;
+    letter-spacing: -0.5px;
 }
 
 .subtitle {
     text-align: center;
     color: #64748b;
-    margin-bottom: 30px;
+    margin: 8px 0 30px;
+    font-size: 14px;
 }
 
 
@@ -36,31 +43,33 @@ h1 {
 .main-tabs {
     display: flex;
     gap: 10px;
-    margin-bottom: 25px;
+    margin-bottom: 22px;
 }
 
 .main-tab {
     flex: 1;
-    padding: 14px;
+    padding: 15px 18px;
     border: 1px solid #d5dfed;
-    border-radius: 10px;
-    background: #dfe8f5;
-    color: #1e3a5f;
+    border-radius: 12px;
+    background: #e3ebf6;
+    color: #29415f;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     margin-top: 0;
+    transition: all 0.2s ease;
 }
 
 .main-tab:hover {
-    background: #cbd9ec;
-    transform: none;
+    background: #d5e1ef;
+    transform: translateY(-1px);
 }
 
 .main-tab.active {
     background: #123b6d;
     color: white;
     border-color: #123b6d;
+    box-shadow: 0 5px 14px rgba(18, 59, 109, 0.18);
 }
 
 
@@ -69,16 +78,15 @@ h1 {
 ========================= */
 
 .tracker-card {
-    background: white;
+    background: #ffffff;
     padding: 30px;
     border-radius: 18px;
     border: 1px solid #dce5f0;
-    box-shadow: 0 8px 25px rgba(15, 45, 80, 0.08);
+    box-shadow: 0 10px 30px rgba(15, 45, 80, 0.08);
 }
 
 .tracker-card h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
+    margin: 0 0 22px;
     font-size: 22px;
     color: #0b1f3a;
 }
@@ -91,29 +99,40 @@ h1 {
 .progress-summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 18px;
+    gap: 14px;
+    margin-bottom: 20px;
 }
 
 .progress-box {
-    background: #f4f8fd;
-    border: 1px solid #dbe5f0;
-    border-radius: 12px;
-    padding: 14px;
+    background: linear-gradient(
+        145deg,
+        #f8fbff,
+        #eef4fb
+    );
+    border: 1px solid #dce6f2;
+    border-radius: 14px;
+    padding: 17px 12px;
     text-align: center;
+    transition: 0.2s ease;
+}
+
+.progress-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(15, 45, 80, 0.07);
 }
 
 .progress-box span {
     display: block;
-    font-size: 24px;
+    font-size: 27px;
     font-weight: bold;
     color: #123b6d;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
 }
 
 .progress-box small {
     color: #64748b;
     font-size: 12px;
+    font-weight: 600;
 }
 
 
@@ -123,7 +142,7 @@ h1 {
 
 .progress-bar {
     width: 100%;
-    height: 10px;
+    height: 11px;
     background: #dce6f2;
     border-radius: 20px;
     overflow: hidden;
@@ -152,29 +171,35 @@ h1 {
 
 label {
     display: block;
-    margin-top: 16px;
+    margin-top: 17px;
     margin-bottom: 7px;
     font-weight: bold;
     color: #29415f;
+    font-size: 14px;
 }
 
 input,
 select {
     width: 100%;
-    box-sizing: border-box;
-    padding: 13px;
+    padding: 13px 14px;
     border: 1px solid #c9d6e5;
-    border-radius: 9px;
+    border-radius: 10px;
     font-size: 14px;
-    background: white;
+    background: #ffffff;
     color: #1e293b;
+    transition: 0.2s ease;
+}
+
+input:hover,
+select:hover {
+    border-color: #9fb3ca;
 }
 
 input:focus,
 select:focus {
     outline: none;
     border-color: #35679f;
-    box-shadow: 0 0 0 3px rgba(53, 103, 159, 0.10);
+    box-shadow: 0 0 0 3px rgba(53, 103, 159, 0.11);
 }
 
 
@@ -187,18 +212,22 @@ button {
     padding: 13px;
     margin-top: 22px;
     border: none;
-    border-radius: 9px;
+    border-radius: 10px;
     background: #123b6d;
     color: white;
     font-size: 15px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s ease;
 }
 
 button:hover {
     background: #0b2d55;
     transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 
@@ -213,18 +242,19 @@ ul {
 }
 
 li {
-    margin: 14px 0;
-    padding: 17px;
-    background: #f8fbff;
+    margin: 12px 0;
+    padding: 18px;
+    background: #f9fbfe;
     border: 1px solid #dce6f2;
     border-left: 5px solid #35679f;
-    border-radius: 12px;
-    transition: 0.2s;
+    border-radius: 13px;
+    transition: all 0.2s ease;
 }
 
 li:hover {
-    background: #f1f6fc;
-    transform: translateX(2px);
+    background: #f2f7fc;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(15, 45, 80, 0.06);
 }
 
 .task-content {
@@ -246,7 +276,7 @@ li:hover {
 }
 
 .task-subject {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
     color: #315477;
     margin-bottom: 5px;
@@ -279,9 +309,9 @@ li:hover {
 
 .priority-badge {
     display: inline-block;
-    padding: 5px 10px;
+    padding: 5px 11px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
 }
 
@@ -307,15 +337,16 @@ li:hover {
 
 .task-actions {
     display: flex;
-    gap: 6px;
+    gap: 7px;
 }
 
 .edit-btn,
 .delete-btn {
     width: auto;
     margin: 0;
-    padding: 6px 10px;
-    font-size: 14px;
+    padding: 7px 11px;
+    font-size: 13px;
+    border-radius: 7px;
 }
 
 .edit-btn {
@@ -353,7 +384,7 @@ li:hover {
 #taskCounter {
     text-align: right;
     color: #64748b;
-    font-size: 14px;
+    font-size: 13px;
     margin-top: 18px;
 }
 
@@ -363,16 +394,17 @@ li:hover {
 ========================= */
 
 #scheduleTab > h2 {
-    margin-bottom: 20px;
+    margin: 0 0 20px;
     color: #0b1f3a;
+    font-size: 23px;
 }
 
 .schedule-form {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
+    background: #ffffff;
+    padding: 21px;
+    border-radius: 14px;
     border: 1px solid #dce5f0;
-    box-shadow: 0 6px 20px rgba(15, 45, 80, 0.07);
+    box-shadow: 0 7px 22px rgba(15, 45, 80, 0.07);
     margin-top: 20px;
 }
 
@@ -410,7 +442,7 @@ li:hover {
 .schedule-tab {
     width: auto;
     padding: 10px 18px;
-    border-radius: 8px;
+    border-radius: 9px;
     background: #dfe8f5;
     color: #29415f;
     cursor: pointer;
@@ -436,15 +468,15 @@ li:hover {
 .calendar-layout {
     display: grid;
     grid-template-columns: 1.7fr 1fr;
-    gap: 15px;
+    gap: 16px;
 }
 
 .calendar-main {
     background: white;
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 14px;
+    padding: 14px;
     border: 1px solid #dce5f0;
-    box-shadow: 0 6px 20px rgba(15, 45, 80, 0.07);
+    box-shadow: 0 7px 22px rgba(15, 45, 80, 0.07);
 }
 
 .calendar-header,
@@ -458,12 +490,12 @@ li:hover {
 .calendar-header button,
 .weekly-header button {
     width: auto;
-    background: #dfe8f5;
+    background: #e3ebf6;
     color: #29415f;
     padding: 8px 14px;
-    border-radius: 7px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
     margin-top: 0;
 }
 
@@ -477,6 +509,7 @@ li:hover {
 .weekly-header h3 {
     margin: 0;
     color: #123b6d;
+    font-size: 18px;
 }
 
 .calendar-weekdays {
@@ -484,7 +517,7 @@ li:hover {
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 12px;
     color: #55708f;
     margin-bottom: 8px;
 }
@@ -497,16 +530,18 @@ li:hover {
 
 .calendar-day {
     min-height: 95px;
-    background: #f8fbff;
+    background: #f9fbfe;
     border: 1px solid #dce6f2;
-    border-radius: 7px;
-    padding: 6px;
+    border-radius: 8px;
+    padding: 7px;
     cursor: pointer;
     overflow: hidden;
+    transition: 0.15s ease;
 }
 
 .calendar-day:hover {
     background: #edf4fb;
+    border-color: #b8cbe0;
 }
 
 .calendar-day.empty {
@@ -517,6 +552,7 @@ li:hover {
 
 .calendar-day.today {
     border: 2px solid #123b6d;
+    background: #f0f6fc;
 }
 
 .calendar-date-number {
@@ -531,13 +567,15 @@ li:hover {
     border-left: 3px solid #123b6d;
     padding: 5px;
     margin-bottom: 4px;
-    border-radius: 4px;
-    font-size: 11px;
+    border-radius: 5px;
+    font-size: 10px;
     cursor: pointer;
+    transition: 0.15s ease;
 }
 
 .calendar-event:hover {
     background: #bfdbfe;
+    transform: translateX(1px);
 }
 
 .calendar-event-subject {
@@ -557,10 +595,10 @@ li:hover {
 
 .schedule-details {
     background: white;
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 14px;
+    padding: 22px;
     border: 1px solid #dce5f0;
-    box-shadow: 0 6px 20px rgba(15, 45, 80, 0.07);
+    box-shadow: 0 7px 22px rgba(15, 45, 80, 0.07);
     min-height: 250px;
 }
 
@@ -575,16 +613,21 @@ li:hover {
     margin-bottom: 10px;
 }
 
+.empty-details p {
+    line-height: 1.5;
+}
+
 .schedule-detail-subject {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     color: #123b6d;
 }
 
 .schedule-detail-item {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     color: #5c7088;
+    line-height: 1.5;
 }
 
 .schedule-detail-item strong {
@@ -605,7 +648,7 @@ li:hover {
 .weekly-column {
     background: white;
     min-height: 300px;
-    border-radius: 10px;
+    border-radius: 11px;
     overflow: hidden;
     border: 1px solid #dce5f0;
     box-shadow: 0 6px 18px rgba(15, 45, 80, 0.06);
@@ -613,7 +656,7 @@ li:hover {
 
 .weekly-day-header {
     background: #e8f0f9;
-    padding: 10px 5px;
+    padding: 11px 5px;
     text-align: center;
     font-weight: bold;
     font-size: 13px;
@@ -622,21 +665,23 @@ li:hover {
 
 .weekly-date {
     color: #64748b;
-    font-size: 12px;
+    font-size: 11px;
     margin-top: 3px;
 }
 
 .weekly-event {
     margin: 8px;
-    padding: 9px;
+    padding: 10px;
     background: #dbeafe;
     border-left: 3px solid #123b6d;
-    border-radius: 6px;
+    border-radius: 7px;
     cursor: pointer;
+    transition: 0.15s ease;
 }
 
 .weekly-event:hover {
     background: #bfdbfe;
+    transform: translateY(-1px);
 }
 
 .weekly-event-subject {
@@ -668,14 +713,15 @@ li:hover {
 }
 
 .saved-schedules h3 {
-    margin-bottom: 12px;
+    margin-bottom: 13px;
     color: #123b6d;
+    font-size: 18px;
 }
 
 .saved-schedule-item {
     background: white;
-    padding: 15px;
-    border-radius: 10px;
+    padding: 16px;
+    border-radius: 11px;
     margin-bottom: 9px;
     display: flex;
     justify-content: space-between;
@@ -683,6 +729,12 @@ li:hover {
     gap: 15px;
     border: 1px solid #dce5f0;
     box-shadow: 0 5px 16px rgba(15, 45, 80, 0.05);
+    transition: 0.15s ease;
+}
+
+.saved-schedule-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px rgba(15, 45, 80, 0.08);
 }
 
 .saved-schedule-info {
@@ -709,7 +761,7 @@ li:hover {
 .saved-schedule-actions button {
     width: auto;
     padding: 7px 10px;
-    border-radius: 6px;
+    border-radius: 7px;
     cursor: pointer;
     margin-top: 0;
 }
@@ -731,6 +783,10 @@ li:hover {
 
 @media (max-width: 800px) {
 
+    .container {
+        margin-top: 20px;
+    }
+
     .schedule-form-grid {
         grid-template-columns: 1fr 1fr;
     }
@@ -741,10 +797,13 @@ li:hover {
 
     .weekly-grid {
         overflow-x: auto;
-        grid-template-columns: repeat(7, minmax(130px, 1fr));
+        grid-template-columns: repeat(
+            7,
+            minmax(130px, 1fr)
+        );
     }
-
 }
+
 
 @media (max-width: 600px) {
 
@@ -753,23 +812,57 @@ li:hover {
     }
 
     .container {
-        margin-top: 20px;
+        margin-top: 15px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .subtitle {
+        margin-bottom: 22px;
+    }
+
+    .tracker-card {
+        padding: 20px;
+        border-radius: 15px;
     }
 
     .progress-summary {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+    }
+
+    .progress-box {
+        padding: 12px 5px;
+    }
+
+    .progress-box span {
+        font-size: 21px;
+    }
+
+    .progress-box small {
+        font-size: 10px;
     }
 
     .main-tabs {
-        flex-direction: column;
+        gap: 7px;
+    }
+
+    .main-tab {
+        padding: 13px 8px;
+        font-size: 13px;
     }
 
     .schedule-tabs {
-        flex-direction: column;
+        flex-direction: row;
     }
 
     .schedule-tab {
-        width: 100%;
+        width: auto;
+        flex: 1;
+        padding: 10px 8px;
+        font-size: 13px;
     }
 
     .schedule-form-grid {
@@ -783,15 +876,33 @@ li:hover {
     .calendar-day {
         min-height: 70px;
         font-size: 10px;
+        padding: 5px;
     }
 
     .calendar-event {
         font-size: 9px;
+        padding: 4px;
+    }
+
+    .calendar-event-time {
+        display: none;
+    }
+
+    .calendar-weekdays {
+        font-size: 10px;
     }
 
     .saved-schedule-item {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .saved-schedule-actions {
+        width: 100%;
+    }
+
+    .saved-schedule-actions button {
+        flex: 1;
     }
 
     .task-bottom {
@@ -800,4 +911,11 @@ li:hover {
         gap: 10px;
     }
 
+    .task-actions {
+        width: 100%;
+    }
+
+    .task-actions button {
+        flex: 1;
+    }
 }
