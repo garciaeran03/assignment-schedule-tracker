@@ -1,406 +1,254 @@
 <!DOCTYPE html>
+<html lang="en">
 
-<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>My School Tracker</title>
+    <title>My School Tracker</title>
 
-<link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>My School Tracker</h1>
-<p class="subtitle">Assignments & Class Schedule</p>
-
-<div class="main-tabs">
-    <button class="main-tab active" onclick="showMainTab('assignments')">
-        📝 Assignments
-    </button>
-
-    <button class="main-tab" onclick="showMainTab('schedule')">
-        📅 Class Schedule
-    </button>
-</div>
-
-
-<!-- =========================
-     ASSIGNMENTS
-========================= -->
-
-<div id="assignmentsTab">
-
-    <div class="progress-summary">
-
-        <div class="progress-card">
-            <div class="progress-number" id="totalTasks">0</div>
-            <div>Total</div>
-        </div>
-
-        <div class="progress-card">
-            <div class="progress-number" id="completedTasks">0</div>
-            <div>Completed</div>
-        </div>
-
-        <div class="progress-card">
-            <div class="progress-number" id="pendingTasks">0</div>
-            <div>Pending</div>
-        </div>
-
-    </div>
-
-
-    <div class="progress-container">
-
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-
-        <div class="progress-text" id="progressText">
-            0% Complete
-        </div>
-
-    </div>
-
-
-    <div class="task-form">
-
-        <select id="subject">
-
-            <option value="">Select Subject</option>
-
-            <option value="Mathematics">
-                Mathematics
-            </option>
-
-            <option value="Science">
-                Science
-            </option>
-
-            <option value="English">
-                English
-            </option>
-
-            <option value="Filipino">
-                Filipino
-            </option>
-
-            <option value="Industrial Engineering">
-                Industrial Engineering
-            </option>
-
-            <option value="Computer">
-                Computer
-            </option>
-
-            <option value="General Education">
-                General Education
-            </option>
-
-            <option value="Others">
-                Others
-            </option>
-
-        </select>
-
-
-        <input
-            type="text"
-            id="task"
-            placeholder="Assignment / Activity"
-        >
-
-
-        <input
-            type="date"
-            id="dueDate"
-        >
-
-
-        <select id="priority">
-
-            <option value="High">
-                High
-            </option>
-
-            <option value="Medium" selected>
-                Medium
-            </option>
-
-            <option value="Low">
-                Low
-            </option>
-
-        </select>
-
-
-        <button
-            id="addTaskButton"
-            onclick="addTask()"
-        >
-            Add Assignment
-        </button>
-
-    </div>
-
-
-    <div class="task-filter">
-
-        <select
-            id="dateFilter"
-            onchange="handleDateFilter()"
-        >
-
-            <option value="all">
-                All Assignments
-            </option>
-
-            <option value="today">
-                Today
-            </option>
-
-            <option value="tomorrow">
-                Tomorrow
-            </option>
-
-            <option value="week">
-                This Week
-            </option>
-
-            <option value="specific">
-                Specific Date
-            </option>
-
-        </select>
-
-
-        <input
-            type="date"
-            id="specificDate"
-            onchange="displayTasks()"
-            style="display:none;"
-        >
-
-    </div>
-
-
-    <div class="task-header">
-
-        <h2>
-            Assignments
-        </h2>
-
-        <span id="taskCounter">
-            0 assignments
-        </span>
-
-    </div>
-
-
-    <div id="taskList"></div>
-
-</div>
-
-
-
-<!-- =========================
-     CLASS SCHEDULE
-========================= -->
-
-<div
-    id="scheduleTab"
-    style="display:none;"
->
-
-    <h2>
-        📅 Class Schedule
-    </h2>
-
-
-    <!-- SCHEDULE FORM -->
-
-    <div class="schedule-form schedule-form-grid">
-
-        <select id="scheduleSubject">
-
-            <option value="">
-                Select Subject
-            </option>
-
-            <option value="Mathematics">
-                Mathematics
-            </option>
-
-            <option value="Science">
-                Science
-            </option>
-
-            <option value="English">
-                English
-            </option>
-
-            <option value="Filipino">
-                Filipino
-            </option>
-
-            <option value="Industrial Engineering">
-                Industrial Engineering
-            </option>
-
-            <option value="Computer">
-                Computer
-            </option>
-
-            <option value="General Education">
-                General Education
-            </option>
-
-            <option value="Others">
-                Others
-            </option>
-
-        </select>
-
-
-        <!-- EXACT DATE -->
-
-        <input
-            type="date"
-            id="scheduleDate"
-        >
-
-
-        <!-- START TIME -->
-
-        <select id="startTime">
-
-            <option value="">
-                Start Time
-            </option>
-
-        </select>
-
-
-        <!-- END TIME -->
-
-        <select id="endTime">
-
-            <option value="">
-                End Time
-            </option>
-
-        </select>
-
-
-        <button
-            id="addScheduleButton"
-            onclick="addSchedule()"
-        >
-            Add Schedule
-        </button>
-
-    </div>
-
-
-
-    <!-- SCHEDULE VIEW TABS -->
-
-    <div class="schedule-tabs">
-
-        <button
-            class="schedule-tab active"
-            onclick="showScheduleView('calendar')"
-        >
-            📅 Calendar
-        </button>
-
-        <button
-            class="schedule-tab"
-            onclick="showScheduleView('weekly')"
-        >
-            🗓️ Weekly
-        </button>
-
-    </div>
-
+    <h1>My School Tracker</h1>
+    <p class="subtitle">Assignments & Class Schedule</p>
 
 
     <!-- =========================
-         CALENDAR VIEW
+         MAIN TABS
     ========================= -->
 
-    <div id="calendarView">
+    <div class="main-tabs">
 
-        <div class="calendar-layout">
+        <button
+            class="main-tab active"
+            onclick="showMainTab('assignments')"
+        >
+            📝 Assignments
+        </button>
 
-            <div class="calendar-main">
+        <button
+            class="main-tab"
+            onclick="showMainTab('schedule')"
+        >
+            📅 Class Schedule
+        </button>
 
-                <div class="calendar-header">
+    </div>
 
-                    <button
-                        onclick="changeMonth(-1)"
-                    >
-                        ◀
-                    </button>
 
-                    <h3 id="calendarMonth">
-                        Month
-                    </h3>
+    <!-- =========================
+         ASSIGNMENT TRACKER
+    ========================= -->
 
-                    <button
-                        onclick="changeMonth(1)"
-                    >
-                        ▶
-                    </button>
+    <div id="assignmentsTab">
+
+        <div class="tracker-card">
+
+            <h2>Today's Progress</h2>
+
+
+            <!-- PROGRESS SUMMARY -->
+
+            <div class="progress-summary">
+
+                <div class="progress-box">
+
+                    <span id="totalTasks">0</span>
+
+                    <small>Total</small>
 
                 </div>
 
 
-                <div class="calendar-weekdays">
+                <div class="progress-box">
 
-                    <div>Sun</div>
-                    <div>Mon</div>
-                    <div>Tue</div>
-                    <div>Wed</div>
-                    <div>Thu</div>
-                    <div>Fri</div>
-                    <div>Sat</div>
+                    <span id="completedTasks">0</span>
+
+                    <small>Completed</small>
 
                 </div>
 
 
-                <div
-                    id="calendarGrid"
-                    class="calendar-grid"
-                ></div>
+                <div class="progress-box">
+
+                    <span id="pendingTasks">0</span>
+
+                    <small>Pending</small>
+
+                </div>
 
             </div>
 
 
+            <!-- PROGRESS BAR -->
 
-            <!-- SCHEDULE DETAILS -->
+            <div class="progress-bar">
 
-            <div
-                id="scheduleDetails"
-                class="schedule-details"
+                <div id="progressFill"></div>
+
+            </div>
+
+            <p id="progressText">
+                0% Complete
+            </p>
+
+
+            <!-- SUBJECT -->
+
+            <label for="subject">
+                Subject
+            </label>
+
+            <select id="subject">
+
+                <option value="CHEM 001 - General Chemistry">
+                    CHEM 001 - General Chemistry
+                </option>
+
+                <option value="MATH 003 - Basic Calculus">
+                    MATH 003 - Basic Calculus
+                </option>
+
+                <option value="CMPE 011 - Computer Fundamentals and Programming">
+                    CMPE 011 - Computer Fundamentals and Programming
+                </option>
+
+                <option value="CWTS 001 - Civic Welfare Training Service 1">
+                    CWTS 001 - Civic Welfare Training Service 1
+                </option>
+
+                <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
+                    GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
+                </option>
+
+                <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
+                    GEED 032 - Filipinolohiya at Pambansang Kaunlaran
+                </option>
+
+                <option value="INEN 101 - Introduction to Industrial Engineering">
+                    INEN 101 - Introduction to Industrial Engineering
+                </option>
+
+                <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
+                    PATHFIT 1 - Physical Activity Towards Health and Fitness 1
+                </option>
+
+            </select>
+
+
+            <!-- TOPIC -->
+
+            <label for="task">
+                Topic
+            </label>
+
+            <input
+                type="text"
+                id="task"
+                placeholder="Enter a school topic"
             >
 
-                <div class="empty-details">
 
-                    <div>
-                        📅
-                    </div>
+            <!-- DUE DATE -->
 
-                    <p>
-                        Select a class from the calendar
-                        to see details.
-                    </p>
+            <label for="dueDate">
+                Due Date
+            </label>
 
-                </div>
+            <input
+                type="date"
+                id="dueDate"
+            >
 
-            </div>
+
+            <!-- PRIORITY -->
+
+            <label for="priority">
+                Priority
+            </label>
+
+            <select id="priority">
+
+                <option value="High">
+                    High
+                </option>
+
+                <option value="Medium" selected>
+                    Medium
+                </option>
+
+                <option value="Low">
+                    Low
+                </option>
+
+            </select>
+
+
+            <!-- ADD TASK -->
+
+            <button
+                id="addTaskButton"
+                onclick="addTask()"
+            >
+                Add Task
+            </button>
+
+
+            <!-- DATE FILTER -->
+
+            <label for="dateFilter">
+                Filter by Date
+            </label>
+
+            <select
+                id="dateFilter"
+                onchange="handleDateFilter()"
+            >
+
+                <option value="All">
+                    All Dates
+                </option>
+
+                <option value="Today">
+                    Today
+                </option>
+
+                <option value="Next7">
+                    Next 7 Days
+                </option>
+
+                <option value="Overdue">
+                    Overdue
+                </option>
+
+                <option value="Specific">
+                    Specific Date
+                </option>
+
+            </select>
+
+
+            <input
+                type="date"
+                id="specificDate"
+                onchange="displayTasks()"
+                style="display: none;"
+            >
+
+
+            <!-- TASK LIST -->
+
+            <ul id="taskList"></ul>
+
+
+            <p id="taskCounter">
+                0 Tasks
+            </p>
 
         </div>
 
@@ -409,63 +257,267 @@
 
 
     <!-- =========================
-         WEEKLY VIEW
+         CLASS SCHEDULE
     ========================= -->
 
     <div
-        id="weeklyView"
-        style="display:none;"
+        id="scheduleTab"
+        style="display: none;"
     >
 
-        <div class="weekly-header">
+        <h2>
+            📅 Class Schedule
+        </h2>
+
+
+        <!-- SCHEDULE FORM -->
+
+        <div class="schedule-form schedule-form-grid">
+
+            <select id="scheduleSubject">
+
+                <option value="">
+                    Select Subject
+                </option>
+
+                <option value="CHEM 001 - General Chemistry">
+                    CHEM 001 - General Chemistry
+                </option>
+
+                <option value="MATH 003 - Basic Calculus">
+                    MATH 003 - Basic Calculus
+                </option>
+
+                <option value="CMPE 011 - Computer Fundamentals and Programming">
+                    CMPE 011 - Computer Fundamentals and Programming
+                </option>
+
+                <option value="CWTS 001 - Civic Welfare Training Service 1">
+                    CWTS 001 - Civic Welfare Training Service 1
+                </option>
+
+                <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
+                    GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
+                </option>
+
+                <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
+                    GEED 032 - Filipinolohiya at Pambansang Kaunlaran
+                </option>
+
+                <option value="INEN 101 - Introduction to Industrial Engineering">
+                    INEN 101 - Introduction to Industrial Engineering
+                </option>
+
+                <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
+                    PATHFIT 1 - Physical Activity Towards Health and Fitness 1
+                </option>
+
+            </select>
+
+
+            <!-- EXACT DATE -->
+
+            <input
+                type="date"
+                id="scheduleDate"
+            >
+
+
+            <!-- START TIME -->
+
+            <select id="startTime">
+
+                <option value="">
+                    Start Time
+                </option>
+
+            </select>
+
+
+            <!-- END TIME -->
+
+            <select id="endTime">
+
+                <option value="">
+                    End Time
+                </option>
+
+            </select>
+
 
             <button
-                onclick="changeWeek(-1)"
+                id="addScheduleButton"
+                onclick="addSchedule()"
             >
-                ◀
-            </button>
-
-            <h3 id="weeklyTitle">
-                Week
-            </h3>
-
-            <button
-                onclick="changeWeek(1)"
-            >
-                ▶
+                Add Schedule
             </button>
 
         </div>
 
 
+
+        <!-- SCHEDULE VIEW TABS -->
+
+        <div class="schedule-tabs">
+
+            <button
+                class="schedule-tab active"
+                onclick="showScheduleView('calendar')"
+            >
+                📅 Calendar
+            </button>
+
+            <button
+                class="schedule-tab"
+                onclick="showScheduleView('weekly')"
+            >
+                🗓️ Weekly
+            </button>
+
+        </div>
+
+
+
+        <!-- =========================
+             CALENDAR VIEW
+        ========================= -->
+
+        <div id="calendarView">
+
+            <div class="calendar-layout">
+
+                <div class="calendar-main">
+
+                    <div class="calendar-header">
+
+                        <button
+                            onclick="changeMonth(-1)"
+                        >
+                            ◀
+                        </button>
+
+                        <h3 id="calendarMonth">
+                            Month
+                        </h3>
+
+                        <button
+                            onclick="changeMonth(1)"
+                        >
+                            ▶
+                        </button>
+
+                    </div>
+
+
+                    <div class="calendar-weekdays">
+
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+
+                    </div>
+
+
+                    <div
+                        id="calendarGrid"
+                        class="calendar-grid"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- SCHEDULE DETAILS -->
+
+                <div
+                    id="scheduleDetails"
+                    class="schedule-details"
+                >
+
+                    <div class="empty-details">
+
+                        <div>
+                            📅
+                        </div>
+
+                        <p>
+                            Select a class from the calendar
+                            to see details.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             WEEKLY VIEW
+        ========================= -->
+
         <div
-            id="weeklyGrid"
-            class="weekly-grid"
-        ></div>
+            id="weeklyView"
+            style="display: none;"
+        >
 
-    </div>
+            <div class="weekly-header">
+
+                <button
+                    onclick="changeWeek(-1)"
+                >
+                    ◀
+                </button>
+
+                <h3 id="weeklyTitle">
+                    Week
+                </h3>
+
+                <button
+                    onclick="changeWeek(1)"
+                >
+                    ▶
+                </button>
+
+            </div>
+
+
+            <div
+                id="weeklyGrid"
+                class="weekly-grid"
+            ></div>
+
+        </div>
 
 
 
-    <!-- =========================
-         SAVED SCHEDULES
-    ========================= -->
+        <!-- =========================
+             SAVED SCHEDULES
+        ========================= -->
 
-    <div class="saved-schedules">
+        <div class="saved-schedules">
 
-        <h3>
-            📋 Saved Class Schedules
-        </h3>
+            <h3>
+                📋 Saved Class Schedules
+            </h3>
 
+            <div id="savedScheduleList"></div>
 
-        <div id="savedScheduleList"></div>
+        </div>
 
     </div>
 
 </div>
 
-</div>
 
 <script src="script.js"></script>
 
-</body> </html>
+</body>
+</html>
