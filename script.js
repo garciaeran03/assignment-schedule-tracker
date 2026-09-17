@@ -122,7 +122,7 @@ function addTask() {
         document.getElementById(
             "addTaskButton"
         ).textContent =
-            "Add Assignment";
+            "Add Task";
 
     } else {
 
@@ -175,8 +175,15 @@ function displayTasks() {
     }
 
 
-    const dateFilter =
+    const rawFilter =
         dateFilterElement.value;
+
+
+    const filter =
+        String(rawFilter)
+            .trim()
+            .toLowerCase();
+
 
     const specificDate =
         specificDateElement
@@ -187,182 +194,220 @@ function displayTasks() {
     taskList.innerHTML = "";
 
 
-    let filteredTasks = tasks.filter(task => {
+    let filteredTasks =
+        tasks.filter(task => {
 
-        /* =========================================
-           NORMALIZE FILTER VALUE
-        ========================================= */
+            /* =========================================
+               ALL DATES
 
-        const filter =
-            String(dateFilter)
-                .trim()
-                .toLowerCase();
+               Supports:
+               all
+               All
+            ========================================= */
 
+            if (
+                filter === "all" ||
+                filter === ""
+            ) {
 
-        /* =========================================
-           ALL DATES
-        ========================================= */
-
-        if (
-            filter === "all" ||
-            filter === ""
-        ) {
-
-            return true;
-        }
+                return true;
+            }
 
 
-        /* =========================================
-           TODAY
-        ========================================= */
+            /* =========================================
+               TODAY
+            ========================================= */
 
-        if (
-            filter === "today"
-        ) {
+            if (
+                filter === "today"
+            ) {
 
-            return (
-                task.dueDate ===
-                getTodayString()
-            );
-        }
-
-
-        /* =========================================
-           TOMORROW
-        ========================================= */
-
-        if (
-            filter === "tomorrow"
-        ) {
-
-            return (
-                task.dueDate ===
-                getDateAfterDays(1)
-            );
-        }
+                return (
+                    task.dueDate ===
+                    getTodayString()
+                );
+            }
 
 
-        /* =========================================
-           NEXT 7 DAYS
+            /* =========================================
+               NEXT 7 DAYS
 
-           Includes:
-           Today
-           + next 6 days
+               IMPORTANT:
 
-           Example:
-           Sept 17 -> Sept 23
+               If today is Sept 17:
 
-           Sept 30 = NOT INCLUDED
-        ========================================= */
+               Sept 17 = Day 1
+               Sept 18 = Day 2
+               Sept 19 = Day 3
+               Sept 20 = Day 4
+               Sept 21 = Day 5
+               Sept 22 = Day 6
+               Sept 23 = Day 7
 
-        if (
-            filter === "next7" ||
-            filter === "week"
-        ) {
+               Sept 30 = OUTSIDE RANGE
+            ========================================= */
 
-            const today =
-                new Date();
+            if (
+                filter === "next7" ||
+                filter === "week"
+            ) {
 
+                const today =
+                    new Date();
 
-            today.setHours(
-                0,
-                0,
-                0,
-                0
-            );
-
-
-            const endDate =
-                new Date(today);
-
-
-            endDate.setDate(
-                today.getDate() + 6
-            );
-
-
-            endDate.setHours(
-                23,
-                59,
-                59,
-                999
-            );
-
-
-            const taskDate =
-                new Date(
-                    task.dueDate +
-                    "T00:00:00"
+                today.setHours(
+                    0,
+                    0,
+                    0,
+                    0
                 );
 
 
-            return (
-                taskDate >= today &&
-                taskDate <= endDate
-            );
-        }
+                const endDate =
+                    new Date(today);
 
+                endDate.setDate(
+                    today.getDate() + 6
+                );
 
-        /* =========================================
-           OVERDUE
-        ========================================= */
-
-        if (
-            filter === "overdue"
-        ) {
-
-            const today =
-                new Date();
-
-
-            today.setHours(
-                0,
-                0,
-                0,
-                0
-            );
-
-
-            const taskDate =
-                new Date(
-                    task.dueDate +
-                    "T00:00:00"
+                endDate.setHours(
+                    23,
+                    59,
+                    59,
+                    999
                 );
 
 
-            return taskDate < today;
-        }
+                if (
+                    !task.dueDate
+                ) {
+                    return false;
+                }
 
 
-        /* =========================================
-           SPECIFIC DATE
-        ========================================= */
-
-        if (
-            filter === "specific"
-        ) {
-
-            return (
-                specificDate !== "" &&
-                task.dueDate === specificDate
-            );
-        }
+                const taskDate =
+                    new Date(
+                        task.dueDate +
+                        "T00:00:00"
+                    );
 
 
-        /* =========================================
-           UNKNOWN FILTER
-           Do NOT show everything.
-        ========================================= */
+                if (
+                    isNaN(
+                        taskDate.getTime()
+                    )
+                ) {
+                    return false;
+                }
 
-        return false;
-    });
+
+                return (
+                    taskDate >= today &&
+                    taskDate <= endDate
+                );
+            }
+
+
+            /* =========================================
+               TOMORROW
+            ========================================= */
+
+            if (
+                filter === "tomorrow"
+            ) {
+
+                return (
+                    task.dueDate ===
+                    getDateAfterDays(1)
+                );
+            }
+
+
+            /* =========================================
+               OVERDUE
+            ========================================= */
+
+            if (
+                filter === "overdue"
+            ) {
+
+                const today =
+                    new Date();
+
+                today.setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                );
+
+
+                if (
+                    !task.dueDate
+                ) {
+                    return false;
+                }
+
+
+                const taskDate =
+                    new Date(
+                        task.dueDate +
+                        "T00:00:00"
+                    );
+
+
+                return (
+                    taskDate < today
+                );
+            }
+
+
+            /* =========================================
+               SPECIFIC DATE
+            ========================================= */
+
+            if (
+                filter === "specific"
+            ) {
+
+                return (
+                    specificDate !== "" &&
+                    task.dueDate ===
+                    specificDate
+                );
+            }
+
+
+            /* =========================================
+               UNKNOWN FILTER
+
+               IMPORTANT:
+               Do NOT show everything.
+            ========================================= */
+
+            return false;
+        });
+
+
+    /* =========================================
+       SORT BY DUE DATE
+    ========================================= */
+
+    filteredTasks.sort(
+        (a, b) =>
+            a.dueDate.localeCompare(
+                b.dueDate
+            )
+    );
 
 
     /* =========================================
        NO RESULTS
     ========================================= */
 
-    if (filteredTasks.length === 0) {
+    if (
+        filteredTasks.length === 0
+    ) {
 
         taskList.innerHTML = `
 
@@ -593,9 +638,11 @@ function handleDateFilter() {
 
 
     const filter =
-        filterElement.value
-            .trim()
-            .toLowerCase();
+        String(
+            filterElement.value
+        )
+        .trim()
+        .toLowerCase();
 
 
     if (
@@ -884,10 +931,9 @@ function generateTimeOptions() {
         `<option value="">End Time</option>`;
 
 
-    /* =========================================
-       START TIME
+    /* START TIME
        7:00 AM - 10:00 PM
-    ========================================= */
+    */
 
     for (
         let hour = 7;
@@ -921,10 +967,9 @@ function generateTimeOptions() {
     }
 
 
-    /* =========================================
-       END TIME
+    /* END TIME
        7:30 AM - 11:00 PM
-    ========================================= */
+    */
 
     for (
         let hour = 7;
@@ -1131,8 +1176,6 @@ function addSchedule() {
 
     saveSchedules();
 
-
-    /* RESET FORM */
 
     document.getElementById(
         "scheduleSubject"
@@ -1391,8 +1434,6 @@ function renderCalendar() {
         ).getDate();
 
 
-    /* EMPTY DAYS */
-
     for (
         let i = 0;
         i < firstDay;
@@ -1418,8 +1459,6 @@ function renderCalendar() {
     const todayString =
         getTodayString();
 
-
-    /* DAYS */
 
     for (
         let day = 1;
@@ -1489,8 +1528,6 @@ function renderCalendar() {
             dateNumber
         );
 
-
-        /* EXACT DATE ONLY */
 
         const daySchedules =
             schedules.filter(
@@ -1874,8 +1911,6 @@ function renderWeeklySchedule() {
             dayHeader
         );
 
-
-        /* EXACT DATE ONLY */
 
         const daySchedules =
             schedules.filter(
