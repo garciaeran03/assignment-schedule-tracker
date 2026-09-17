@@ -15,33 +15,20 @@
 <h1>My School Tracker</h1>
 <p class="subtitle">Assignments & Class Schedule</p>
 
-
-<!-- =====================================================
-     MAIN TABS
-====================================================== -->
-
 <div class="main-tabs">
-
-    <button
-        class="main-tab active"
-        onclick="showMainTab('assignments')"
-    >
+    <button class="main-tab active" onclick="showMainTab('assignments')">
         📝 Assignments
     </button>
 
-    <button
-        class="main-tab"
-        onclick="showMainTab('schedule')"
-    >
+    <button class="main-tab" onclick="showMainTab('schedule')">
         📅 Class Schedule
     </button>
-
 </div>
 
 
-<!-- =====================================================
-     ASSIGNMENTS TAB
-====================================================== -->
+<!-- =========================
+     ASSIGNMENTS
+========================= -->
 
 <div id="assignmentsTab">
 
@@ -68,16 +55,10 @@
     <div class="progress-container">
 
         <div class="progress-bar">
-            <div
-                class="progress-fill"
-                id="progressFill"
-            ></div>
+            <div class="progress-fill" id="progressFill"></div>
         </div>
 
-        <div
-            class="progress-text"
-            id="progressText"
-        >
+        <div class="progress-text" id="progressText">
             0% Complete
         </div>
 
@@ -88,9 +69,7 @@
 
         <select id="subject">
 
-            <option value="">
-                Select Subject
-            </option>
+            <option value="">Select Subject</option>
 
             <option value="Mathematics">
                 Mathematics
@@ -209,7 +188,9 @@
 
     <div class="task-header">
 
-        <h2>Assignments</h2>
+        <h2>
+            Assignments
+        </h2>
 
         <span id="taskCounter">
             0 assignments
@@ -223,21 +204,24 @@
 </div>
 
 
-<!-- =====================================================
-     CLASS SCHEDULE TAB
-====================================================== -->
+
+<!-- =========================
+     CLASS SCHEDULE
+========================= -->
 
 <div
     id="scheduleTab"
     style="display:none;"
 >
 
-    <h2>📅 Class Schedule</h2>
+    <h2>
+        📅 Class Schedule
+    </h2>
 
 
     <!-- SCHEDULE FORM -->
 
-    <div class="schedule-form">
+    <div class="schedule-form schedule-form-grid">
 
         <select id="scheduleSubject">
 
@@ -288,17 +272,25 @@
         >
 
 
+        <!-- START TIME -->
+
         <select id="startTime">
+
             <option value="">
                 Start Time
             </option>
+
         </select>
 
 
+        <!-- END TIME -->
+
         <select id="endTime">
+
             <option value="">
                 End Time
             </option>
+
         </select>
 
 
@@ -310,6 +302,7 @@
         </button>
 
     </div>
+
 
 
     <!-- SCHEDULE VIEW TABS -->
@@ -333,62 +326,79 @@
     </div>
 
 
-    <!-- =================================================
+
+    <!-- =========================
          CALENDAR VIEW
-    ================================================== -->
+    ========================= -->
 
     <div id="calendarView">
 
-        <div class="calendar-container">
+        <div class="calendar-layout">
 
-            <div class="calendar-header">
+            <div class="calendar-main">
 
-                <button onclick="changeMonth(-1)">
-                    ◀
-                </button>
+                <div class="calendar-header">
 
-                <h3 id="calendarMonth">
-                    Month
-                </h3>
+                    <button
+                        onclick="changeMonth(-1)"
+                    >
+                        ◀
+                    </button>
 
-                <button onclick="changeMonth(1)">
-                    ▶
-                </button>
+                    <h3 id="calendarMonth">
+                        Month
+                    </h3>
+
+                    <button
+                        onclick="changeMonth(1)"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="calendar-weekdays">
+
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+
+                </div>
+
+
+                <div
+                    id="calendarGrid"
+                    class="calendar-grid"
+                ></div>
 
             </div>
 
 
-            <div class="calendar-weekdays">
 
-                <div>Sun</div>
-                <div>Mon</div>
-                <div>Tue</div>
-                <div>Wed</div>
-                <div>Thu</div>
-                <div>Fri</div>
-                <div>Sat</div>
+            <!-- SCHEDULE DETAILS -->
 
-            </div>
+            <div
+                id="scheduleDetails"
+                class="schedule-details"
+            >
 
+                <div class="empty-details">
 
-            <div id="calendarGrid"></div>
+                    <div>
+                        📅
+                    </div>
 
-        </div>
+                    <p>
+                        Select a class from the calendar
+                        to see details.
+                    </p>
 
-
-        <div
-            id="scheduleDetails"
-            class="schedule-details"
-        >
-
-            <div class="empty-details">
-
-                <div>📅</div>
-
-                <p>
-                    Select a class from the calendar
-                    to see details.
-                </p>
+                </div>
 
             </div>
 
@@ -397,9 +407,10 @@
     </div>
 
 
-    <!-- =================================================
+
+    <!-- =========================
          WEEKLY VIEW
-    ================================================== -->
+    ========================= -->
 
     <div
         id="weeklyView"
@@ -408,7 +419,9 @@
 
         <div class="weekly-header">
 
-            <button onclick="changeWeek(-1)">
+            <button
+                onclick="changeWeek(-1)"
+            >
                 ◀
             </button>
 
@@ -416,25 +429,34 @@
                 Week
             </h3>
 
-            <button onclick="changeWeek(1)">
+            <button
+                onclick="changeWeek(1)"
+            >
                 ▶
             </button>
 
         </div>
 
 
-        <div id="weeklyGrid"></div>
+        <div
+            id="weeklyGrid"
+            class="weekly-grid"
+        ></div>
 
     </div>
 
 
-    <!-- =================================================
+
+    <!-- =========================
          SAVED SCHEDULES
-    ================================================== -->
+    ========================= -->
 
     <div class="saved-schedules">
 
-        <h3>📋 Saved Class Schedules</h3>
+        <h3>
+            📋 Saved Class Schedules
+        </h3>
+
 
         <div id="savedScheduleList"></div>
 
