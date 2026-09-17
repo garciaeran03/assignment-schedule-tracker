@@ -1,454 +1,449 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My School Tracker</title>
+<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
+<title>My School Tracker</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>My School Tracker</h1>
-    <p class="subtitle">Assignments & Class Schedule</p>
+<h1>My School Tracker</h1>
+<p class="subtitle">Assignments & Class Schedule</p>
 
 
-    <!-- =====================================================
-         MAIN TABS
-    ====================================================== -->
+<!-- =====================================================
+     MAIN TABS
+====================================================== -->
 
-    <div class="main-tabs">
+<div class="main-tabs">
 
-        <button
-            class="main-tab active"
-            onclick="showMainTab('assignments')"
-        >
-            📝 Assignments
-        </button>
-
-        <button
-            class="main-tab"
-            onclick="showMainTab('schedule')"
-        >
-            📅 Class Schedule
-        </button>
-
-    </div>
-
-
-    <!-- =====================================================
-         ASSIGNMENTS TAB
-    ====================================================== -->
-
-    <div id="assignmentsTab">
-
-        <div class="progress-summary">
-
-            <div class="progress-card">
-                <div class="progress-number" id="totalTasks">0</div>
-                <div>Total</div>
-            </div>
-
-            <div class="progress-card">
-                <div class="progress-number" id="completedTasks">0</div>
-                <div>Completed</div>
-            </div>
-
-            <div class="progress-card">
-                <div class="progress-number" id="pendingTasks">0</div>
-                <div>Pending</div>
-            </div>
-
-        </div>
-
-
-        <div class="progress-container">
-
-            <div class="progress-bar">
-                <div
-                    class="progress-fill"
-                    id="progressFill"
-                ></div>
-            </div>
-
-            <div
-                class="progress-text"
-                id="progressText"
-            >
-                0% Complete
-            </div>
-
-        </div>
-
-
-        <div class="task-form">
-
-            <select id="subject">
-
-                <option value="">
-                    Select Subject
-                </option>
-
-                <option value="Mathematics">
-                    Mathematics
-                </option>
-
-                <option value="Science">
-                    Science
-                </option>
-
-                <option value="English">
-                    English
-                </option>
-
-                <option value="Filipino">
-                    Filipino
-                </option>
-
-                <option value="Industrial Engineering">
-                    Industrial Engineering
-                </option>
-
-                <option value="Computer">
-                    Computer
-                </option>
-
-                <option value="General Education">
-                    General Education
-                </option>
-
-                <option value="Others">
-                    Others
-                </option>
-
-            </select>
-
-
-            <input
-                type="text"
-                id="task"
-                placeholder="Assignment / Activity"
-            >
-
-
-            <input
-                type="date"
-                id="dueDate"
-            >
-
-
-            <select id="priority">
-
-                <option value="High">
-                    High
-                </option>
-
-                <option value="Medium" selected>
-                    Medium
-                </option>
-
-                <option value="Low">
-                    Low
-                </option>
-
-            </select>
-
-
-            <button
-                id="addTaskButton"
-                onclick="addTask()"
-            >
-                Add Assignment
-            </button>
-
-        </div>
-
-
-        <div class="task-filter">
-
-            <select
-                id="dateFilter"
-                onchange="handleDateFilter()"
-            >
-
-                <option value="all">
-                    All Assignments
-                </option>
-
-                <option value="today">
-                    Today
-                </option>
-
-                <option value="tomorrow">
-                    Tomorrow
-                </option>
-
-                <option value="week">
-                    This Week
-                </option>
-
-                <option value="specific">
-                    Specific Date
-                </option>
-
-            </select>
-
-
-            <input
-                type="date"
-                id="specificDate"
-                onchange="displayTasks()"
-                style="display:none;"
-            >
-
-        </div>
-
-
-        <div class="task-header">
-
-            <h2>Assignments</h2>
-
-            <span id="taskCounter">
-                0 assignments
-            </span>
-
-        </div>
-
-
-        <div id="taskList"></div>
-
-    </div>
-
-
-    <!-- =====================================================
-         CLASS SCHEDULE TAB
-    ====================================================== -->
-
-    <div
-        id="scheduleTab"
-        style="display:none;"
+    <button
+        class="main-tab active"
+        onclick="showMainTab('assignments')"
     >
+        📝 Assignments
+    </button>
 
-        <h2>📅 Class Schedule</h2>
+    <button
+        class="main-tab"
+        onclick="showMainTab('schedule')"
+    >
+        📅 Class Schedule
+    </button>
 
-
-        <!-- SCHEDULE FORM -->
-
-        <div class="schedule-form">
-
-            <select id="scheduleSubject">
-
-                <option value="">
-                    Select Subject
-                </option>
-
-                <option value="Mathematics">
-                    Mathematics
-                </option>
-
-                <option value="Science">
-                    Science
-                </option>
-
-                <option value="English">
-                    English
-                </option>
-
-                <option value="Filipino">
-                    Filipino
-                </option>
-
-                <option value="Industrial Engineering">
-                    Industrial Engineering
-                </option>
-
-                <option value="Computer">
-                    Computer
-                </option>
-
-                <option value="General Education">
-                    General Education
-                </option>
-
-                <option value="Others">
-                    Others
-                </option>
-
-            </select>
+</div>
 
 
-            <!-- IMPORTANT:
-                 DATE, NOT DAY
-            -->
+<!-- =====================================================
+     ASSIGNMENTS TAB
+====================================================== -->
 
-            <input
-                type="date"
-                id="scheduleDate"
-            >
+<div id="assignmentsTab">
 
+    <div class="progress-summary">
 
-            <select id="startTime">
-                <option value="">
-                    Start Time
-                </option>
-            </select>
-
-
-            <select id="endTime">
-                <option value="">
-                    End Time
-                </option>
-            </select>
-
-
-            <button
-                id="addScheduleButton"
-                onclick="addSchedule()"
-            >
-                Add Schedule
-            </button>
-
+        <div class="progress-card">
+            <div class="progress-number" id="totalTasks">0</div>
+            <div>Total</div>
         </div>
 
-
-        <!-- SCHEDULE VIEW TABS -->
-
-        <div class="schedule-tabs">
-
-            <button
-                class="schedule-tab active"
-                onclick="showScheduleView('calendar')"
-            >
-                📅 Calendar
-            </button>
-
-            <button
-                class="schedule-tab"
-                onclick="showScheduleView('weekly')"
-            >
-                🗓️ Weekly
-            </button>
-
+        <div class="progress-card">
+            <div class="progress-number" id="completedTasks">0</div>
+            <div>Completed</div>
         </div>
 
+        <div class="progress-card">
+            <div class="progress-number" id="pendingTasks">0</div>
+            <div>Pending</div>
+        </div>
 
-        <!-- =================================================
-             CALENDAR VIEW
-        ================================================== -->
-
-        <div id="calendarView">
-
-            <div class="calendar-container">
-
-                <div class="calendar-header">
-
-                    <button onclick="changeMonth(-1)">
-                        ◀
-                    </button>
-
-                    <h3 id="calendarMonth">
-                        Month
-                    </h3>
-
-                    <button onclick="changeMonth(1)">
-                        ▶
-                    </button>
-
-                </div>
+    </div>
 
 
-                <div class="calendar-weekdays">
+    <div class="progress-container">
 
-                    <div>Sun</div>
-                    <div>Mon</div>
-                    <div>Tue</div>
-                    <div>Wed</div>
-                    <div>Thu</div>
-                    <div>Fri</div>
-                    <div>Sat</div>
-
-                </div>
-
-
-                <div id="calendarGrid"></div>
-
-            </div>
-
-
+        <div class="progress-bar">
             <div
-                id="scheduleDetails"
-                class="schedule-details"
-            >
-
-                <div class="empty-details">
-
-                    <div>📅</div>
-
-                    <p>
-                        Select a class from the calendar
-                        to see details.
-                    </p>
-
-                </div>
-
-            </div>
-
+                class="progress-fill"
+                id="progressFill"
+            ></div>
         </div>
-
-
-        <!-- =================================================
-             WEEKLY VIEW
-        ================================================== -->
 
         <div
-            id="weeklyView"
+            class="progress-text"
+            id="progressText"
+        >
+            0% Complete
+        </div>
+
+    </div>
+
+
+    <div class="task-form">
+
+        <select id="subject">
+
+            <option value="">
+                Select Subject
+            </option>
+
+            <option value="Mathematics">
+                Mathematics
+            </option>
+
+            <option value="Science">
+                Science
+            </option>
+
+            <option value="English">
+                English
+            </option>
+
+            <option value="Filipino">
+                Filipino
+            </option>
+
+            <option value="Industrial Engineering">
+                Industrial Engineering
+            </option>
+
+            <option value="Computer">
+                Computer
+            </option>
+
+            <option value="General Education">
+                General Education
+            </option>
+
+            <option value="Others">
+                Others
+            </option>
+
+        </select>
+
+
+        <input
+            type="text"
+            id="task"
+            placeholder="Assignment / Activity"
+        >
+
+
+        <input
+            type="date"
+            id="dueDate"
+        >
+
+
+        <select id="priority">
+
+            <option value="High">
+                High
+            </option>
+
+            <option value="Medium" selected>
+                Medium
+            </option>
+
+            <option value="Low">
+                Low
+            </option>
+
+        </select>
+
+
+        <button
+            id="addTaskButton"
+            onclick="addTask()"
+        >
+            Add Assignment
+        </button>
+
+    </div>
+
+
+    <div class="task-filter">
+
+        <select
+            id="dateFilter"
+            onchange="handleDateFilter()"
+        >
+
+            <option value="all">
+                All Assignments
+            </option>
+
+            <option value="today">
+                Today
+            </option>
+
+            <option value="tomorrow">
+                Tomorrow
+            </option>
+
+            <option value="week">
+                This Week
+            </option>
+
+            <option value="specific">
+                Specific Date
+            </option>
+
+        </select>
+
+
+        <input
+            type="date"
+            id="specificDate"
+            onchange="displayTasks()"
             style="display:none;"
         >
 
-            <div class="weekly-header">
+    </div>
 
-                <button onclick="changeWeek(-1)">
+
+    <div class="task-header">
+
+        <h2>Assignments</h2>
+
+        <span id="taskCounter">
+            0 assignments
+        </span>
+
+    </div>
+
+
+    <div id="taskList"></div>
+
+</div>
+
+
+<!-- =====================================================
+     CLASS SCHEDULE TAB
+====================================================== -->
+
+<div
+    id="scheduleTab"
+    style="display:none;"
+>
+
+    <h2>📅 Class Schedule</h2>
+
+
+    <!-- SCHEDULE FORM -->
+
+    <div class="schedule-form">
+
+        <select id="scheduleSubject">
+
+            <option value="">
+                Select Subject
+            </option>
+
+            <option value="Mathematics">
+                Mathematics
+            </option>
+
+            <option value="Science">
+                Science
+            </option>
+
+            <option value="English">
+                English
+            </option>
+
+            <option value="Filipino">
+                Filipino
+            </option>
+
+            <option value="Industrial Engineering">
+                Industrial Engineering
+            </option>
+
+            <option value="Computer">
+                Computer
+            </option>
+
+            <option value="General Education">
+                General Education
+            </option>
+
+            <option value="Others">
+                Others
+            </option>
+
+        </select>
+
+
+        <!-- EXACT DATE -->
+
+        <input
+            type="date"
+            id="scheduleDate"
+        >
+
+
+        <select id="startTime">
+            <option value="">
+                Start Time
+            </option>
+        </select>
+
+
+        <select id="endTime">
+            <option value="">
+                End Time
+            </option>
+        </select>
+
+
+        <button
+            id="addScheduleButton"
+            onclick="addSchedule()"
+        >
+            Add Schedule
+        </button>
+
+    </div>
+
+
+    <!-- SCHEDULE VIEW TABS -->
+
+    <div class="schedule-tabs">
+
+        <button
+            class="schedule-tab active"
+            onclick="showScheduleView('calendar')"
+        >
+            📅 Calendar
+        </button>
+
+        <button
+            class="schedule-tab"
+            onclick="showScheduleView('weekly')"
+        >
+            🗓️ Weekly
+        </button>
+
+    </div>
+
+
+    <!-- =================================================
+         CALENDAR VIEW
+    ================================================== -->
+
+    <div id="calendarView">
+
+        <div class="calendar-container">
+
+            <div class="calendar-header">
+
+                <button onclick="changeMonth(-1)">
                     ◀
                 </button>
 
-                <h3 id="weeklyTitle">
-                    Week
+                <h3 id="calendarMonth">
+                    Month
                 </h3>
 
-                <button onclick="changeWeek(1)">
+                <button onclick="changeMonth(1)">
                     ▶
                 </button>
 
             </div>
 
 
-            <div id="weeklyGrid"></div>
+            <div class="calendar-weekdays">
+
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+
+            </div>
+
+
+            <div id="calendarGrid"></div>
 
         </div>
 
 
-        <!-- =================================================
-             SAVED SCHEDULES
-        ================================================== -->
+        <div
+            id="scheduleDetails"
+            class="schedule-details"
+        >
 
-        <div class="saved-schedules">
+            <div class="empty-details">
 
-            <h3>📋 Saved Class Schedules</h3>
+                <div>📅</div>
 
-            <div id="savedScheduleList"></div>
+                <p>
+                    Select a class from the calendar
+                    to see details.
+                </p>
+
+            </div>
 
         </div>
 
     </div>
 
+
+    <!-- =================================================
+         WEEKLY VIEW
+    ================================================== -->
+
+    <div
+        id="weeklyView"
+        style="display:none;"
+    >
+
+        <div class="weekly-header">
+
+            <button onclick="changeWeek(-1)">
+                ◀
+            </button>
+
+            <h3 id="weeklyTitle">
+                Week
+            </h3>
+
+            <button onclick="changeWeek(1)">
+                ▶
+            </button>
+
+        </div>
+
+
+        <div id="weeklyGrid"></div>
+
+    </div>
+
+
+    <!-- =================================================
+         SAVED SCHEDULES
+    ================================================== -->
+
+    <div class="saved-schedules">
+
+        <h3>📋 Saved Class Schedules</h3>
+
+        <div id="savedScheduleList"></div>
+
+    </div>
+
 </div>
 
+</div>
 
 <script src="script.js"></script>
 
-</body>
-</html>
+</body> </html>
