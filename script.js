@@ -110,6 +110,10 @@ function addTask() {
 }
 
 
+/* =========================================================
+   DISPLAY TASKS + DATE FILTER
+========================================================= */
+
 function displayTasks() {
 
     const taskList = document.getElementById("taskList");
@@ -120,38 +124,118 @@ function displayTasks() {
 
     let filteredTasks = tasks.filter(task => {
 
+        const taskDate =
+            new Date(task.dueDate + "T00:00:00");
+
+
+        /* =========================
+           ALL DATES
+        ========================= */
+
         if (dateFilter === "all") {
             return true;
         }
+
+
+        /* =========================
+           TODAY
+        ========================= */
 
         if (dateFilter === "today") {
             return task.dueDate === getTodayString();
         }
 
+
+        /* =========================
+           TOMORROW
+        ========================= */
+
         if (dateFilter === "tomorrow") {
             return task.dueDate === getDateAfterDays(1);
         }
 
+
+        /* =========================
+           NEXT 7 DAYS
+        ========================= */
+
         if (dateFilter === "week") {
 
             const today = new Date();
+
             today.setHours(0, 0, 0, 0);
 
-            const weekEnd = new Date(today);
-            weekEnd.setDate(today.getDate() + 7);
 
-            const taskDate = new Date(task.dueDate + "T00:00:00");
+            /*
+                Today = Day 1
 
-            return taskDate >= today && taskDate <= weekEnd;
+                Example:
+                September 17
+                September 18
+                September 19
+                September 20
+                September 21
+                September 22
+                September 23
+
+                September 30 = NOT INCLUDED
+            */
+
+            const sevenDaysLater = new Date(today);
+
+            sevenDaysLater.setDate(
+                today.getDate() + 6
+            );
+
+            sevenDaysLater.setHours(
+                23,
+                59,
+                59,
+                999
+            );
+
+
+            return (
+                taskDate >= today &&
+                taskDate <= sevenDaysLater
+            );
         }
+
+
+        /* =========================
+           OVERDUE
+        ========================= */
+
+        if (dateFilter === "overdue") {
+
+            const today = new Date();
+
+            today.setHours(0, 0, 0, 0);
+
+            return taskDate < today;
+        }
+
+
+        /* =========================
+           SPECIFIC DATE
+        ========================= */
 
         if (dateFilter === "specific") {
-            return specificDate && task.dueDate === specificDate;
+
+            return (
+                specificDate &&
+                task.dueDate === specificDate
+            );
         }
+
 
         return true;
     });
 
+
+    /* =========================
+       NO RESULTS
+    ========================= */
 
     if (filteredTasks.length === 0) {
 
@@ -168,10 +252,13 @@ function displayTasks() {
 
             const originalIndex = tasks.indexOf(task);
 
-            const taskItem = document.createElement("div");
+            const taskItem =
+                document.createElement("div");
 
             taskItem.className =
-                "task-item" + (task.completed ? " completed" : "");
+                "task-item" +
+                (task.completed ? " completed" : "");
+
 
             const priorityClass =
                 task.priority === "High"
@@ -233,16 +320,22 @@ function displayTasks() {
         });
     }
 
-    updateTaskCounter(filteredTasks.length);
+
+    updateTaskCounter(
+        filteredTasks.length
+    );
+
     updateProgress();
 }
 
 
 function toggleTask(index) {
 
-    tasks[index].completed = !tasks[index].completed;
+    tasks[index].completed =
+        !tasks[index].completed;
 
     saveTasks();
+
     displayTasks();
 }
 
@@ -251,10 +344,17 @@ function editTask(index) {
 
     const task = tasks[index];
 
-    document.getElementById("subject").value = task.subject;
-    document.getElementById("task").value = task.task;
-    document.getElementById("dueDate").value = task.dueDate;
-    document.getElementById("priority").value = task.priority;
+    document.getElementById("subject").value =
+        task.subject;
+
+    document.getElementById("task").value =
+        task.task;
+
+    document.getElementById("dueDate").value =
+        task.dueDate;
+
+    document.getElementById("priority").value =
+        task.priority;
 
     editingIndex = index;
 
@@ -277,21 +377,33 @@ function deleteTask(index) {
     tasks.splice(index, 1);
 
     saveTasks();
+
     displayTasks();
 }
 
 
 function handleDateFilter() {
 
-    const filter = document.getElementById("dateFilter").value;
-    const specificDate = document.getElementById("specificDate");
+    const filter =
+        document.getElementById("dateFilter").value;
+
+    const specificDate =
+        document.getElementById("specificDate");
+
 
     if (filter === "specific") {
-        specificDate.style.display = "block";
+
+        specificDate.style.display =
+            "block";
+
     } else {
-        specificDate.style.display = "none";
+
+        specificDate.style.display =
+            "none";
+
         specificDate.value = "";
     }
+
 
     displayTasks();
 }
@@ -317,20 +429,31 @@ function updateProgress() {
 
     const total = tasks.length;
 
-    const completed = tasks.filter(
-        task => task.completed
-    ).length;
+    const completed =
+        tasks.filter(
+            task => task.completed
+        ).length;
 
-    const pending = total - completed;
+    const pending =
+        total - completed;
 
     const percentage =
         total === 0
             ? 0
-            : Math.round((completed / total) * 100);
+            : Math.round(
+                (completed / total) * 100
+            );
 
-    document.getElementById("totalTasks").textContent = total;
-    document.getElementById("completedTasks").textContent = completed;
-    document.getElementById("pendingTasks").textContent = pending;
+
+    document.getElementById("totalTasks").textContent =
+        total;
+
+    document.getElementById("completedTasks").textContent =
+        completed;
+
+    document.getElementById("pendingTasks").textContent =
+        pending;
+
 
     document.getElementById("progressFill").style.width =
         percentage + "%";
@@ -356,7 +479,9 @@ function getDateAfterDays(days) {
 
     const date = new Date();
 
-    date.setDate(date.getDate() + days);
+    date.setDate(
+        date.getDate() + days
+    );
 
     return getDateString(date);
 }
@@ -364,15 +489,18 @@ function getDateAfterDays(days) {
 
 function getDateString(date) {
 
-    const year = date.getFullYear();
+    const year =
+        date.getFullYear();
 
-    const month = String(
-        date.getMonth() + 1
-    ).padStart(2, "0");
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
 
-    const day = String(
-        date.getDate()
-    ).padStart(2, "0");
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 }
@@ -384,9 +512,10 @@ function formatDate(dateString) {
         return "";
     }
 
-    const date = new Date(
-        dateString + "T00:00:00"
-    );
+    const date =
+        new Date(
+            dateString + "T00:00:00"
+        );
 
     return date.toLocaleDateString(
         "en-US",
@@ -401,7 +530,8 @@ function formatDate(dateString) {
 
 function escapeHtml(value) {
 
-    const div = document.createElement("div");
+    const div =
+        document.createElement("div");
 
     div.textContent = value;
 
@@ -415,12 +545,17 @@ function escapeHtml(value) {
 
 function generateTimeOptions() {
 
-    const startTime = document.getElementById("startTime");
-    const endTime = document.getElementById("endTime");
+    const startTime =
+        document.getElementById("startTime");
+
+    const endTime =
+        document.getElementById("endTime");
+
 
     if (!startTime || !endTime) {
         return;
     }
+
 
     startTime.innerHTML =
         `<option value="">Start Time</option>`;
@@ -430,19 +565,25 @@ function generateTimeOptions() {
 
 
     // START: 7:00 AM to 10:00 PM
+
     for (let hour = 7; hour <= 22; hour++) {
 
         for (let minute of [0, 30]) {
 
-            if (hour === 22 && minute === 30) {
+            if (
+                hour === 22 &&
+                minute === 30
+            ) {
                 continue;
             }
+
 
             const value =
                 `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
             const label =
                 formatTime(value);
+
 
             startTime.innerHTML +=
                 `<option value="${value}">${label}</option>`;
@@ -451,23 +592,32 @@ function generateTimeOptions() {
 
 
     // END: 7:30 AM to 11:00 PM
+
     for (let hour = 7; hour <= 23; hour++) {
 
         for (let minute of [0, 30]) {
 
-            if (hour === 7 && minute === 0) {
+            if (
+                hour === 7 &&
+                minute === 0
+            ) {
                 continue;
             }
 
-            if (hour === 23 && minute === 30) {
+            if (
+                hour === 23 &&
+                minute === 30
+            ) {
                 continue;
             }
+
 
             const value =
                 `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
             const label =
                 formatTime(value);
+
 
             endTime.innerHTML +=
                 `<option value="${value}">${label}</option>`;
@@ -482,17 +632,32 @@ function formatTime(time) {
         return "";
     }
 
-    const [hourString, minute] = time.split(":");
 
-    let hour = parseInt(hourString);
+    const [
+        hourString,
+        minute
+    ] = time.split(":");
 
-    const suffix = hour >= 12 ? "PM" : "AM";
+
+    let hour =
+        parseInt(hourString);
+
+
+    const suffix =
+        hour >= 12
+            ? "PM"
+            : "AM";
+
 
     if (hour === 0) {
+
         hour = 12;
+
     } else if (hour > 12) {
+
         hour -= 12;
     }
+
 
     return `${hour}:${minute} ${suffix}`;
 }
@@ -500,10 +665,18 @@ function formatTime(time) {
 
 function convertTimeToMinutes(time) {
 
-    const [hours, minutes] =
-        time.split(":").map(Number);
+    const [
+        hours,
+        minutes
+    ] = time
+        .split(":")
+        .map(Number);
 
-    return hours * 60 + minutes;
+
+    return (
+        hours * 60 +
+        minutes
+    );
 }
 
 
@@ -514,21 +687,36 @@ function convertTimeToMinutes(time) {
 function addSchedule() {
 
     const subject =
-        document.getElementById("scheduleSubject").value;
+        document.getElementById(
+            "scheduleSubject"
+        ).value;
 
     const date =
-        document.getElementById("scheduleDate").value;
+        document.getElementById(
+            "scheduleDate"
+        ).value;
 
     const startTime =
-        document.getElementById("startTime").value;
+        document.getElementById(
+            "startTime"
+        ).value;
 
     const endTime =
-        document.getElementById("endTime").value;
+        document.getElementById(
+            "endTime"
+        ).value;
 
 
-    if (!subject || !date || !startTime || !endTime) {
+    if (
+        !subject ||
+        !date ||
+        !startTime ||
+        !endTime
+    ) {
 
-        alert("Please complete all schedule fields.");
+        alert(
+            "Please complete all schedule fields."
+        );
 
         return;
     }
@@ -539,7 +727,9 @@ function addSchedule() {
         convertTimeToMinutes(startTime)
     ) {
 
-        alert("End time must be later than start time.");
+        alert(
+            "End time must be later than start time."
+        );
 
         return;
     }
@@ -567,11 +757,14 @@ function addSchedule() {
 
         document.getElementById(
             "addScheduleButton"
-        ).textContent = "Add Schedule";
+        ).textContent =
+            "Add Schedule";
 
     } else {
 
-        schedules.push(scheduleData);
+        schedules.push(
+            scheduleData
+        );
     }
 
 
@@ -579,6 +772,7 @@ function addSchedule() {
 
 
     // RESET FORM
+
     document.getElementById(
         "scheduleSubject"
     ).value = "";
@@ -597,7 +791,9 @@ function addSchedule() {
 
 
     renderCalendar();
+
     renderWeeklySchedule();
+
     displaySavedSchedules();
 }
 
@@ -613,30 +809,39 @@ function saveSchedules() {
 
 function editSchedule(index) {
 
-    const schedule = schedules[index];
+    const schedule =
+        schedules[index];
+
 
     document.getElementById(
         "scheduleSubject"
-    ).value = schedule.subject;
+    ).value =
+        schedule.subject;
 
     document.getElementById(
         "scheduleDate"
-    ).value = schedule.date;
+    ).value =
+        schedule.date;
 
     document.getElementById(
         "startTime"
-    ).value = schedule.startTime;
+    ).value =
+        schedule.startTime;
 
     document.getElementById(
         "endTime"
-    ).value = schedule.endTime;
+    ).value =
+        schedule.endTime;
 
 
-    editingScheduleIndex = index;
+    editingScheduleIndex =
+        index;
+
 
     document.getElementById(
         "addScheduleButton"
-    ).textContent = "Update Schedule";
+    ).textContent =
+        "Update Schedule";
 
 
     window.scrollTo({
@@ -648,16 +853,26 @@ function editSchedule(index) {
 
 function deleteSchedule(index) {
 
-    if (!confirm("Delete this class schedule?")) {
+    if (
+        !confirm(
+            "Delete this class schedule?"
+        )
+    ) {
         return;
     }
 
-    schedules.splice(index, 1);
+
+    schedules.splice(
+        index,
+        1
+    );
 
     saveSchedules();
 
     renderCalendar();
+
     renderWeeklySchedule();
+
     displaySavedSchedules();
 
     showScheduleDetails(null);
@@ -671,35 +886,55 @@ function deleteSchedule(index) {
 function showScheduleView(view) {
 
     const calendarView =
-        document.getElementById("calendarView");
+        document.getElementById(
+            "calendarView"
+        );
 
     const weeklyView =
-        document.getElementById("weeklyView");
+        document.getElementById(
+            "weeklyView"
+        );
 
     const tabs =
-        document.querySelectorAll(".schedule-tab");
+        document.querySelectorAll(
+            ".schedule-tab"
+        );
 
 
     tabs.forEach(tab => {
-        tab.classList.remove("active");
+
+        tab.classList.remove(
+            "active"
+        );
+
     });
 
 
     if (view === "calendar") {
 
-        calendarView.style.display = "block";
-        weeklyView.style.display = "none";
+        calendarView.style.display =
+            "block";
 
-        tabs[0].classList.add("active");
+        weeklyView.style.display =
+            "none";
+
+        tabs[0].classList.add(
+            "active"
+        );
 
         renderCalendar();
 
     } else {
 
-        calendarView.style.display = "none";
-        weeklyView.style.display = "block";
+        calendarView.style.display =
+            "none";
 
-        tabs[1].classList.add("active");
+        weeklyView.style.display =
+            "block";
+
+        tabs[1].classList.add(
+            "active"
+        );
 
         renderWeeklySchedule();
     }
@@ -713,10 +948,15 @@ function showScheduleView(view) {
 function renderCalendar() {
 
     const grid =
-        document.getElementById("calendarGrid");
+        document.getElementById(
+            "calendarGrid"
+        );
 
     const monthTitle =
-        document.getElementById("calendarMonth");
+        document.getElementById(
+            "calendarMonth"
+        );
+
 
     if (!grid || !monthTitle) {
         return;
@@ -726,8 +966,11 @@ function renderCalendar() {
     grid.innerHTML = "";
 
 
-    const year = calendarDate.getFullYear();
-    const month = calendarDate.getMonth();
+    const year =
+        calendarDate.getFullYear();
+
+    const month =
+        calendarDate.getMonth();
 
 
     const monthName =
@@ -740,27 +983,45 @@ function renderCalendar() {
         );
 
 
-    monthTitle.textContent = monthName;
+    monthTitle.textContent =
+        monthName;
 
 
     const firstDay =
-        new Date(year, month, 1).getDay();
+        new Date(
+            year,
+            month,
+            1
+        ).getDay();
 
 
     const daysInMonth =
-        new Date(year, month + 1, 0).getDate();
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
 
 
     // EMPTY DAYS BEFORE MONTH START
-    for (let i = 0; i < firstDay; i++) {
+
+    for (
+        let i = 0;
+        i < firstDay;
+        i++
+    ) {
 
         const emptyDay =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         emptyDay.className =
             "calendar-day empty";
 
-        grid.appendChild(emptyDay);
+        grid.appendChild(
+            emptyDay
+        );
     }
 
 
@@ -769,105 +1030,153 @@ function renderCalendar() {
 
 
     // DAYS
-    for (let day = 1; day <= daysInMonth; day++) {
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
 
         const date =
-            new Date(year, month, day);
+            new Date(
+                year,
+                month,
+                day
+            );
 
         const dateString =
             getDateString(date);
 
 
         const dayElement =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         dayElement.className =
             "calendar-day";
 
 
-        if (dateString === todayString) {
-            dayElement.classList.add("today");
+        if (
+            dateString ===
+            todayString
+        ) {
+
+            dayElement.classList.add(
+                "today"
+            );
         }
 
 
-        dayElement.onclick = function () {
+        dayElement.onclick =
+            function () {
 
-            showScheduleDetailsForDate(
-                dateString
-            );
+                showScheduleDetailsForDate(
+                    dateString
+                );
 
-        };
+            };
 
 
         const dateNumber =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         dateNumber.className =
             "calendar-date-number";
 
-        dateNumber.textContent = day;
+        dateNumber.textContent =
+            day;
 
-        dayElement.appendChild(dateNumber);
+        dayElement.appendChild(
+            dateNumber
+        );
 
 
         const daySchedules =
             schedules.filter(
                 schedule =>
-                    schedule.date === dateString
+                    schedule.date ===
+                    dateString
             );
 
 
         daySchedules.sort(
             (a, b) =>
-                convertTimeToMinutes(a.startTime) -
-                convertTimeToMinutes(b.startTime)
+                convertTimeToMinutes(
+                    a.startTime
+                ) -
+                convertTimeToMinutes(
+                    b.startTime
+                )
         );
 
 
-        daySchedules.forEach(schedule => {
+        daySchedules.forEach(
+            schedule => {
 
-            const event =
-                document.createElement("div");
+                const event =
+                    document.createElement(
+                        "div"
+                    );
 
-            event.className =
-                "calendar-event";
-
-
-            event.onclick = function(eventObject) {
-
-                eventObject.stopPropagation();
-
-                showScheduleDetails(schedule);
-
-            };
+                event.className =
+                    "calendar-event";
 
 
-            event.innerHTML = `
+                event.onclick =
+                    function (
+                        eventObject
+                    ) {
 
-                <div class="calendar-event-subject">
-                    ${escapeHtml(
-                        getShortSubject(schedule.subject)
-                    )}
-                </div>
+                        eventObject.stopPropagation();
 
-                <div class="calendar-event-time">
-                    ${formatTime(schedule.startTime)}
-                    -
-                    ${formatTime(schedule.endTime)}
-                </div>
+                        showScheduleDetails(
+                            schedule
+                        );
 
-            `;
+                    };
 
 
-            dayElement.appendChild(event);
-        });
+                event.innerHTML = `
+
+                    <div class="calendar-event-subject">
+                        ${escapeHtml(
+                            getShortSubject(
+                                schedule.subject
+                            )
+                        )}
+                    </div>
+
+                    <div class="calendar-event-time">
+                        ${formatTime(
+                            schedule.startTime
+                        )}
+                        -
+                        ${formatTime(
+                            schedule.endTime
+                        )}
+                    </div>
+
+                `;
 
 
-        grid.appendChild(dayElement);
+                dayElement.appendChild(
+                    event
+                );
+            }
+        );
+
+
+        grid.appendChild(
+            dayElement
+        );
     }
 
 
     // KEEP DETAILS IF DATE WAS SELECTED
+
     if (selectedCalendarDate) {
 
         showScheduleDetailsForDate(
@@ -884,7 +1193,8 @@ function renderCalendar() {
 function changeMonth(amount) {
 
     calendarDate.setMonth(
-        calendarDate.getMonth() + amount
+        calendarDate.getMonth() +
+        amount
     );
 
     selectedCalendarDate = null;
@@ -902,7 +1212,9 @@ function changeMonth(amount) {
 function showScheduleDetails(schedule) {
 
     const details =
-        document.getElementById("scheduleDetails");
+        document.getElementById(
+            "scheduleDetails"
+        );
 
 
     if (!schedule) {
@@ -933,19 +1245,27 @@ function showScheduleDetails(schedule) {
     details.innerHTML = `
 
         <div class="schedule-detail-subject">
-            ${escapeHtml(schedule.subject)}
+            ${escapeHtml(
+                schedule.subject
+            )}
         </div>
 
         <div class="schedule-detail-item">
             <strong>📅 Date:</strong><br>
-            ${formatDate(schedule.date)}
+            ${formatDate(
+                schedule.date
+            )}
         </div>
 
         <div class="schedule-detail-item">
             <strong>🕐 Time:</strong><br>
-            ${formatTime(schedule.startTime)}
+            ${formatTime(
+                schedule.startTime
+            )}
             -
-            ${formatTime(schedule.endTime)}
+            ${formatTime(
+                schedule.endTime
+            )}
         </div>
 
         <div class="schedule-detail-item">
@@ -957,20 +1277,29 @@ function showScheduleDetails(schedule) {
 }
 
 
-function showScheduleDetailsForDate(dateString) {
+function showScheduleDetailsForDate(
+    dateString
+) {
 
-    selectedCalendarDate = dateString;
+    selectedCalendarDate =
+        dateString;
+
 
     const daySchedules =
         schedules.filter(
             schedule =>
-                schedule.date === dateString
+                schedule.date ===
+                dateString
         );
 
 
-    if (daySchedules.length === 0) {
+    if (
+        daySchedules.length === 0
+    ) {
 
-        showScheduleDetails(null);
+        showScheduleDetails(
+            null
+        );
 
         return;
     }
@@ -978,6 +1307,7 @@ function showScheduleDetailsForDate(dateString) {
 
     // If several classes exist,
     // show the first one initially.
+
     showScheduleDetails(
         daySchedules[0]
     );
@@ -996,11 +1326,20 @@ function getStartOfWeek(date) {
     const day =
         result.getDay();
 
+
     result.setDate(
-        result.getDate() - day
+        result.getDate() -
+        day
     );
 
-    result.setHours(0, 0, 0, 0);
+
+    result.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
 
     return result;
 }
@@ -1009,10 +1348,14 @@ function getStartOfWeek(date) {
 function renderWeeklySchedule() {
 
     const grid =
-        document.getElementById("weeklyGrid");
+        document.getElementById(
+            "weeklyGrid"
+        );
 
     const title =
-        document.getElementById("weeklyTitle");
+        document.getElementById(
+            "weeklyTitle"
+        );
 
 
     if (!grid || !title) {
@@ -1024,14 +1367,20 @@ function renderWeeklySchedule() {
 
 
     const weekStart =
-        getStartOfWeek(weeklyDate);
+        getStartOfWeek(
+            weeklyDate
+        );
 
 
     const weekEnd =
-        new Date(weekStart);
+        new Date(
+            weekStart
+        );
+
 
     weekEnd.setDate(
-        weekStart.getDate() + 6
+        weekStart.getDate() +
+        6
     );
 
 
@@ -1042,29 +1391,43 @@ function renderWeeklySchedule() {
         );
 
 
-    for (let i = 0; i < 7; i++) {
+    for (
+        let i = 0;
+        i < 7;
+        i++
+    ) {
 
         const currentDate =
-            new Date(weekStart);
+            new Date(
+                weekStart
+            );
+
 
         currentDate.setDate(
-            weekStart.getDate() + i
+            weekStart.getDate() +
+            i
         );
 
 
         const dateString =
-            getDateString(currentDate);
+            getDateString(
+                currentDate
+            );
 
 
         const dayColumn =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         dayColumn.className =
             "weekly-column";
 
 
         const dayHeader =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         dayHeader.className =
             "weekly-day-header";
@@ -1100,27 +1463,38 @@ function renderWeeklySchedule() {
         `;
 
 
-        dayColumn.appendChild(dayHeader);
+        dayColumn.appendChild(
+            dayHeader
+        );
 
 
         const daySchedules =
             schedules.filter(
                 schedule =>
-                    schedule.date === dateString
+                    schedule.date ===
+                    dateString
             );
 
 
         daySchedules.sort(
             (a, b) =>
-                convertTimeToMinutes(a.startTime) -
-                convertTimeToMinutes(b.startTime)
+                convertTimeToMinutes(
+                    a.startTime
+                ) -
+                convertTimeToMinutes(
+                    b.startTime
+                )
         );
 
 
-        if (daySchedules.length === 0) {
+        if (
+            daySchedules.length === 0
+        ) {
 
             const empty =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             empty.className =
                 "weekly-empty";
@@ -1128,58 +1502,82 @@ function renderWeeklySchedule() {
             empty.textContent =
                 "No class";
 
-            dayColumn.appendChild(empty);
+            dayColumn.appendChild(
+                empty
+            );
 
         } else {
 
-            daySchedules.forEach(schedule => {
+            daySchedules.forEach(
+                schedule => {
 
-                const event =
-                    document.createElement("div");
-
-                event.className =
-                    "weekly-event";
-
-
-                event.onclick = function() {
-
-                    showScheduleDetails(schedule);
-
-                    showScheduleView("calendar");
-
-                    calendarDate =
-                        new Date(
-                            schedule.date + "T00:00:00"
+                    const event =
+                        document.createElement(
+                            "div"
                         );
 
-                    renderCalendar();
-
-                };
-
-
-                event.innerHTML = `
-
-                    <div class="weekly-event-subject">
-                        ${escapeHtml(
-                            getShortSubject(schedule.subject)
-                        )}
-                    </div>
-
-                    <div class="weekly-event-time">
-                        ${formatTime(schedule.startTime)}
-                        -
-                        ${formatTime(schedule.endTime)}
-                    </div>
-
-                `;
+                    event.className =
+                        "weekly-event";
 
 
-                dayColumn.appendChild(event);
-            });
+                    event.onclick =
+                        function () {
+
+                            showScheduleDetails(
+                                schedule
+                            );
+
+                            showScheduleView(
+                                "calendar"
+                            );
+
+
+                            calendarDate =
+                                new Date(
+                                    schedule.date +
+                                    "T00:00:00"
+                                );
+
+
+                            renderCalendar();
+
+                        };
+
+
+                    event.innerHTML = `
+
+                        <div class="weekly-event-subject">
+                            ${escapeHtml(
+                                getShortSubject(
+                                    schedule.subject
+                                )
+                            )}
+                        </div>
+
+                        <div class="weekly-event-time">
+                            ${formatTime(
+                                schedule.startTime
+                            )}
+                            -
+                            ${formatTime(
+                                schedule.endTime
+                            )}
+                        </div>
+
+                    `;
+
+
+                    dayColumn.appendChild(
+                        event
+                    );
+                }
+            );
         }
 
 
-        grid.appendChild(dayColumn);
+        grid.appendChild(
+            dayColumn
+        );
     }
 }
 
@@ -1191,14 +1589,18 @@ function renderWeeklySchedule() {
 function changeWeek(amount) {
 
     weeklyDate.setDate(
-        weeklyDate.getDate() + (amount * 7)
+        weeklyDate.getDate() +
+        (amount * 7)
     );
 
     renderWeeklySchedule();
 }
 
 
-function formatWeekRange(start, end) {
+function formatWeekRange(
+    start,
+    end
+) {
 
     const startText =
         start.toLocaleDateString(
@@ -1245,7 +1647,9 @@ function displaySavedSchedules() {
     list.innerHTML = "";
 
 
-    if (schedules.length === 0) {
+    if (
+        schedules.length === 0
+    ) {
 
         list.innerHTML = `
 
@@ -1267,10 +1671,12 @@ function displaySavedSchedules() {
 
     const sortedSchedules =
         schedules
-            .map((schedule, index) => ({
-                schedule,
-                index
-            }))
+            .map(
+                (schedule, index) => ({
+                    schedule,
+                    index
+                })
+            )
             .sort(
                 (a, b) =>
                     a.schedule.date.localeCompare(
@@ -1282,64 +1688,81 @@ function displaySavedSchedules() {
             );
 
 
-    sortedSchedules.forEach(item => {
+    sortedSchedules.forEach(
+        item => {
 
-        const schedule = item.schedule;
-        const index = item.index;
+            const schedule =
+                item.schedule;
 
-
-        const element =
-            document.createElement("div");
-
-        element.className =
-            "saved-schedule-item";
+            const index =
+                item.index;
 
 
-        element.innerHTML = `
+            const element =
+                document.createElement(
+                    "div"
+                );
 
-            <div class="saved-schedule-info">
+            element.className =
+                "saved-schedule-item";
 
-                <div class="saved-schedule-subject">
-                    ${escapeHtml(schedule.subject)}
+
+            element.innerHTML = `
+
+                <div class="saved-schedule-info">
+
+                    <div class="saved-schedule-subject">
+                        ${escapeHtml(
+                            schedule.subject
+                        )}
+                    </div>
+
+                    <div class="saved-schedule-date">
+                        📅 ${formatDate(
+                            schedule.date
+                        )}
+                    </div>
+
+                    <div class="saved-schedule-time">
+                        🕐
+                        ${formatTime(
+                            schedule.startTime
+                        )}
+                        -
+                        ${formatTime(
+                            schedule.endTime
+                        )}
+                    </div>
+
                 </div>
 
-                <div class="saved-schedule-date">
-                    📅 ${formatDate(schedule.date)}
+
+                <div class="saved-schedule-actions">
+
+                    <button
+                        class="saved-edit"
+                        onclick="editSchedule(${index})"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        class="saved-delete"
+                        onclick="deleteSchedule(${index})"
+                    >
+                        Delete
+                    </button>
+
                 </div>
 
-                <div class="saved-schedule-time">
-                    🕐
-                    ${formatTime(schedule.startTime)}
-                    -
-                    ${formatTime(schedule.endTime)}
-                </div>
-
-            </div>
+            `;
 
 
-            <div class="saved-schedule-actions">
-
-                <button
-                    class="saved-edit"
-                    onclick="editSchedule(${index})"
-                >
-                    Edit
-                </button>
-
-                <button
-                    class="saved-delete"
-                    onclick="deleteSchedule(${index})"
-                >
-                    Delete
-                </button>
-
-            </div>
-
-        `;
-
-
-        list.appendChild(element);
-    });
+            list.appendChild(
+                element
+            );
+        }
+    );
 }
 
 
@@ -1353,8 +1776,10 @@ function getShortSubject(subject) {
         return "";
     }
 
+
     const parts =
         subject.split(" - ");
+
 
     return parts[0];
 }
