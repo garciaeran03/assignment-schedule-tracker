@@ -5,7 +5,6 @@
 // ============================================================
 
 let currentUser = null;
-
 let tasks = [];
 let schedules = [];
 
@@ -14,7 +13,6 @@ let editingScheduleIndex = -1;
 
 let calendarDate = new Date();
 let weeklyDate = new Date();
-
 let summaryDate = new Date();
 
 let selectedCalendarDate = null;
@@ -49,8 +47,7 @@ function createLoginScreen() {
         return;
     }
 
-    const loginScreen =
-        document.createElement("div");
+    const loginScreen = document.createElement("div");
 
     loginScreen.id = "loginScreen";
 
@@ -98,12 +95,12 @@ async function loginUser() {
 
     const email =
         document.getElementById("loginEmail")
-            .value
-            .trim();
+        .value
+        .trim();
 
     const password =
         document.getElementById("loginPassword")
-            .value;
+        .value;
 
     const message =
         document.getElementById("loginMessage");
@@ -116,25 +113,26 @@ async function loginUser() {
         return;
     }
 
-    message.textContent =
-        "Logging in...";
+    message.textContent = "Logging in...";
 
-    const { data, error } =
-        await supabase.auth.signInWithPassword({
-            email: email,
-            password: password
-        });
+    const {
+        data,
+        error
+    } = await supabase.auth.signInWithPassword({
+
+        email: email,
+        password: password
+
+    });
 
     if (error) {
 
-        message.textContent =
-            error.message;
+        message.textContent = error.message;
 
         return;
     }
 
-    currentUser =
-        data.user;
+    currentUser = data.user;
 
     const loginScreen =
         document.getElementById("loginScreen");
@@ -208,44 +206,57 @@ async function loadCloudData() {
                 cloudTasks.length > 0
             ) {
 
-                tasks =
-                    cloudTasks.map(task => ({
-                        id: task.id,
-                        subject: task.subject,
-                        task: task.task,
-                        dueDate: task.due_date,
-                        priority: task.priority,
-                        completed: task.completed,
-                        createdAt: task.created_at
-                    }));
+                tasks = cloudTasks.map(task => ({
+
+                    id: task.id,
+
+                    subject: task.subject,
+
+                    task: task.task,
+
+                    dueDate: task.due_date,
+
+                    priority: task.priority,
+
+                    completed: task.completed,
+
+                    createdAt: task.created_at
+
+                }));
 
             } else {
 
                 const localTasks =
                     JSON.parse(
-                        localStorage.getItem("schoolTasks")
+                        localStorage.getItem(
+                            "schoolTasks"
+                        )
                     ) || [];
 
-                tasks =
-                    localTasks;
+                tasks = localTasks;
 
                 if (localTasks.length > 0) {
 
-                    for (
-                        const task of localTasks
-                    ) {
+                    for (const task of localTasks) {
 
                         await supabase
                             .from("assignments")
                             .insert({
+
                                 subject: task.subject,
+
                                 task: task.task,
+
                                 due_date: task.dueDate,
+
                                 priority: task.priority,
+
                                 completed:
                                     task.completed || false,
+
                                 user_id:
                                     currentUser.id
+
                             });
                     }
                 }
@@ -284,16 +295,23 @@ async function loadCloudData() {
 
                 schedules =
                     cloudSchedules.map(schedule => ({
+
                         id: schedule.id,
+
                         subject: schedule.subject,
+
                         scheduleDate:
                             schedule.schedule_date,
+
                         startTime:
                             schedule.start_time,
+
                         endTime:
                             schedule.end_time,
+
                         createdAt:
                             schedule.created_at
+
                     }));
 
             } else {
@@ -305,12 +323,9 @@ async function loadCloudData() {
                         )
                     ) || [];
 
-                schedules =
-                    localSchedules;
+                schedules = localSchedules;
 
-                if (
-                    localSchedules.length > 0
-                ) {
+                if (localSchedules.length > 0) {
 
                     for (
                         const schedule
@@ -320,22 +335,32 @@ async function loadCloudData() {
                         await supabase
                             .from("class_schedules")
                             .insert({
+
                                 subject:
                                     schedule.subject,
+
                                 schedule_date:
                                     schedule.scheduleDate,
+
                                 start_time:
                                     schedule.startTime,
+
                                 end_time:
                                     schedule.endTime,
+
                                 user_id:
                                     currentUser.id
+
                             });
                     }
                 }
             }
         }
 
+
+        // ====================================================
+        // LOCAL STORAGE
+        // ====================================================
 
         localStorage.setItem(
             "schoolTasks",
@@ -400,17 +425,13 @@ function addLogoutButton() {
     const button =
         document.createElement("button");
 
-    button.id =
-        "logoutButton";
+    button.id = "logoutButton";
 
-    button.textContent =
-        "Logout";
+    button.textContent = "Logout";
 
-    button.onclick =
-        logoutUser;
+    button.onclick = logoutUser;
 
-    button.style.marginTop =
-        "15px";
+    button.style.marginTop = "15px";
 
     const container =
         document.querySelector(
@@ -419,9 +440,7 @@ function addLogoutButton() {
 
     if (container) {
 
-        container.appendChild(
-            button
-        );
+        container.appendChild(button);
     }
 }
 
@@ -452,7 +471,6 @@ function showMainTab(tab) {
             ".main-tab"
         );
 
-
     tabs.forEach(button => {
 
         button.classList.remove(
@@ -471,17 +489,20 @@ function showMainTab(tab) {
             "none";
 
         if (summaryTab) {
+
             summaryTab.style.display =
                 "none";
         }
 
         if (tabs[0]) {
+
             tabs[0].classList.add(
                 "active"
             );
         }
 
     }
+
 
     else if (tab === "schedule") {
 
@@ -492,11 +513,13 @@ function showMainTab(tab) {
             "block";
 
         if (summaryTab) {
+
             summaryTab.style.display =
                 "none";
         }
 
         if (tabs[1]) {
+
             tabs[1].classList.add(
                 "active"
             );
@@ -509,6 +532,7 @@ function showMainTab(tab) {
         displaySavedSchedules();
 
     }
+
 
     else if (tab === "summary") {
 
@@ -556,6 +580,7 @@ async function addTask() {
 
     if (!supabase) return;
 
+
     const subject =
         document.getElementById(
             "subject"
@@ -596,27 +621,30 @@ async function addTask() {
         const existingTask =
             tasks[editingIndex];
 
-        const { error } =
-            await supabase
-                .from("assignments")
-                .update({
-                    subject:
-                        subject,
-                    task:
-                        task,
-                    due_date:
-                        dueDate,
-                    priority:
-                        priority
-                })
-                .eq(
-                    "id",
-                    existingTask.id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
+        const {
+            error
+        } = await supabase
+            .from("assignments")
+            .update({
+
+                subject: subject,
+
+                task: task,
+
+                due_date: dueDate,
+
+                priority: priority
+
+            })
+            .eq(
+                "id",
+                existingTask.id
+            )
+            .eq(
+                "user_id",
+                currentUser.id
+            );
+
 
         if (error) {
 
@@ -628,20 +656,30 @@ async function addTask() {
             return;
         }
 
+
         tasks[editingIndex] = {
+
             ...existingTask,
+
             subject,
+
             task,
+
             dueDate,
+
             priority
+
         };
 
+
         editingIndex = -1;
+
 
         document.getElementById(
             "addTaskButton"
         ).textContent =
             "Add Task";
+
     }
 
 
@@ -654,25 +692,27 @@ async function addTask() {
         const {
             data,
             error
-        } =
-            await supabase
-                .from("assignments")
-                .insert({
-                    subject:
-                        subject,
-                    task:
-                        task,
-                    due_date:
-                        dueDate,
-                    priority:
-                        priority,
-                    completed:
-                        false,
-                    user_id:
-                        currentUser.id
-                })
-                .select()
-                .single();
+        } = await supabase
+            .from("assignments")
+            .insert({
+
+                subject: subject,
+
+                task: task,
+
+                due_date: dueDate,
+
+                priority: priority,
+
+                completed: false,
+
+                user_id:
+                    currentUser.id
+
+            })
+            .select()
+            .single();
+
 
         if (error) {
 
@@ -684,21 +724,25 @@ async function addTask() {
             return;
         }
 
+
         tasks.push({
-            id:
-                data.id,
-            subject:
-                data.subject,
-            task:
-                data.task,
-            dueDate:
-                data.due_date,
-            priority:
-                data.priority,
+
+            id: data.id,
+
+            subject: data.subject,
+
+            task: data.task,
+
+            dueDate: data.due_date,
+
+            priority: data.priority,
+
             completed:
                 data.completed,
+
             createdAt:
                 data.created_at
+
         });
     }
 
@@ -771,9 +815,7 @@ function displayTasks() {
     if (filter === "Today") {
 
         const todayString =
-            formatDateInput(
-                today
-            );
+            formatDateInput(today);
 
         filteredTasks =
             tasks.filter(
@@ -791,25 +833,24 @@ function displayTasks() {
             new Date(today);
 
         sevenDays.setDate(
-            sevenDays.getDate() +
-            7
+            sevenDays.getDate() + 7
         );
 
+
         filteredTasks =
-            tasks.filter(
-                task => {
+            tasks.filter(task => {
 
-                    const due =
-                        parseLocalDate(
-                            task.dueDate
-                        );
-
-                    return (
-                        due >= today &&
-                        due <= sevenDays
+                const due =
+                    parseLocalDate(
+                        task.dueDate
                     );
-                }
-            );
+
+                return (
+                    due >= today &&
+                    due <= sevenDays
+                );
+
+            });
 
     }
 
@@ -817,20 +858,19 @@ function displayTasks() {
     else if (filter === "Overdue") {
 
         filteredTasks =
-            tasks.filter(
-                task => {
+            tasks.filter(task => {
 
-                    const due =
-                        parseLocalDate(
-                            task.dueDate
-                        );
-
-                    return (
-                        due < today &&
-                        !task.completed
+                const due =
+                    parseLocalDate(
+                        task.dueDate
                     );
-                }
-            );
+
+                return (
+                    due < today &&
+                    !task.completed
+                );
+
+            });
 
     }
 
@@ -851,100 +891,99 @@ function displayTasks() {
 
     filteredTasks.sort(
         (a, b) =>
-            parseLocalDate(
-                a.dueDate
-            ) -
-            parseLocalDate(
-                b.dueDate
-            )
+            parseLocalDate(a.dueDate) -
+            parseLocalDate(b.dueDate)
     );
 
 
-    filteredTasks.forEach(
-        task => {
+    filteredTasks.forEach(task => {
 
-            const actualIndex =
-                tasks.indexOf(task);
-
-            const li =
-                document.createElement(
-                    "li"
-                );
-
-            li.className =
-                task.completed
-                    ? "completed"
-                    : "";
+        const actualIndex =
+            tasks.indexOf(task);
 
 
-            li.innerHTML = `
+        const li =
+            document.createElement(
+                "li"
+            );
 
-                <div class="task-info">
 
-                    <strong>
-                        ${escapeHtml(
-                            task.task
-                        )}
-                    </strong>
+        li.className =
+            task.completed
+                ? "completed"
+                : "";
 
-                    <small>
-                        ${escapeHtml(
-                            task.subject
-                        )}
-                    </small>
 
-                    <small>
-                        📅
-                        ${formatDisplayDate(
-                            task.dueDate
-                        )}
-                    </small>
+        li.innerHTML = `
 
-                    <small>
-                        Priority:
-                        ${escapeHtml(
-                            task.priority
-                        )}
-                    </small>
+            <div class="task-info">
 
-                </div>
+                <strong>
+                    ${escapeHtml(
+                        task.task
+                    )}
+                </strong>
 
-                <div class="task-actions">
+                <small>
+                    ${escapeHtml(
+                        task.subject
+                    )}
+                </small>
 
-                    <button
-                        onclick="toggleTask(${actualIndex})"
-                    >
-                        ${
-                            task.completed
-                                ? "↩️"
-                                : "✅"
-                        }
-                    </button>
+                <small>
+                    📅 ${formatDisplayDate(
+                        task.dueDate
+                    )}
+                </small>
 
-                    <button
-                        onclick="editTask(${actualIndex})"
-                    >
-                        ✏️
-                    </button>
+                <small>
+                    Priority:
+                    ${escapeHtml(
+                        task.priority
+                    )}
+                </small>
 
-                    <button
-                        onclick="deleteTask(${actualIndex})"
-                    >
-                        🗑️
-                    </button>
+            </div>
 
-                </div>
-            `;
 
-            list.appendChild(li);
-        }
-    );
+            <div class="task-actions">
+
+                <button
+                    onclick="toggleTask(${actualIndex})"
+                >
+                    ${
+                        task.completed
+                            ? "↩️"
+                            : "✅"
+                    }
+                </button>
+
+                <button
+                    onclick="editTask(${actualIndex})"
+                >
+                    ✏️
+                </button>
+
+                <button
+                    onclick="deleteTask(${actualIndex})"
+                >
+                    🗑️
+                </button>
+
+            </div>
+        `;
+
+
+        list.appendChild(li);
+
+    });
 
 
     const counter =
         document.getElementById(
             "taskCounter"
         );
+
 
     if (counter) {
 
@@ -956,6 +995,7 @@ function displayTasks() {
                     : " Tasks"
             );
     }
+
 
     updateProgress();
 }
@@ -972,6 +1012,7 @@ function handleDateFilter() {
             "dateFilter"
         ).value;
 
+
     const specificDate =
         document.getElementById(
             "specificDate"
@@ -983,13 +1024,14 @@ function handleDateFilter() {
         specificDate.style.display =
             "block";
 
-    } else {
+    }
+
+    else {
 
         specificDate.style.display =
             "none";
 
-        specificDate.value =
-            "";
+        specificDate.value = "";
     }
 
 
@@ -1010,30 +1052,35 @@ async function toggleTask(index) {
 
     if (!supabase) return;
 
+
     const task =
         tasks[index];
 
     if (!task) return;
 
+
     const newStatus =
         !task.completed;
 
 
-    const { error } =
-        await supabase
-            .from("assignments")
-            .update({
-                completed:
-                    newStatus
-            })
-            .eq(
-                "id",
-                task.id
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            );
+    const {
+        error
+    } = await supabase
+        .from("assignments")
+        .update({
+
+            completed:
+                newStatus
+
+        })
+        .eq(
+            "id",
+            task.id
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        );
 
 
     if (error) {
@@ -1082,15 +1129,18 @@ function editTask(index) {
     ).value =
         task.subject;
 
+
     document.getElementById(
         "task"
     ).value =
         task.task;
 
+
     document.getElementById(
         "dueDate"
     ).value =
         task.dueDate;
+
 
     document.getElementById(
         "priority"
@@ -1109,8 +1159,11 @@ function editTask(index) {
 
 
     window.scrollTo({
+
         top: 0,
+
         behavior: "smooth"
+
     });
 }
 
@@ -1123,6 +1176,7 @@ async function deleteTask(index) {
 
     if (!currentUser) return;
 
+
     const task =
         tasks[index];
 
@@ -1134,6 +1188,7 @@ async function deleteTask(index) {
             "Delete this assignment?"
         );
 
+
     if (!confirmed) return;
 
 
@@ -1143,18 +1198,19 @@ async function deleteTask(index) {
     if (!supabase) return;
 
 
-    const { error } =
-        await supabase
-            .from("assignments")
-            .delete()
-            .eq(
-                "id",
-                task.id
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            );
+    const {
+        error
+    } = await supabase
+        .from("assignments")
+        .delete()
+        .eq(
+            "id",
+            task.id
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        );
 
 
     if (error) {
@@ -1204,8 +1260,7 @@ function updateProgress() {
         ).length;
 
     const pending =
-        total -
-        completed;
+        total - completed;
 
 
     const totalElement =
@@ -1230,11 +1285,13 @@ function updateProgress() {
             total;
     }
 
+
     if (completedElement) {
 
         completedElement.textContent =
             completed;
     }
+
 
     if (pendingElement) {
 
@@ -1247,10 +1304,8 @@ function updateProgress() {
         total === 0
             ? 0
             : Math.round(
-                (
-                    completed /
-                    total
-                ) * 100
+                (completed / total) *
+                100
             );
 
 
@@ -1270,6 +1325,7 @@ function updateProgress() {
         progressFill.style.width =
             percentage + "%";
     }
+
 
     if (progressText) {
 
@@ -1321,6 +1377,7 @@ function populateTimeDropdowns() {
 
             const value =
                 `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+
 
             const label =
                 formatTime(value);
@@ -1419,9 +1476,7 @@ async function addSchedule() {
     }
 
 
-    if (
-        startTime >= endTime
-    ) {
+    if (startTime >= endTime) {
 
         alert(
             "End time must be later than start time."
@@ -1445,27 +1500,32 @@ async function addSchedule() {
             ];
 
 
-        const { error } =
-            await supabase
-                .from("class_schedules")
-                .update({
-                    subject:
-                        subject,
-                    schedule_date:
-                        scheduleDate,
-                    start_time:
-                        startTime,
-                    end_time:
-                        endTime
-                })
-                .eq(
-                    "id",
-                    existing.id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
+        const {
+            error
+        } = await supabase
+            .from("class_schedules")
+            .update({
+
+                subject: subject,
+
+                schedule_date:
+                    scheduleDate,
+
+                start_time:
+                    startTime,
+
+                end_time:
+                    endTime
+
+            })
+            .eq(
+                "id",
+                existing.id
+            )
+            .eq(
+                "user_id",
+                currentUser.id
+            );
 
 
         if (error) {
@@ -1486,9 +1546,13 @@ async function addSchedule() {
             ...existing,
 
             subject,
+
             scheduleDate,
+
             startTime,
+
             endTime
+
         };
 
 
@@ -1512,23 +1576,27 @@ async function addSchedule() {
         const {
             data,
             error
-        } =
-            await supabase
-                .from("class_schedules")
-                .insert({
-                    subject:
-                        subject,
-                    schedule_date:
-                        scheduleDate,
-                    start_time:
-                        startTime,
-                    end_time:
-                        endTime,
-                    user_id:
-                        currentUser.id
-                })
-                .select()
-                .single();
+        } = await supabase
+            .from("class_schedules")
+            .insert({
+
+                subject: subject,
+
+                schedule_date:
+                    scheduleDate,
+
+                start_time:
+                    startTime,
+
+                end_time:
+                    endTime,
+
+                user_id:
+                    currentUser.id
+
+            })
+            .select()
+            .single();
 
 
         if (error) {
@@ -1544,8 +1612,7 @@ async function addSchedule() {
 
         schedules.push({
 
-            id:
-                data.id,
+            id: data.id,
 
             subject:
                 data.subject,
@@ -1561,6 +1628,7 @@ async function addSchedule() {
 
             createdAt:
                 data.created_at
+
         });
     }
 
@@ -1616,7 +1684,6 @@ function showScheduleView(view) {
             "weeklyView"
         );
 
-
     const tabs =
         document.querySelectorAll(
             ".schedule-tab"
@@ -1642,13 +1709,21 @@ function showScheduleView(view) {
         weeklyView.style.display =
             "none";
 
-        tabs[0].classList.add(
-            "active"
-        );
+
+        if (tabs[0]) {
+
+            tabs[0].classList.add(
+                "active"
+            );
+        }
+
 
         renderCalendar();
 
-    } else {
+    }
+
+
+    else {
 
         calendarView.style.display =
             "none";
@@ -1656,9 +1731,14 @@ function showScheduleView(view) {
         weeklyView.style.display =
             "block";
 
-        tabs[1].classList.add(
-            "active"
-        );
+
+        if (tabs[1]) {
+
+            tabs[1].classList.add(
+                "active"
+            );
+        }
+
 
         renderWeekly();
     }
@@ -1683,12 +1763,14 @@ function getScheduleColorClass(
                         b.startTime
                     );
 
+
                 if (
                     startCompare !== 0
                 ) {
 
                     return startCompare;
                 }
+
 
                 return a.endTime.localeCompare(
                     b.endTime
@@ -1708,17 +1790,23 @@ function getScheduleColorClass(
     if (index === 0) {
 
         return "schedule-color-1";
+
     }
+
 
     if (index === 1) {
 
         return "schedule-color-2";
+
     }
+
 
     if (index === 2) {
 
         return "schedule-color-3";
+
     }
+
 
     return "schedule-color-4";
 }
@@ -1744,8 +1832,7 @@ function renderCalendar() {
     if (!grid || !title) return;
 
 
-    grid.innerHTML =
-        "";
+    grid.innerHTML = "";
 
 
     const year =
@@ -1785,7 +1872,6 @@ function renderCalendar() {
         ).getDate();
 
 
-    // EMPTY DAYS
     for (
         let i = 0;
         i < firstDay;
@@ -1806,7 +1892,6 @@ function renderCalendar() {
     }
 
 
-    // DAYS
     for (
         let day = 1;
         day <= daysInMonth;
@@ -1817,6 +1902,7 @@ function renderCalendar() {
             document.createElement(
                 "div"
             );
+
 
         cell.className =
             "calendar-day";
@@ -1848,11 +1934,13 @@ function renderCalendar() {
                 "div"
             );
 
+
         dayNumber.className =
             "day-number";
 
         dayNumber.textContent =
             day;
+
 
         cell.appendChild(
             dayNumber
@@ -1874,12 +1962,14 @@ function renderCalendar() {
                                 b.startTime
                             );
 
+
                         if (
                             startCompare !== 0
                         ) {
 
                             return startCompare;
                         }
+
 
                         return a.endTime.localeCompare(
                             b.endTime
@@ -1951,7 +2041,8 @@ function renderCalendar() {
 
 
                 if (
-                    selectedSchedules.length > 0
+                    selectedSchedules.length >
+                    0
                 ) {
 
                     showScheduleDetails(
@@ -1984,6 +2075,7 @@ function changeMonth(direction) {
         calendarDate.getMonth() +
         direction
     );
+
 
     renderCalendar();
 }
@@ -2021,15 +2113,13 @@ function showScheduleDetails(
             </h3>
 
             <p>
-                📅
-                ${formatDisplayDate(
+                📅 ${formatDisplayDate(
                     schedule.scheduleDate
                 )}
             </p>
 
             <p>
-                🕐
-                ${formatTime(
+                🕐 ${formatTime(
                     schedule.startTime
                 )}
                 -
@@ -2117,8 +2207,7 @@ function renderWeekly() {
     if (!grid || !title) return;
 
 
-    grid.innerHTML =
-        "";
+    grid.innerHTML = "";
 
 
     const current =
@@ -2126,14 +2215,13 @@ function renderWeekly() {
             weeklyDate
         );
 
+
     const day =
         current.getDay();
 
 
     const monday =
-        new Date(
-            current
-        );
+        new Date(current);
 
 
     monday.setDate(
@@ -2155,14 +2243,11 @@ function renderWeekly() {
 
 
     const sunday =
-        new Date(
-            monday
-        );
+        new Date(monday);
 
 
     sunday.setDate(
-        monday.getDate() +
-        6
+        monday.getDate() + 6
     );
 
 
@@ -2171,13 +2256,21 @@ function renderWeekly() {
 
 
     const days = [
+
         "Monday",
+
         "Tuesday",
+
         "Wednesday",
+
         "Thursday",
+
         "Friday",
+
         "Saturday",
+
         "Sunday"
+
     ];
 
 
@@ -2188,9 +2281,7 @@ function renderWeekly() {
         ) => {
 
             const date =
-                new Date(
-                    monday
-                );
+                new Date(monday);
 
 
             date.setDate(
@@ -2210,6 +2301,7 @@ function renderWeekly() {
                     "div"
                 );
 
+
             column.className =
                 "weekly-column";
 
@@ -2219,11 +2311,13 @@ function renderWeekly() {
                     "div"
                 );
 
+
             header.className =
                 "weekly-day-header";
 
 
             header.innerHTML = `
+
                 <strong>
                     ${dayName}
                 </strong>
@@ -2256,12 +2350,14 @@ function renderWeekly() {
                                     b.startTime
                                 );
 
+
                             if (
                                 startCompare !== 0
                             ) {
 
                                 return startCompare;
                             }
+
 
                             return a.endTime.localeCompare(
                                 b.endTime
@@ -2271,7 +2367,8 @@ function renderWeekly() {
 
 
             if (
-                daySchedules.length === 0
+                daySchedules.length ===
+                0
             ) {
 
                 const empty =
@@ -2279,17 +2376,23 @@ function renderWeekly() {
                         "div"
                     );
 
+
                 empty.className =
                     "weekly-empty";
 
+
                 empty.textContent =
                     "No class";
+
 
                 column.appendChild(
                     empty
                 );
 
-            } else {
+            }
+
+
+            else {
 
                 daySchedules.forEach(
                     schedule => {
@@ -2374,6 +2477,7 @@ function changeWeek(direction) {
         direction * 7
     );
 
+
     renderWeekly();
 }
 
@@ -2393,17 +2497,20 @@ function displaySavedSchedules() {
     if (!list) return;
 
 
-    list.innerHTML =
-        "";
+    list.innerHTML = "";
 
 
     if (
-        schedules.length === 0
+        schedules.length ===
+        0
     ) {
 
         list.innerHTML = `
+
             <div class="empty-schedules">
+
                 No saved class schedules yet.
+
             </div>
         `;
 
@@ -2420,12 +2527,14 @@ function displaySavedSchedules() {
                         b.scheduleDate
                     );
 
+
                 if (
                     dateCompare !== 0
                 ) {
 
                     return dateCompare;
                 }
+
 
                 return a.startTime.localeCompare(
                     b.startTime
@@ -2448,6 +2557,7 @@ function displaySavedSchedules() {
                     "div"
                 );
 
+
             item.className =
                 "saved-schedule-item";
 
@@ -2463,15 +2573,13 @@ function displaySavedSchedules() {
                     </strong>
 
                     <span>
-                        📅
-                        ${formatDisplayDate(
+                        📅 ${formatDisplayDate(
                             schedule.scheduleDate
                         )}
                     </span>
 
                     <span>
-                        🕐
-                        ${formatTime(
+                        🕐 ${formatTime(
                             schedule.startTime
                         )}
                         -
@@ -2481,6 +2589,7 @@ function displaySavedSchedules() {
                     </span>
 
                 </div>
+
 
                 <div class="saved-schedule-actions">
 
@@ -2516,6 +2625,7 @@ function editSchedule(index) {
 
     const schedule =
         schedules[index];
+
 
     if (!schedule) return;
 
@@ -2561,10 +2671,14 @@ function editSchedule(index) {
 
 
     window.scrollTo({
+
         top:
-            document.body.scrollHeight,
+            document.body
+                .scrollHeight,
+
         behavior:
             "smooth"
+
     });
 }
 
@@ -2580,7 +2694,9 @@ function editScheduleById(
     const index =
         schedules.findIndex(
             schedule =>
-                Number(schedule.id) ===
+                Number(
+                    schedule.id
+                ) ===
                 Number(id)
         );
 
@@ -2606,6 +2722,7 @@ async function deleteSchedule(
     const schedule =
         schedules[index];
 
+
     if (!schedule) return;
 
 
@@ -2621,21 +2738,23 @@ async function deleteSchedule(
     const supabase =
         getSupabase();
 
+
     if (!supabase) return;
 
 
-    const { error } =
-        await supabase
-            .from("class_schedules")
-            .delete()
-            .eq(
-                "id",
-                schedule.id
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            );
+    const {
+        error
+    } = await supabase
+        .from("class_schedules")
+        .delete()
+        .eq(
+            "id",
+            schedule.id
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        );
 
 
     if (error) {
@@ -2681,12 +2800,16 @@ async function deleteSchedule(
     if (details) {
 
         details.innerHTML = `
+
             <div class="empty-details">
+
                 <div>📅</div>
+
                 <p>
                     Select a class from the calendar
                     to see details.
                 </p>
+
             </div>
         `;
     }
@@ -2704,7 +2827,9 @@ async function deleteScheduleById(
     const index =
         schedules.findIndex(
             schedule =>
-                Number(schedule.id) ===
+                Number(
+                    schedule.id
+                ) ===
                 Number(id)
         );
 
@@ -2712,7 +2837,9 @@ async function deleteScheduleById(
     if (index === -1) return;
 
 
-    await deleteSchedule(index);
+    await deleteSchedule(
+        index
+    );
 }
 
 
@@ -2749,6 +2876,56 @@ function getSubjectCode(
 
 
 // ============================================================
+// SUBJECT COLOR SYSTEM
+// ============================================================
+
+const subjectColors = {
+
+    "CHEM 001":
+        "subject-color-1",
+
+    "MATH 003":
+        "subject-color-2",
+
+    "CMPE 011":
+        "subject-color-3",
+
+    "CWTS 001":
+        "subject-color-4",
+
+    "GEED 004":
+        "subject-color-5",
+
+    "GEED 032":
+        "subject-color-6",
+
+    "INEN 101":
+        "subject-color-7",
+
+    "PATHFIT 1":
+        "subject-color-8"
+
+};
+
+
+function getSubjectColorClass(
+    subject
+) {
+
+    const code =
+        getSubjectCode(
+            subject
+        );
+
+
+    return (
+        subjectColors[code] ||
+        "subject-color-default"
+    );
+}
+
+
+// ============================================================
 // SUMMARY
 // MONTHLY CALENDAR
 // ============================================================
@@ -2778,7 +2955,16 @@ function renderSummaryCalendar() {
 
         summaryTab.innerHTML = `
 
-            <h2>📊 Summary</h2>
+            <h2>
+                📊 Summary
+            </h2>
+
+
+            <div
+                id="summaryMonthlyOverview"
+                class="summary-monthly-overview"
+            ></div>
+
 
             <div
                 id="summaryCalendarLayout"
@@ -2809,6 +2995,7 @@ function renderSummaryCalendar() {
 
                     </div>
 
+
                     <div class="summary-calendar-weekdays">
 
                         <div>Sun</div>
@@ -2821,10 +3008,12 @@ function renderSummaryCalendar() {
 
                     </div>
 
+
                     <div
                         id="summaryCalendarGrid"
                         class="summary-calendar-grid"
                     ></div>
+
 
                     <div class="summary-legend">
 
@@ -2837,6 +3026,7 @@ function renderSummaryCalendar() {
                             Class Schedule
 
                         </div>
+
 
                         <div class="summary-legend-item">
 
@@ -2852,19 +3042,22 @@ function renderSummaryCalendar() {
 
                 </div>
 
+
                 <div
                     id="summaryDetails"
                     class="summary-details"
                 >
 
-                    <div class="summary-empty-details">
+                    <div
+                        class="summary-empty-details"
+                    >
 
                         <div>📅</div>
 
                         <p>
                             Select a date or subject
-                            to see your schedule and
-                            assignment details.
+                            to see your schedule
+                            and assignment details.
                         </p>
 
                     </div>
@@ -2873,6 +3066,7 @@ function renderSummaryCalendar() {
 
             </div>
         `;
+
 
         calendarLayout =
             document.getElementById(
@@ -2886,6 +3080,7 @@ function renderSummaryCalendar() {
             "summaryCalendarGrid"
         );
 
+
     const title =
         document.getElementById(
             "summaryCalendarMonth"
@@ -2895,8 +3090,7 @@ function renderSummaryCalendar() {
     if (!grid || !title) return;
 
 
-    grid.innerHTML =
-        "";
+    grid.innerHTML = "";
 
 
     const year =
@@ -2910,12 +3104,20 @@ function renderSummaryCalendar() {
         summaryDate.toLocaleDateString(
             "en-US",
             {
-                month:
-                    "long",
-                year:
-                    "numeric"
+                month: "long",
+                year: "numeric"
             }
         );
+
+
+    // --------------------------------------------------------
+    // MONTHLY OVERVIEW
+    // --------------------------------------------------------
+
+    renderSummaryMonthlyOverview(
+        year,
+        month
+    );
 
 
     const firstDay =
@@ -2949,8 +3151,10 @@ function renderSummaryCalendar() {
                 "div"
             );
 
+
         empty.className =
             "summary-calendar-day empty";
+
 
         grid.appendChild(
             empty
@@ -2976,6 +3180,7 @@ function renderSummaryCalendar() {
             document.createElement(
                 "div"
             );
+
 
         cell.className =
             "summary-calendar-day";
@@ -3007,11 +3212,14 @@ function renderSummaryCalendar() {
                 "div"
             );
 
+
         dateNumber.className =
             "summary-date-number";
 
+
         dateNumber.textContent =
             day;
+
 
         cell.appendChild(
             dateNumber
@@ -3037,12 +3245,14 @@ function renderSummaryCalendar() {
                                 b.startTime
                             );
 
+
                         if (
                             startCompare !== 0
                         ) {
 
                             return startCompare;
                         }
+
 
                         return a.endTime.localeCompare(
                             b.endTime
@@ -3059,14 +3269,19 @@ function renderSummaryCalendar() {
                         "div"
                     );
 
+
                 event.className =
-                    "summary-event schedule";
+                    "summary-event schedule " +
+                    getSubjectColorClass(
+                        schedule.subject
+                    );
 
 
                 const dot =
                     document.createElement(
                         "span"
                     );
+
 
                 dot.className =
                     "summary-event-dot";
@@ -3077,8 +3292,10 @@ function renderSummaryCalendar() {
                         "span"
                     );
 
+
                 label.className =
                     "summary-event-label";
+
 
                 label.textContent =
                     getSubjectCode(
@@ -3089,6 +3306,7 @@ function renderSummaryCalendar() {
                 event.appendChild(
                     dot
                 );
+
 
                 event.appendChild(
                     label
@@ -3105,6 +3323,7 @@ function renderSummaryCalendar() {
                     ) {
 
                         eventObject.stopPropagation();
+
 
                         showSummarySubjectDetails(
                             dateString,
@@ -3142,14 +3361,19 @@ function renderSummaryCalendar() {
                         "div"
                     );
 
+
                 event.className =
-                    "summary-event assignment";
+                    "summary-event assignment " +
+                    getSubjectColorClass(
+                        task.subject
+                    );
 
 
                 const dot =
                     document.createElement(
                         "span"
                     );
+
 
                 dot.className =
                     "summary-event-dot";
@@ -3160,8 +3384,10 @@ function renderSummaryCalendar() {
                         "span"
                     );
 
+
                 label.className =
                     "summary-event-label";
+
 
                 label.textContent =
                     getSubjectCode(
@@ -3172,6 +3398,7 @@ function renderSummaryCalendar() {
                 event.appendChild(
                     dot
                 );
+
 
                 event.appendChild(
                     label
@@ -3188,6 +3415,7 @@ function renderSummaryCalendar() {
                     ) {
 
                         eventObject.stopPropagation();
+
 
                         showSummarySubjectDetails(
                             dateString,
@@ -3226,6 +3454,342 @@ function renderSummaryCalendar() {
 
 
 // ============================================================
+// SUMMARY MONTHLY OVERVIEW
+// ============================================================
+
+function renderSummaryMonthlyOverview(
+    year,
+    month
+) {
+
+    const overview =
+        document.getElementById(
+            "summaryMonthlyOverview"
+        );
+
+
+    if (!overview) return;
+
+
+    // ========================================================
+    // MONTH SCHEDULES
+    // ========================================================
+
+    const monthSchedules =
+        schedules.filter(
+            schedule => {
+
+                const date =
+                    parseLocalDate(
+                        schedule.scheduleDate
+                    );
+
+
+                return (
+                    date.getFullYear() ===
+                        year &&
+                    date.getMonth() ===
+                        month
+                );
+            }
+        );
+
+
+    // ========================================================
+    // MONTH ASSIGNMENTS
+    // ========================================================
+
+    const monthTasks =
+        tasks.filter(
+            task => {
+
+                const date =
+                    parseLocalDate(
+                        task.dueDate
+                    );
+
+
+                return (
+                    date.getFullYear() ===
+                        year &&
+                    date.getMonth() ===
+                        month
+                );
+            }
+        );
+
+
+    // ========================================================
+    // UNIQUE BUSY DAYS
+    // ========================================================
+
+    const busyDates =
+        new Set();
+
+
+    monthSchedules.forEach(
+        schedule => {
+
+            busyDates.add(
+                schedule.scheduleDate
+            );
+        }
+    );
+
+
+    monthTasks.forEach(
+        task => {
+
+            busyDates.add(
+                task.dueDate
+            );
+        }
+    );
+
+
+    // ========================================================
+    // SUBJECT COUNTS
+    // ========================================================
+
+    const subjectCounts = {};
+
+
+    monthSchedules.forEach(
+        schedule => {
+
+            const code =
+                getSubjectCode(
+                    schedule.subject
+                );
+
+
+            if (
+                !subjectCounts[code]
+            ) {
+
+                subjectCounts[code] =
+                    0;
+            }
+
+
+            subjectCounts[code]++;
+        }
+    );
+
+
+    // ========================================================
+    // SUBJECT BREAKDOWN
+    // ========================================================
+
+    let subjectBreakdown =
+        "";
+
+
+    Object.keys(
+        subjectCounts
+    )
+        .sort()
+        .forEach(
+            code => {
+
+                subjectBreakdown += `
+
+                    <div
+                        class="summary-subject-stat"
+                    >
+
+                        <span
+                            class="summary-subject-color ${getSubjectColorClass(code)}"
+                        ></span>
+
+
+                        <span
+                            class="summary-subject-name"
+                        >
+                            ${escapeHtml(code)}
+                        </span>
+
+
+                        <strong>
+                            ${subjectCounts[code]}
+                        </strong>
+
+                    </div>
+                `;
+            }
+        );
+
+
+    if (!subjectBreakdown) {
+
+        subjectBreakdown = `
+
+            <div
+                class="summary-no-subjects"
+            >
+                No class schedules this month.
+            </div>
+        `;
+    }
+
+
+    // ========================================================
+    // BUSY LEVEL
+    // ========================================================
+
+    let busyLabel =
+        "🟢 Light";
+
+
+    if (
+        busyDates.size >= 15
+    ) {
+
+        busyLabel =
+            "🔥 Very Busy";
+
+    }
+
+    else if (
+        busyDates.size >= 8
+    ) {
+
+        busyLabel =
+            "🟠 Busy";
+
+    }
+
+    else if (
+        busyDates.size >= 4
+    ) {
+
+        busyLabel =
+            "🟡 Moderate";
+    }
+
+
+    // ========================================================
+    // MONTHLY OVERVIEW UI
+    // ========================================================
+
+    overview.innerHTML = `
+
+        <div
+            class="summary-overview-header"
+        >
+
+            <div>
+
+                <span
+                    class="summary-overview-label"
+                >
+                    MONTHLY OVERVIEW
+                </span>
+
+
+                <h3>
+
+                    ${summaryDate.toLocaleDateString(
+                        "en-US",
+                        {
+                            month:
+                                "long",
+
+                            year:
+                                "numeric"
+                        }
+                    )}
+
+                </h3>
+
+            </div>
+
+
+            <div
+                class="summary-busy-indicator"
+            >
+                ${busyLabel}
+            </div>
+
+        </div>
+
+
+        <div
+            class="summary-overview-stats"
+        >
+
+            <div
+                class="summary-overview-box"
+            >
+
+                <span>
+                    ${monthSchedules.length}
+                </span>
+
+                <small>
+                    📚 Class Schedules
+                </small>
+
+            </div>
+
+
+            <div
+                class="summary-overview-box"
+            >
+
+                <span>
+                    ${monthTasks.length}
+                </span>
+
+                <small>
+                    📝 Assignments
+                </small>
+
+            </div>
+
+
+            <div
+                class="summary-overview-box"
+            >
+
+                <span>
+                    ${busyDates.size}
+                </span>
+
+                <small>
+                    🔥 Busy Days
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="summary-subject-breakdown"
+        >
+
+            <div
+                class="summary-breakdown-title"
+            >
+                📚 Subject Breakdown
+            </div>
+
+
+            <div
+                class="summary-subject-list"
+            >
+
+                ${subjectBreakdown}
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+// ============================================================
 // SUMMARY MONTH CHANGE
 // ============================================================
 
@@ -3237,6 +3801,7 @@ function changeSummaryMonth(
         summaryDate.getMonth() +
         direction
     );
+
 
     renderSummaryCalendar();
 }
@@ -3282,7 +3847,9 @@ function showSummaryDateDetails(
 
         details.innerHTML = `
 
-            <div class="summary-empty-details">
+            <div
+                class="summary-empty-details"
+            >
 
                 <div>📅</div>
 
@@ -3306,13 +3873,12 @@ function showSummaryDateDetails(
 
     let html = `
 
-        <div class="summary-detail-subject">
-
-            📅
-            ${formatDisplayDate(
+        <div
+            class="summary-detail-subject"
+        >
+            📅 ${formatDisplayDate(
                 dateString
             )}
-
         </div>
     `;
 
@@ -3323,7 +3889,9 @@ function showSummaryDateDetails(
 
         html += `
 
-            <div class="summary-detail-item">
+            <div
+                class="summary-detail-item"
+            >
 
                 <strong>
                     📚 Class Schedule
@@ -3338,7 +3906,9 @@ function showSummaryDateDetails(
 
                 html += `
 
-                    <div class="summary-detail-item">
+                    <div
+                        class="summary-detail-item"
+                    >
 
                         <strong>
                             ${escapeHtml(
@@ -3360,7 +3930,9 @@ function showSummaryDateDetails(
                         ${formatTime(
                             schedule.startTime
                         )}
+
                         -
+
                         ${formatTime(
                             schedule.endTime
                         )}
@@ -3378,7 +3950,9 @@ function showSummaryDateDetails(
 
         html += `
 
-            <div class="summary-detail-item">
+            <div
+                class="summary-detail-item"
+            >
 
                 <strong>
                     📝 Assignment Deadline
@@ -3393,7 +3967,9 @@ function showSummaryDateDetails(
 
                 html += `
 
-                    <div class="summary-detail-item">
+                    <div
+                        class="summary-detail-item"
+                    >
 
                         <strong>
                             ${escapeHtml(
@@ -3459,8 +4035,7 @@ function showSummarySubjectDetails(
                     dateString &&
                 getSubjectCode(
                     schedule.subject
-                ) ===
-                    subjectCode
+                ) === subjectCode
         );
 
 
@@ -3471,23 +4046,24 @@ function showSummarySubjectDetails(
                     dateString &&
                 getSubjectCode(
                     task.subject
-                ) ===
-                    subjectCode
+                ) === subjectCode
         );
 
 
     let html = `
 
-        <div class="summary-detail-subject">
-
-            📚
-            ${escapeHtml(
+        <div
+            class="summary-detail-subject"
+        >
+            📚 ${escapeHtml(
                 subjectCode
             )}
-
         </div>
 
-        <div class="summary-detail-item">
+
+        <div
+            class="summary-detail-item"
+        >
 
             <strong>
                 📅 ${formatDisplayDate(
@@ -3508,7 +4084,9 @@ function showSummarySubjectDetails(
 
                 html += `
 
-                    <div class="summary-detail-item">
+                    <div
+                        class="summary-detail-item"
+                    >
 
                         <strong>
                             Class Schedule
@@ -3526,7 +4104,9 @@ function showSummarySubjectDetails(
                         ${formatTime(
                             schedule.startTime
                         )}
+
                         -
+
                         ${formatTime(
                             schedule.endTime
                         )}
@@ -3547,7 +4127,9 @@ function showSummarySubjectDetails(
 
                 html += `
 
-                    <div class="summary-detail-item">
+                    <div
+                        class="summary-detail-item"
+                    >
 
                         <strong>
                             Assignment
@@ -3605,9 +4187,13 @@ function parseLocalDate(
 
 
     return new Date(
+
         Number(parts[0]),
+
         Number(parts[1]) - 1,
+
         Number(parts[2])
+
     );
 }
 
@@ -3619,6 +4205,7 @@ function formatDateInput(
     const year =
         date.getFullYear();
 
+
     const month =
         String(
             date.getMonth() + 1
@@ -3626,6 +4213,7 @@ function formatDateInput(
             2,
             "0"
         );
+
 
     const day =
         String(
@@ -3656,12 +4244,13 @@ function formatDisplayDate(
     return date.toLocaleDateString(
         "en-US",
         {
-            month:
-                "short",
-            day:
-                "numeric",
-            year:
-                "numeric"
+
+            month: "short",
+
+            day: "numeric",
+
+            year: "numeric"
+
         }
     );
 }
@@ -3674,10 +4263,11 @@ function formatShortDate(
     return date.toLocaleDateString(
         "en-US",
         {
-            month:
-                "short",
-            day:
-                "numeric"
+
+            month: "short",
+
+            day: "numeric"
+
         }
     );
 }
@@ -3701,14 +4291,11 @@ function formatTime(
 
 
     let hour =
-        Number(
-            parts[0]
-        );
+        Number(parts[0]);
 
 
     const minute =
-        parts[1] ||
-        "00";
+        parts[1] || "00";
 
 
     const suffix =
@@ -3718,8 +4305,7 @@ function formatTime(
 
 
     hour =
-        hour % 12 ||
-        12;
+        hour % 12 || 12;
 
 
     return `${hour}:${minute} ${suffix}`;
@@ -3744,22 +4330,27 @@ function escapeHtml(
 
 
     return String(value)
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
@@ -3796,6 +4387,7 @@ function updateCozyHeader() {
 
     }
 
+
     else if (
         hour >= 12 &&
         hour < 18
@@ -3811,10 +4403,12 @@ function updateCozyHeader() {
             "greeting"
         );
 
+
     const timeElement =
         document.getElementById(
             "currentTime"
         );
+
 
     const dateElement =
         document.getElementById(
@@ -3835,10 +4429,13 @@ function updateCozyHeader() {
             now.toLocaleTimeString(
                 "en-US",
                 {
+
                     hour:
                         "numeric",
+
                     minute:
                         "2-digit"
+
                 }
             );
     }
@@ -3850,12 +4447,16 @@ function updateCozyHeader() {
             now.toLocaleDateString(
                 "en-US",
                 {
+
                     month:
                         "long",
+
                     day:
                         "numeric",
+
                     year:
                         "numeric"
+
                 }
             );
     }
@@ -3897,6 +4498,7 @@ const motivationalQuotes = [
     "Focus on progress, not pressure.",
 
     "You can do hard things."
+
 ];
 
 
@@ -3940,8 +4542,6 @@ document.addEventListener(
         setRandomMotivation();
 
 
-        // Update time every second
-
         setInterval(
             updateCozyHeader,
             1000
@@ -3975,7 +4575,9 @@ document.addEventListener(
 
             await initializeTracker();
 
-        } else {
+        }
+
+        else {
 
             createLoginScreen();
         }
@@ -4025,6 +4627,7 @@ document.addEventListener(
                     currentUser =
                         null;
                 }
+
             }
         );
 
@@ -4037,8 +4640,7 @@ document.addEventListener(
 // ============================================================
 
 if (
-    "serviceWorker" in
-    navigator
+    "serviceWorker" in navigator
 ) {
 
     window.addEventListener(
@@ -4049,6 +4651,7 @@ if (
                 .register(
                     "./service-worker.js"
                 )
+
                 .then(
                     function (
                         registration
@@ -4061,6 +4664,7 @@ if (
 
                     }
                 )
+
                 .catch(
                     function (
                         error
@@ -4073,7 +4677,6 @@ if (
 
                     }
                 );
-
         }
     );
 }
