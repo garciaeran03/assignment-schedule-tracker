@@ -6,7 +6,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background: #eef2f7;
+    background: #eef3f9;
     color: #1e293b;
 }
 
@@ -18,7 +18,7 @@ body {
 h1 {
     text-align: center;
     margin-bottom: 6px;
-    color: #0f172a;
+    color: #0b1f3a;
     font-size: 32px;
 }
 
@@ -42,10 +42,10 @@ h1 {
 .main-tab {
     flex: 1;
     padding: 14px;
-    border: none;
+    border: 1px solid #d5dfed;
     border-radius: 10px;
-    background: #e2e8f0;
-    color: #334155;
+    background: #dfe8f5;
+    color: #1e3a5f;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
@@ -53,13 +53,14 @@ h1 {
 }
 
 .main-tab:hover {
-    background: #cbd5e1;
+    background: #cbd9ec;
     transform: none;
 }
 
 .main-tab.active {
-    background: #1e293b;
+    background: #123b6d;
     color: white;
+    border-color: #123b6d;
 }
 
 
@@ -71,13 +72,15 @@ h1 {
     background: white;
     padding: 30px;
     border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #dce5f0;
+    box-shadow: 0 8px 25px rgba(15, 45, 80, 0.08);
 }
 
 .tracker-card h2 {
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 22px;
+    color: #0b1f3a;
 }
 
 
@@ -93,8 +96,8 @@ h1 {
 }
 
 .progress-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: #f4f8fd;
+    border: 1px solid #dbe5f0;
     border-radius: 12px;
     padding: 14px;
     text-align: center;
@@ -104,7 +107,7 @@ h1 {
     display: block;
     font-size: 24px;
     font-weight: bold;
-    color: #0f172a;
+    color: #123b6d;
     margin-bottom: 4px;
 }
 
@@ -121,7 +124,7 @@ h1 {
 .progress-bar {
     width: 100%;
     height: 10px;
-    background: #e2e8f0;
+    background: #dce6f2;
     border-radius: 20px;
     overflow: hidden;
 }
@@ -129,7 +132,7 @@ h1 {
 #progressFill {
     width: 0%;
     height: 100%;
-    background: #1e293b;
+    background: #123b6d;
     border-radius: 20px;
     transition: width 0.3s ease;
 }
@@ -152,7 +155,7 @@ label {
     margin-top: 16px;
     margin-bottom: 7px;
     font-weight: bold;
-    color: #334155;
+    color: #29415f;
 }
 
 input,
@@ -160,17 +163,24 @@ select {
     width: 100%;
     box-sizing: border-box;
     padding: 13px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid #c9d6e5;
     border-radius: 9px;
     font-size: 14px;
     background: white;
+    color: #1e293b;
 }
 
 input:focus,
 select:focus {
     outline: none;
-    border-color: #64748b;
+    border-color: #35679f;
+    box-shadow: 0 0 0 3px rgba(53, 103, 159, 0.10);
 }
+
+
+/* =========================
+   GENERAL BUTTON
+========================= */
 
 button {
     width: 100%;
@@ -178,7 +188,7 @@ button {
     margin-top: 22px;
     border: none;
     border-radius: 9px;
-    background: #1e293b;
+    background: #123b6d;
     color: white;
     font-size: 15px;
     font-weight: bold;
@@ -187,7 +197,7 @@ button {
 }
 
 button:hover {
-    background: #334155;
+    background: #0b2d55;
     transform: translateY(-1px);
 }
 
@@ -205,15 +215,15 @@ ul {
 li {
     margin: 14px 0;
     padding: 17px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-left: 5px solid #94a3b8;
+    background: #f8fbff;
+    border: 1px solid #dce6f2;
+    border-left: 5px solid #35679f;
     border-radius: 12px;
     transition: 0.2s;
 }
 
 li:hover {
-    background: #f1f5f9;
+    background: #f1f6fc;
     transform: translateX(2px);
 }
 
@@ -238,14 +248,14 @@ li:hover {
 .task-subject {
     font-size: 14px;
     font-weight: bold;
-    color: #475569;
+    color: #315477;
     margin-bottom: 5px;
 }
 
 .task-topic {
     font-size: 17px;
     font-weight: bold;
-    color: #0f172a;
+    color: #0b1f3a;
     margin-bottom: 7px;
 }
 
@@ -262,6 +272,11 @@ li:hover {
     margin-left: 32px;
 }
 
+
+/* =========================
+   PRIORITY
+========================= */
+
 .priority-badge {
     display: inline-block;
     padding: 5px 10px;
@@ -276,13 +291,13 @@ li:hover {
 }
 
 .priority-medium {
-    background: #fef3c7;
-    color: #92400e;
+    background: #dbeafe;
+    color: #1d4f91;
 }
 
 .priority-low {
-    background: #dcfce7;
-    color: #166534;
+    background: #e0f2fe;
+    color: #075985;
 }
 
 
@@ -304,18 +319,18 @@ li:hover {
 }
 
 .edit-btn {
-    background: #e2e8f0;
-    color: #334155;
+    background: #e1eaf5;
+    color: #29415f;
 }
 
 .edit-btn:hover {
-    background: #cbd5e1;
-    color: #0f172a;
+    background: #cbd9ea;
+    color: #123b6d;
     transform: none;
 }
 
 .delete-btn {
-    background: #f1f5f9;
+    background: #eef3f8;
     color: #64748b;
 }
 
@@ -349,13 +364,15 @@ li:hover {
 
 #scheduleTab > h2 {
     margin-bottom: 20px;
+    color: #0b1f3a;
 }
 
 .schedule-form {
     background: white;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #dce5f0;
+    box-shadow: 0 6px 20px rgba(15, 45, 80, 0.07);
     margin-top: 20px;
 }
 
@@ -371,12 +388,12 @@ li:hover {
 }
 
 #addScheduleButton {
-    background: #1e293b;
+    background: #123b6d;
     color: white;
 }
 
 #addScheduleButton:hover {
-    background: #334155;
+    background: #0b2d55;
 }
 
 
@@ -394,20 +411,20 @@ li:hover {
     width: auto;
     padding: 10px 18px;
     border-radius: 8px;
-    background: #e2e8f0;
-    color: #334155;
+    background: #dfe8f5;
+    color: #29415f;
     cursor: pointer;
     font-weight: bold;
     margin-top: 0;
 }
 
 .schedule-tab:hover {
-    background: #cbd5e1;
+    background: #cbd9ec;
     transform: none;
 }
 
 .schedule-tab.active {
-    background: #1e293b;
+    background: #123b6d;
     color: white;
 }
 
@@ -426,7 +443,8 @@ li:hover {
     background: white;
     border-radius: 12px;
     padding: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #dce5f0;
+    box-shadow: 0 6px 20px rgba(15, 45, 80, 0.07);
 }
 
 .calendar-header,
@@ -440,8 +458,8 @@ li:hover {
 .calendar-header button,
 .weekly-header button {
     width: auto;
-    background: #e2e8f0;
-    color: #334155;
+    background: #dfe8f5;
+    color: #29415f;
     padding: 8px 14px;
     border-radius: 7px;
     cursor: pointer;
@@ -451,13 +469,14 @@ li:hover {
 
 .calendar-header button:hover,
 .weekly-header button:hover {
-    background: #cbd5e1;
+    background: #cbd9ec;
     transform: none;
 }
 
 .calendar-header h3,
 .weekly-header h3 {
     margin: 0;
+    color: #123b6d;
 }
 
 .calendar-weekdays {
@@ -466,7 +485,7 @@ li:hover {
     text-align: center;
     font-weight: bold;
     font-size: 13px;
-    color: #666;
+    color: #55708f;
     margin-bottom: 8px;
 }
 
@@ -478,8 +497,8 @@ li:hover {
 
 .calendar-day {
     min-height: 95px;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
+    background: #f8fbff;
+    border: 1px solid #dce6f2;
     border-radius: 7px;
     padding: 6px;
     cursor: pointer;
@@ -487,7 +506,7 @@ li:hover {
 }
 
 .calendar-day:hover {
-    background: #f1f5f9;
+    background: #edf4fb;
 }
 
 .calendar-day.empty {
@@ -497,18 +516,19 @@ li:hover {
 }
 
 .calendar-day.today {
-    border: 2px solid #1e293b;
+    border: 2px solid #123b6d;
 }
 
 .calendar-date-number {
     font-weight: bold;
     font-size: 13px;
     margin-bottom: 5px;
+    color: #29415f;
 }
 
 .calendar-event {
-    background: #e2e8f0;
-    border-left: 3px solid #1e293b;
+    background: #dbeafe;
+    border-left: 3px solid #123b6d;
     padding: 5px;
     margin-bottom: 4px;
     border-radius: 4px;
@@ -517,15 +537,16 @@ li:hover {
 }
 
 .calendar-event:hover {
-    background: #cbd5e1;
+    background: #bfdbfe;
 }
 
 .calendar-event-subject {
     font-weight: bold;
+    color: #123b6d;
 }
 
 .calendar-event-time {
-    color: #555;
+    color: #486581;
     margin-top: 2px;
 }
 
@@ -538,13 +559,14 @@ li:hover {
     background: white;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #dce5f0;
+    box-shadow: 0 6px 20px rgba(15, 45, 80, 0.07);
     min-height: 250px;
 }
 
 .empty-details {
     text-align: center;
-    color: #888;
+    color: #7a8da3;
     padding-top: 45px;
 }
 
@@ -557,15 +579,16 @@ li:hover {
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 15px;
+    color: #123b6d;
 }
 
 .schedule-detail-item {
     margin-bottom: 12px;
-    color: #555;
+    color: #5c7088;
 }
 
 .schedule-detail-item strong {
-    color: #222;
+    color: #1e293b;
 }
 
 
@@ -584,19 +607,21 @@ li:hover {
     min-height: 300px;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #dce5f0;
+    box-shadow: 0 6px 18px rgba(15, 45, 80, 0.06);
 }
 
 .weekly-day-header {
-    background: #f1f5f9;
+    background: #e8f0f9;
     padding: 10px 5px;
     text-align: center;
     font-weight: bold;
     font-size: 13px;
+    color: #29415f;
 }
 
 .weekly-date {
-    color: #666;
+    color: #64748b;
     font-size: 12px;
     margin-top: 3px;
 }
@@ -604,30 +629,31 @@ li:hover {
 .weekly-event {
     margin: 8px;
     padding: 9px;
-    background: #e2e8f0;
-    border-left: 3px solid #1e293b;
+    background: #dbeafe;
+    border-left: 3px solid #123b6d;
     border-radius: 6px;
     cursor: pointer;
 }
 
 .weekly-event:hover {
-    background: #cbd5e1;
+    background: #bfdbfe;
 }
 
 .weekly-event-subject {
     font-weight: bold;
     font-size: 12px;
+    color: #123b6d;
 }
 
 .weekly-event-time {
     font-size: 11px;
-    color: #555;
+    color: #486581;
     margin-top: 4px;
 }
 
 .weekly-empty {
     text-align: center;
-    color: #aaa;
+    color: #9aabba;
     font-size: 12px;
     padding: 20px 5px;
 }
@@ -643,6 +669,7 @@ li:hover {
 
 .saved-schedules h3 {
     margin-bottom: 12px;
+    color: #123b6d;
 }
 
 .saved-schedule-item {
@@ -654,7 +681,8 @@ li:hover {
     justify-content: space-between;
     align-items: center;
     gap: 15px;
-    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.05);
+    border: 1px solid #dce5f0;
+    box-shadow: 0 5px 16px rgba(15, 45, 80, 0.05);
 }
 
 .saved-schedule-info {
@@ -664,12 +692,13 @@ li:hover {
 .saved-schedule-subject {
     font-weight: bold;
     margin-bottom: 5px;
+    color: #123b6d;
 }
 
 .saved-schedule-date,
 .saved-schedule-time {
     font-size: 13px;
-    color: #666;
+    color: #64748b;
 }
 
 .saved-schedule-actions {
@@ -686,8 +715,8 @@ li:hover {
 }
 
 .saved-edit {
-    background: #e2e8f0;
-    color: #334155;
+    background: #e1eaf5;
+    color: #29415f;
 }
 
 .saved-delete {
