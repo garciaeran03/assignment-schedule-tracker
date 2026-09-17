@@ -33,14 +33,23 @@
     </p>
 
     <div class="main-tabs">
-        <button class="main-tab active" onclick="showMainTab('assignments')">
+
+        <button
+            class="main-tab active"
+            onclick="showMainTab('assignments')"
+        >
             📝 Assignments
         </button>
 
-        <button class="main-tab" onclick="showMainTab('schedule')">
+        <button
+            class="main-tab"
+            onclick="showMainTab('schedule')"
+        >
             📅 Class Schedule
         </button>
+
     </div>
+
 
     <div id="assignmentsTab">
 
@@ -67,6 +76,7 @@
 
             </div>
 
+
             <div class="progress-bar">
                 <div id="progressFill"></div>
             </div>
@@ -74,6 +84,7 @@
             <p id="progressText">
                 0% Complete
             </p>
+
 
             <label for="subject">
                 Subject
@@ -115,6 +126,7 @@
 
             </select>
 
+
             <label for="task">
                 Topic
             </label>
@@ -125,6 +137,7 @@
                 placeholder="Enter a school topic"
             >
 
+
             <label for="dueDate">
                 Due Date
             </label>
@@ -133,6 +146,7 @@
                 type="date"
                 id="dueDate"
             >
+
 
             <label for="priority">
                 Priority
@@ -157,12 +171,14 @@
 
             </select>
 
+
             <button
                 id="addTaskButton"
                 onclick="addTask()"
             >
                 Add Task
             </button>
+
 
             <label for="dateFilter">
                 Filter by Date
@@ -195,12 +211,14 @@
 
             </select>
 
+
             <input
                 type="date"
                 id="specificDate"
                 onchange="displayTasks()"
                 style="display: none;"
             >
+
 
             <ul id="taskList"></ul>
 
@@ -221,6 +239,7 @@
         <h2>
             📅 Class Schedule
         </h2>
+
 
         <div class="schedule-form schedule-form-grid">
 
@@ -436,6 +455,29 @@
 <script src="supabase-config.js"></script>
 
 <script src="script.js"></script>
+
+
+<!-- PWA Service Worker -->
+<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+            navigator.serviceWorker
+                .register("./sw.js")
+                .then(function (registration) {
+                    console.log(
+                        "Service Worker registered:",
+                        registration.scope
+                    );
+                })
+                .catch(function (error) {
+                    console.error(
+                        "Service Worker registration failed:",
+                        error
+                    );
+                });
+        });
+    }
+</script>
 
 </body>
 
