@@ -1,4 +1,4 @@
-const CACHE_NAME = "school-tracker-v1";
+const CACHE_NAME = "eran-study-hub-v2";
 
 const APP_FILES = [
     "./",
