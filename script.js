@@ -119,10 +119,8 @@ async function loginUser() {
         data,
         error
     } = await supabase.auth.signInWithPassword({
-
         email: email,
         password: password
-
     });
 
     if (error) {
@@ -434,9 +432,7 @@ function addLogoutButton() {
     button.style.marginTop = "15px";
 
     const container =
-        document.querySelector(
-            ".container"
-        );
+        document.querySelector(".container");
 
     if (container) {
 
@@ -472,33 +468,22 @@ function showMainTab(tab) {
         );
 
     tabs.forEach(button => {
-
-        button.classList.remove(
-            "active"
-        );
-
+        button.classList.remove("active");
     });
 
 
     if (tab === "assignments") {
 
-        assignmentsTab.style.display =
-            "block";
+        assignmentsTab.style.display = "block";
 
-        scheduleTab.style.display =
-            "none";
+        scheduleTab.style.display = "none";
 
         if (summaryTab) {
-
-            summaryTab.style.display =
-                "none";
+            summaryTab.style.display = "none";
         }
 
         if (tabs[0]) {
-
-            tabs[0].classList.add(
-                "active"
-            );
+            tabs[0].classList.add("active");
         }
 
     }
@@ -506,23 +491,16 @@ function showMainTab(tab) {
 
     else if (tab === "schedule") {
 
-        assignmentsTab.style.display =
-            "none";
+        assignmentsTab.style.display = "none";
 
-        scheduleTab.style.display =
-            "block";
+        scheduleTab.style.display = "block";
 
         if (summaryTab) {
-
-            summaryTab.style.display =
-                "none";
+            summaryTab.style.display = "none";
         }
 
         if (tabs[1]) {
-
-            tabs[1].classList.add(
-                "active"
-            );
+            tabs[1].classList.add("active");
         }
 
         renderCalendar();
@@ -536,23 +514,16 @@ function showMainTab(tab) {
 
     else if (tab === "summary") {
 
-        assignmentsTab.style.display =
-            "none";
+        assignmentsTab.style.display = "none";
 
-        scheduleTab.style.display =
-            "none";
+        scheduleTab.style.display = "none";
 
         if (summaryTab) {
-
-            summaryTab.style.display =
-                "block";
+            summaryTab.style.display = "block";
         }
 
         if (tabs[2]) {
-
-            tabs[2].classList.add(
-                "active"
-            );
+            tabs[2].classList.add("active");
         }
 
         renderSummaryCalendar();
@@ -568,38 +539,26 @@ async function addTask() {
 
     if (!currentUser) {
 
-        alert(
-            "Please login first."
-        );
+        alert("Please login first.");
 
         return;
     }
 
-    const supabase =
-        getSupabase();
+    const supabase = getSupabase();
 
     if (!supabase) return;
 
-
     const subject =
-        document.getElementById(
-            "subject"
-        ).value;
+        document.getElementById("subject").value;
 
     const task =
-        document.getElementById(
-            "task"
-        ).value.trim();
+        document.getElementById("task").value.trim();
 
     const dueDate =
-        document.getElementById(
-            "dueDate"
-        ).value;
+        document.getElementById("dueDate").value;
 
     const priority =
-        document.getElementById(
-            "priority"
-        ).value;
+        document.getElementById("priority").value;
 
 
     if (!task || !dueDate) {
@@ -612,9 +571,7 @@ async function addTask() {
     }
 
 
-    // ========================================================
     // EDIT
-    // ========================================================
 
     if (editingIndex !== -1) {
 
@@ -683,9 +640,7 @@ async function addTask() {
     }
 
 
-    // ========================================================
     // ADD
-    // ========================================================
 
     else {
 
@@ -753,13 +708,9 @@ async function addTask() {
     );
 
 
-    document.getElementById(
-        "task"
-    ).value = "";
+    document.getElementById("task").value = "";
 
-    document.getElementById(
-        "dueDate"
-    ).value = "";
+    document.getElementById("dueDate").value = "";
 
 
     displayTasks();
@@ -777,9 +728,7 @@ async function addTask() {
 function displayTasks() {
 
     const list =
-        document.getElementById(
-            "taskList"
-        );
+        document.getElementById("taskList");
 
     if (!list) return;
 
@@ -787,29 +736,18 @@ function displayTasks() {
 
 
     const filter =
-        document.getElementById(
-            "dateFilter"
-        ).value;
+        document.getElementById("dateFilter").value;
 
     const specificDate =
-        document.getElementById(
-            "specificDate"
-        ).value;
+        document.getElementById("specificDate").value;
 
 
-    const today =
-        new Date();
+    const today = new Date();
 
-    today.setHours(
-        0,
-        0,
-        0,
-        0
-    );
+    today.setHours(0, 0, 0, 0);
 
 
-    let filteredTasks =
-        [...tasks];
+    let filteredTasks = [...tasks];
 
 
     if (filter === "Today") {
@@ -901,33 +839,24 @@ function displayTasks() {
         const actualIndex =
             tasks.indexOf(task);
 
-
         const li =
-            document.createElement(
-                "li"
-            );
-
+            document.createElement("li");
 
         li.className =
             task.completed
                 ? "completed"
                 : "";
 
-
         li.innerHTML = `
 
             <div class="task-info">
 
                 <strong>
-                    ${escapeHtml(
-                        task.task
-                    )}
+                    ${escapeHtml(task.task)}
                 </strong>
 
                 <small>
-                    ${escapeHtml(
-                        task.subject
-                    )}
+                    ${escapeHtml(task.subject)}
                 </small>
 
                 <small>
@@ -938,13 +867,10 @@ function displayTasks() {
 
                 <small>
                     Priority:
-                    ${escapeHtml(
-                        task.priority
-                    )}
+                    ${escapeHtml(task.priority)}
                 </small>
 
             </div>
-
 
             <div class="task-actions">
 
@@ -973,17 +899,13 @@ function displayTasks() {
             </div>
         `;
 
-
         list.appendChild(li);
 
     });
 
 
     const counter =
-        document.getElementById(
-            "taskCounter"
-        );
-
+        document.getElementById("taskCounter");
 
     if (counter) {
 
@@ -996,7 +918,6 @@ function displayTasks() {
             );
     }
 
-
     updateProgress();
 }
 
@@ -1008,28 +929,21 @@ function displayTasks() {
 function handleDateFilter() {
 
     const filter =
-        document.getElementById(
-            "dateFilter"
-        ).value;
-
+        document.getElementById("dateFilter").value;
 
     const specificDate =
-        document.getElementById(
-            "specificDate"
-        );
+        document.getElementById("specificDate");
 
 
     if (filter === "Specific") {
 
-        specificDate.style.display =
-            "block";
+        specificDate.style.display = "block";
 
     }
 
     else {
 
-        specificDate.style.display =
-            "none";
+        specificDate.style.display = "none";
 
         specificDate.value = "";
     }
@@ -1047,14 +961,12 @@ async function toggleTask(index) {
 
     if (!currentUser) return;
 
-    const supabase =
-        getSupabase();
+    const supabase = getSupabase();
 
     if (!supabase) return;
 
 
-    const task =
-        tasks[index];
+    const task = tasks[index];
 
     if (!task) return;
 
@@ -1068,10 +980,7 @@ async function toggleTask(index) {
     } = await supabase
         .from("assignments")
         .update({
-
-            completed:
-                newStatus
-
+            completed: newStatus
         })
         .eq(
             "id",
@@ -1094,8 +1003,7 @@ async function toggleTask(index) {
     }
 
 
-    task.completed =
-        newStatus;
+    task.completed = newStatus;
 
 
     localStorage.setItem(
@@ -1118,38 +1026,25 @@ async function toggleTask(index) {
 
 function editTask(index) {
 
-    const task =
-        tasks[index];
+    const task = tasks[index];
 
     if (!task) return;
 
 
-    document.getElementById(
-        "subject"
-    ).value =
+    document.getElementById("subject").value =
         task.subject;
 
-
-    document.getElementById(
-        "task"
-    ).value =
+    document.getElementById("task").value =
         task.task;
 
-
-    document.getElementById(
-        "dueDate"
-    ).value =
+    document.getElementById("dueDate").value =
         task.dueDate;
 
-
-    document.getElementById(
-        "priority"
-    ).value =
+    document.getElementById("priority").value =
         task.priority;
 
 
-    editingIndex =
-        index;
+    editingIndex = index;
 
 
     document.getElementById(
@@ -1159,11 +1054,8 @@ function editTask(index) {
 
 
     window.scrollTo({
-
         top: 0,
-
         behavior: "smooth"
-
     });
 }
 
@@ -1177,8 +1069,7 @@ async function deleteTask(index) {
     if (!currentUser) return;
 
 
-    const task =
-        tasks[index];
+    const task = tasks[index];
 
     if (!task) return;
 
@@ -1192,8 +1083,7 @@ async function deleteTask(index) {
     if (!confirmed) return;
 
 
-    const supabase =
-        getSupabase();
+    const supabase = getSupabase();
 
     if (!supabase) return;
 
@@ -1224,10 +1114,7 @@ async function deleteTask(index) {
     }
 
 
-    tasks.splice(
-        index,
-        1
-    );
+    tasks.splice(index, 1);
 
 
     localStorage.setItem(
@@ -1250,13 +1137,11 @@ async function deleteTask(index) {
 
 function updateProgress() {
 
-    const total =
-        tasks.length;
+    const total = tasks.length;
 
     const completed =
         tasks.filter(
-            task =>
-                task.completed
+            task => task.completed
         ).length;
 
     const pending =
@@ -1280,23 +1165,15 @@ function updateProgress() {
 
 
     if (totalElement) {
-
-        totalElement.textContent =
-            total;
+        totalElement.textContent = total;
     }
-
 
     if (completedElement) {
-
-        completedElement.textContent =
-            completed;
+        completedElement.textContent = completed;
     }
 
-
     if (pendingElement) {
-
-        pendingElement.textContent =
-            pending;
+        pendingElement.textContent = pending;
     }
 
 
@@ -1304,8 +1181,7 @@ function updateProgress() {
         total === 0
             ? 0
             : Math.round(
-                (completed / total) *
-                100
+                (completed / total) * 100
             );
 
 
@@ -1321,14 +1197,11 @@ function updateProgress() {
 
 
     if (progressFill) {
-
         progressFill.style.width =
             percentage + "%";
     }
 
-
     if (progressText) {
-
         progressText.textContent =
             percentage +
             "% Complete";
@@ -1343,14 +1216,10 @@ function updateProgress() {
 function populateTimeDropdowns() {
 
     const start =
-        document.getElementById(
-            "startTime"
-        );
+        document.getElementById("startTime");
 
     const end =
-        document.getElementById(
-            "endTime"
-        );
+        document.getElementById("endTime");
 
 
     if (!start || !end) return;
@@ -1378,41 +1247,28 @@ function populateTimeDropdowns() {
             const value =
                 `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
-
             const label =
                 formatTime(value);
 
 
             const option1 =
-                document.createElement(
-                    "option"
-                );
+                document.createElement("option");
 
-            option1.value =
-                value;
+            option1.value = value;
 
-            option1.textContent =
-                label;
+            option1.textContent = label;
 
-            start.appendChild(
-                option1
-            );
+            start.appendChild(option1);
 
 
             const option2 =
-                document.createElement(
-                    "option"
-                );
+                document.createElement("option");
 
-            option2.value =
-                value;
+            option2.value = value;
 
-            option2.textContent =
-                label;
+            option2.textContent = label;
 
-            end.appendChild(
-                option2
-            );
+            end.appendChild(option2);
         }
     }
 }
@@ -1426,16 +1282,13 @@ async function addSchedule() {
 
     if (!currentUser) {
 
-        alert(
-            "Please login first."
-        );
+        alert("Please login first.");
 
         return;
     }
 
 
-    const supabase =
-        getSupabase();
+    const supabase = getSupabase();
 
     if (!supabase) return;
 
@@ -1486,13 +1339,9 @@ async function addSchedule() {
     }
 
 
-    // ========================================================
     // EDIT SCHEDULE
-    // ========================================================
 
-    if (
-        editingScheduleIndex !== -1
-    ) {
+    if (editingScheduleIndex !== -1) {
 
         const existing =
             schedules[
@@ -1556,8 +1405,7 @@ async function addSchedule() {
         };
 
 
-        editingScheduleIndex =
-            -1;
+        editingScheduleIndex = -1;
 
 
         document.getElementById(
@@ -1567,9 +1415,7 @@ async function addSchedule() {
     }
 
 
-    // ========================================================
     // ADD SCHEDULE
-    // ========================================================
 
     else {
 
@@ -1635,9 +1481,7 @@ async function addSchedule() {
 
     localStorage.setItem(
         "classSchedules",
-        JSON.stringify(
-            schedules
-        )
+        JSON.stringify(schedules)
     );
 
 
@@ -1691,30 +1535,19 @@ function showScheduleView(view) {
 
 
     tabs.forEach(button => {
-
-        button.classList.remove(
-            "active"
-        );
-
+        button.classList.remove("active");
     });
 
 
-    if (
-        view === "calendar"
-    ) {
+    if (view === "calendar") {
 
-        calendarView.style.display =
-            "block";
+        calendarView.style.display = "block";
 
-        weeklyView.style.display =
-            "none";
+        weeklyView.style.display = "none";
 
 
         if (tabs[0]) {
-
-            tabs[0].classList.add(
-                "active"
-            );
+            tabs[0].classList.add("active");
         }
 
 
@@ -1722,21 +1555,15 @@ function showScheduleView(view) {
 
     }
 
-
     else {
 
-        calendarView.style.display =
-            "none";
+        calendarView.style.display = "none";
 
-        weeklyView.style.display =
-            "block";
+        weeklyView.style.display = "block";
 
 
         if (tabs[1]) {
-
-            tabs[1].classList.add(
-                "active"
-            );
+            tabs[1].classList.add("active");
         }
 
 
@@ -1763,14 +1590,9 @@ function getScheduleColorClass(
                         b.startTime
                     );
 
-
-                if (
-                    startCompare !== 0
-                ) {
-
+                if (startCompare !== 0) {
                     return startCompare;
                 }
-
 
                 return a.endTime.localeCompare(
                     b.endTime
@@ -1788,25 +1610,16 @@ function getScheduleColorClass(
 
 
     if (index === 0) {
-
         return "schedule-color-1";
-
     }
-
 
     if (index === 1) {
-
         return "schedule-color-2";
-
     }
-
 
     if (index === 2) {
-
         return "schedule-color-3";
-
     }
-
 
     return "schedule-color-4";
 }
@@ -1842,7 +1655,7 @@ function renderCalendar() {
         calendarDate.getMonth();
 
 
-    const monthName =
+    title.textContent =
         calendarDate.toLocaleDateString(
             "en-US",
             {
@@ -1850,10 +1663,6 @@ function renderCalendar() {
                 year: "numeric"
             }
         );
-
-
-    title.textContent =
-        monthName;
 
 
     const firstDay =
@@ -1879,16 +1688,12 @@ function renderCalendar() {
     ) {
 
         const empty =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
         empty.className =
             "calendar-day empty";
 
-        grid.appendChild(
-            empty
-        );
+        grid.appendChild(empty);
     }
 
 
@@ -1899,10 +1704,7 @@ function renderCalendar() {
     ) {
 
         const cell =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         cell.className =
             "calendar-day";
@@ -1913,38 +1715,26 @@ function renderCalendar() {
 
 
         const todayString =
-            formatDateInput(
-                new Date()
-            );
+            formatDateInput(new Date());
 
 
         if (
-            dateString ===
-            todayString
+            dateString === todayString
         ) {
 
-            cell.classList.add(
-                "today"
-            );
+            cell.classList.add("today");
         }
 
 
         const dayNumber =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         dayNumber.className =
             "day-number";
 
-        dayNumber.textContent =
-            day;
+        dayNumber.textContent = day;
 
-
-        cell.appendChild(
-            dayNumber
-        );
+        cell.appendChild(dayNumber);
 
 
         const daySchedules =
@@ -1962,14 +1752,9 @@ function renderCalendar() {
                                 b.startTime
                             );
 
-
-                        if (
-                            startCompare !== 0
-                        ) {
-
+                        if (startCompare !== 0) {
                             return startCompare;
                         }
-
 
                         return a.endTime.localeCompare(
                             b.endTime
@@ -1978,55 +1763,42 @@ function renderCalendar() {
                 );
 
 
-        daySchedules.forEach(
-            schedule => {
+        daySchedules.forEach(schedule => {
 
-                const event =
-                    document.createElement(
-                        "div"
-                    );
+            const event =
+                document.createElement("div");
 
-
-                const colorClass =
-                    getScheduleColorClass(
-                        schedule,
-                        daySchedules
-                    );
-
-
-                event.className =
-                    "calendar-event " +
-                    colorClass;
-
-
-                event.textContent =
-                    getSubjectCode(
-                        schedule.subject
-                    );
-
-
-                event.onclick =
-                    function (
-                        eventObject
-                    ) {
-
-                        eventObject.stopPropagation();
-
-                        showScheduleDetails(
-                            schedule
-                        );
-                    };
-
-
-                cell.appendChild(
-                    event
+            const colorClass =
+                getScheduleColorClass(
+                    schedule,
+                    daySchedules
                 );
-            }
-        );
+
+            event.className =
+                "calendar-event " +
+                colorClass;
+
+            event.textContent =
+                getSubjectCode(
+                    schedule.subject
+                );
+
+            event.onclick =
+                function(eventObject) {
+
+                    eventObject.stopPropagation();
+
+                    showScheduleDetails(
+                        schedule
+                    );
+                };
+
+            cell.appendChild(event);
+        });
 
 
         cell.onclick =
-            function () {
+            function() {
 
                 selectedCalendarDate =
                     dateString;
@@ -2041,8 +1813,7 @@ function renderCalendar() {
 
 
                 if (
-                    selectedSchedules.length >
-                    0
+                    selectedSchedules.length > 0
                 ) {
 
                     showScheduleDetails(
@@ -2058,9 +1829,7 @@ function renderCalendar() {
             };
 
 
-        grid.appendChild(
-            cell
-        );
+        grid.appendChild(cell);
     }
 }
 
@@ -2076,7 +1845,6 @@ function changeMonth(direction) {
         direction
     );
 
-
     renderCalendar();
 }
 
@@ -2085,15 +1853,12 @@ function changeMonth(direction) {
 // SHOW SCHEDULE DETAILS
 // ============================================================
 
-function showScheduleDetails(
-    schedule
-) {
+function showScheduleDetails(schedule) {
 
     const details =
         document.getElementById(
             "scheduleDetails"
         );
-
 
     if (!details) return;
 
@@ -2153,15 +1918,12 @@ function showScheduleDetails(
 // SHOW DATE DETAILS
 // ============================================================
 
-function showDateDetails(
-    dateString
-) {
+function showDateDetails(dateString) {
 
     const details =
         document.getElementById(
             "scheduleDetails"
         );
-
 
     if (!details) return;
 
@@ -2211,10 +1973,7 @@ function renderWeekly() {
 
 
     const current =
-        new Date(
-            weeklyDate
-        );
-
+        new Date(weeklyDate);
 
     const day =
         current.getDay();
@@ -2256,61 +2015,40 @@ function renderWeekly() {
 
 
     const days = [
-
         "Monday",
-
         "Tuesday",
-
         "Wednesday",
-
         "Thursday",
-
         "Friday",
-
         "Saturday",
-
         "Sunday"
-
     ];
 
 
     days.forEach(
-        (
-            dayName,
-            index
-        ) => {
+        (dayName, index) => {
 
             const date =
                 new Date(monday);
 
-
             date.setDate(
-                monday.getDate() +
-                index
+                monday.getDate() + index
             );
 
 
             const dateString =
-                formatDateInput(
-                    date
-                );
+                formatDateInput(date);
 
 
             const column =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             column.className =
                 "weekly-column";
 
 
             const header =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             header.className =
                 "weekly-day-header";
@@ -2323,16 +2061,12 @@ function renderWeekly() {
                 </strong>
 
                 <span>
-                    ${formatShortDate(
-                        date
-                    )}
+                    ${formatShortDate(date)}
                 </span>
             `;
 
 
-            column.appendChild(
-                header
-            );
+            column.appendChild(header);
 
 
             const daySchedules =
@@ -2350,14 +2084,11 @@ function renderWeekly() {
                                     b.startTime
                                 );
 
-
                             if (
                                 startCompare !== 0
                             ) {
-
                                 return startCompare;
                             }
-
 
                             return a.endTime.localeCompare(
                                 b.endTime
@@ -2366,101 +2097,82 @@ function renderWeekly() {
                     );
 
 
-            if (
-                daySchedules.length ===
-                0
-            ) {
+            if (daySchedules.length === 0) {
 
                 const empty =
-                    document.createElement(
-                        "div"
-                    );
-
+                    document.createElement("div");
 
                 empty.className =
                     "weekly-empty";
 
-
                 empty.textContent =
                     "No class";
 
-
-                column.appendChild(
-                    empty
-                );
+                column.appendChild(empty);
 
             }
-
 
             else {
 
-                daySchedules.forEach(
-                    schedule => {
+                daySchedules.forEach(schedule => {
 
-                        const event =
-                            document.createElement(
-                                "div"
-                            );
+                    const event =
+                        document.createElement("div");
 
 
-                        const colorClass =
-                            getScheduleColorClass(
-                                schedule,
-                                daySchedules
-                            );
-
-
-                        event.className =
-                            "weekly-event " +
-                            colorClass;
-
-
-                        event.innerHTML = `
-
-                            <strong>
-                                ${escapeHtml(
-                                    getSubjectCode(
-                                        schedule.subject
-                                    )
-                                )}
-                            </strong>
-
-                            <span>
-                                ${formatTime(
-                                    schedule.startTime
-                                )}
-                                -
-                                ${formatTime(
-                                    schedule.endTime
-                                )}
-                            </span>
-                        `;
-
-
-                        event.onclick =
-                            function () {
-
-                                showScheduleDetails(
-                                    schedule
-                                );
-
-                                showScheduleView(
-                                    "calendar"
-                                );
-                            };
-
-
-                        column.appendChild(
-                            event
+                    const colorClass =
+                        getScheduleColorClass(
+                            schedule,
+                            daySchedules
                         );
-                    }
-                );
+
+
+                    event.className =
+                        "weekly-event " +
+                        colorClass;
+
+
+                    event.innerHTML = `
+
+                        <strong>
+                            ${escapeHtml(
+                                getSubjectCode(
+                                    schedule.subject
+                                )
+                            )}
+                        </strong>
+
+                        <span>
+                            ${formatTime(
+                                schedule.startTime
+                            )}
+                            -
+                            ${formatTime(
+                                schedule.endTime
+                            )}
+                        </span>
+                    `;
+
+
+                    event.onclick =
+                        function() {
+
+                            showScheduleDetails(
+                                schedule
+                            );
+
+                            showScheduleView(
+                                "calendar"
+                            );
+                        };
+
+
+                    column.appendChild(event);
+                });
             }
 
 
-            grid.appendChild(
-                column
-            );
+            grid.appendChild(column);
         }
     );
 }
@@ -2477,7 +2189,6 @@ function changeWeek(direction) {
         direction * 7
     );
 
-
     renderWeekly();
 }
 
@@ -2493,17 +2204,13 @@ function displaySavedSchedules() {
             "savedScheduleList"
         );
 
-
     if (!list) return;
 
 
     list.innerHTML = "";
 
 
-    if (
-        schedules.length ===
-        0
-    ) {
+    if (schedules.length === 0) {
 
         list.innerHTML = `
 
@@ -2527,14 +2234,9 @@ function displaySavedSchedules() {
                         b.scheduleDate
                     );
 
-
-                if (
-                    dateCompare !== 0
-                ) {
-
+                if (dateCompare !== 0) {
                     return dateCompare;
                 }
-
 
                 return a.startTime.localeCompare(
                     b.startTime
@@ -2543,77 +2245,68 @@ function displaySavedSchedules() {
         );
 
 
-    sorted.forEach(
-        schedule => {
+    sorted.forEach(schedule => {
 
-            const actualIndex =
-                schedules.indexOf(
-                    schedule
-                );
+        const actualIndex =
+            schedules.indexOf(schedule);
 
 
-            const item =
-                document.createElement(
-                    "div"
-                );
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "saved-schedule-item";
 
 
-            item.className =
-                "saved-schedule-item";
+        item.innerHTML = `
+
+            <div class="saved-schedule-info">
+
+                <strong>
+                    ${escapeHtml(
+                        schedule.subject
+                    )}
+                </strong>
+
+                <span>
+                    📅 ${formatDisplayDate(
+                        schedule.scheduleDate
+                    )}
+                </span>
+
+                <span>
+                    🕐 ${formatTime(
+                        schedule.startTime
+                    )}
+                    -
+                    ${formatTime(
+                        schedule.endTime
+                    )}
+                </span>
+
+            </div>
 
 
-            item.innerHTML = `
+            <div class="saved-schedule-actions">
 
-                <div class="saved-schedule-info">
+                <button
+                    onclick="editSchedule(${actualIndex})"
+                >
+                    ✏️
+                </button>
 
-                    <strong>
-                        ${escapeHtml(
-                            schedule.subject
-                        )}
-                    </strong>
+                <button
+                    onclick="deleteSchedule(${actualIndex})"
+                >
+                    🗑️
+                </button>
 
-                    <span>
-                        📅 ${formatDisplayDate(
-                            schedule.scheduleDate
-                        )}
-                    </span>
-
-                    <span>
-                        🕐 ${formatTime(
-                            schedule.startTime
-                        )}
-                        -
-                        ${formatTime(
-                            schedule.endTime
-                        )}
-                    </span>
-
-                </div>
+            </div>
+        `;
 
 
-                <div class="saved-schedule-actions">
-
-                    <button
-                        onclick="editSchedule(${actualIndex})"
-                    >
-                        ✏️
-                    </button>
-
-                    <button
-                        onclick="deleteSchedule(${actualIndex})"
-                    >
-                        🗑️
-                    </button>
-
-                </div>
-            `;
-
-
-            list.appendChild(
-                item
-            );
-        }
-    );
+        list.appendChild(item);
+    });
 }
 
 
@@ -2625,7 +2318,6 @@ function editSchedule(index) {
 
     const schedule =
         schedules[index];
-
 
     if (!schedule) return;
 
@@ -2645,23 +2337,16 @@ function editSchedule(index) {
     document.getElementById(
         "startTime"
     ).value =
-        schedule.startTime.slice(
-            0,
-            5
-        );
+        schedule.startTime.slice(0, 5);
 
 
     document.getElementById(
         "endTime"
     ).value =
-        schedule.endTime.slice(
-            0,
-            5
-        );
+        schedule.endTime.slice(0, 5);
 
 
-    editingScheduleIndex =
-        index;
+    editingScheduleIndex = index;
 
 
     document.getElementById(
@@ -2671,14 +2356,10 @@ function editSchedule(index) {
 
 
     window.scrollTo({
-
         top:
-            document.body
-                .scrollHeight,
-
+            document.body.scrollHeight,
         behavior:
             "smooth"
-
     });
 }
 
@@ -2687,16 +2368,12 @@ function editSchedule(index) {
 // EDIT SCHEDULE BY ID
 // ============================================================
 
-function editScheduleById(
-    id
-) {
+function editScheduleById(id) {
 
     const index =
         schedules.findIndex(
             schedule =>
-                Number(
-                    schedule.id
-                ) ===
+                Number(schedule.id) ===
                 Number(id)
         );
 
@@ -2712,16 +2389,13 @@ function editScheduleById(
 // DELETE SCHEDULE
 // ============================================================
 
-async function deleteSchedule(
-    index
-) {
+async function deleteSchedule(index) {
 
     if (!currentUser) return;
 
 
     const schedule =
         schedules[index];
-
 
     if (!schedule) return;
 
@@ -2737,7 +2411,6 @@ async function deleteSchedule(
 
     const supabase =
         getSupabase();
-
 
     if (!supabase) return;
 
@@ -2768,17 +2441,12 @@ async function deleteSchedule(
     }
 
 
-    schedules.splice(
-        index,
-        1
-    );
+    schedules.splice(index, 1);
 
 
     localStorage.setItem(
         "classSchedules",
-        JSON.stringify(
-            schedules
-        )
+        JSON.stringify(schedules)
     );
 
 
@@ -2820,16 +2488,12 @@ async function deleteSchedule(
 // DELETE SCHEDULE BY ID
 // ============================================================
 
-async function deleteScheduleById(
-    id
-) {
+async function deleteScheduleById(id) {
 
     const index =
         schedules.findIndex(
             schedule =>
-                Number(
-                    schedule.id
-                ) ===
+                Number(schedule.id) ===
                 Number(id)
         );
 
@@ -2837,9 +2501,7 @@ async function deleteScheduleById(
     if (index === -1) return;
 
 
-    await deleteSchedule(
-        index
-    );
+    await deleteSchedule(index);
 }
 
 
@@ -2847,22 +2509,16 @@ async function deleteScheduleById(
 // SUBJECT CODE
 // ============================================================
 
-function getSubjectCode(
-    subject
-) {
+function getSubjectCode(subject) {
 
     if (!subject) return "";
 
 
     const dashIndex =
-        subject.indexOf(
-            " - "
-        );
+        subject.indexOf(" - ");
 
 
-    if (
-        dashIndex !== -1
-    ) {
+    if (dashIndex !== -1) {
 
         return subject.substring(
             0,
@@ -2908,14 +2564,10 @@ const subjectColors = {
 };
 
 
-function getSubjectColorClass(
-    subject
-) {
+function getSubjectColorClass(subject) {
 
     const code =
-        getSubjectCode(
-            subject
-        );
+        getSubjectCode(subject);
 
 
     return (
@@ -2958,12 +2610,6 @@ function renderSummaryCalendar() {
             <h2>
                 📊 Summary
             </h2>
-
-
-            <div
-                id="summaryMonthlyOverview"
-                class="summary-monthly-overview"
-            ></div>
 
 
             <div
@@ -3055,9 +2701,8 @@ function renderSummaryCalendar() {
                         <div>📅</div>
 
                         <p>
-                            Select a date or subject
-                            to see your schedule
-                            and assignment details.
+                            Hover over a subject
+                            to see its details.
                         </p>
 
                     </div>
@@ -3110,16 +2755,6 @@ function renderSummaryCalendar() {
         );
 
 
-    // --------------------------------------------------------
-    // MONTHLY OVERVIEW
-    // --------------------------------------------------------
-
-    renderSummaryMonthlyOverview(
-        year,
-        month
-    );
-
-
     const firstDay =
         new Date(
             year,
@@ -3147,18 +2782,12 @@ function renderSummaryCalendar() {
     ) {
 
         const empty =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         empty.className =
             "summary-calendar-day empty";
 
-
-        grid.appendChild(
-            empty
-        );
+        grid.appendChild(empty);
     }
 
 
@@ -3177,29 +2806,21 @@ function renderSummaryCalendar() {
 
 
         const cell =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         cell.className =
             "summary-calendar-day";
 
 
         const todayString =
-            formatDateInput(
-                new Date()
-            );
+            formatDateInput(new Date());
 
 
         if (
-            dateString ===
-            todayString
+            dateString === todayString
         ) {
 
-            cell.classList.add(
-                "today"
-            );
+            cell.classList.add("today");
         }
 
 
@@ -3208,22 +2829,15 @@ function renderSummaryCalendar() {
         // ----------------------------------------------------
 
         const dateNumber =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         dateNumber.className =
             "summary-date-number";
 
-
         dateNumber.textContent =
             day;
 
-
-        cell.appendChild(
-            dateNumber
-        );
+        cell.appendChild(dateNumber);
 
 
         // ----------------------------------------------------
@@ -3265,9 +2879,7 @@ function renderSummaryCalendar() {
             schedule => {
 
                 const event =
-                    document.createElement(
-                        "div"
-                    );
+                    document.createElement("div");
 
 
                 event.className =
@@ -3278,9 +2890,7 @@ function renderSummaryCalendar() {
 
 
                 const dot =
-                    document.createElement(
-                        "span"
-                    );
+                    document.createElement("span");
 
 
                 dot.className =
@@ -3288,9 +2898,7 @@ function renderSummaryCalendar() {
 
 
                 const label =
-                    document.createElement(
-                        "span"
-                    );
+                    document.createElement("span");
 
 
                 label.className =
@@ -3303,27 +2911,18 @@ function renderSummaryCalendar() {
                     );
 
 
-                event.appendChild(
-                    dot
-                );
+                event.appendChild(dot);
+
+                event.appendChild(label);
 
 
-                event.appendChild(
-                    label
-                );
+                // ------------------------------------------------
+                // HOVER → RIGHT SIDE DETAILS
+                // ------------------------------------------------
 
-
-                event.title =
-                    `${schedule.subject} • ${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}`;
-
-
-                event.onclick =
-                    function (
-                        eventObject
-                    ) {
-
-                        eventObject.stopPropagation();
-
+                event.addEventListener(
+                    "mouseenter",
+                    function() {
 
                         showSummarySubjectDetails(
                             dateString,
@@ -3331,12 +2930,18 @@ function renderSummaryCalendar() {
                                 schedule.subject
                             )
                         );
-                    };
 
-
-                cell.appendChild(
-                    event
+                    }
                 );
+
+
+                // Helpful browser tooltip
+
+                event.title =
+                    `${schedule.subject} • ${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}`;
+
+
+                cell.appendChild(event);
             }
         );
 
@@ -3357,9 +2962,7 @@ function renderSummaryCalendar() {
             task => {
 
                 const event =
-                    document.createElement(
-                        "div"
-                    );
+                    document.createElement("div");
 
 
                 event.className =
@@ -3370,9 +2973,7 @@ function renderSummaryCalendar() {
 
 
                 const dot =
-                    document.createElement(
-                        "span"
-                    );
+                    document.createElement("span");
 
 
                 dot.className =
@@ -3380,9 +2981,7 @@ function renderSummaryCalendar() {
 
 
                 const label =
-                    document.createElement(
-                        "span"
-                    );
+                    document.createElement("span");
 
 
                 label.className =
@@ -3395,27 +2994,18 @@ function renderSummaryCalendar() {
                     );
 
 
-                event.appendChild(
-                    dot
-                );
+                event.appendChild(dot);
+
+                event.appendChild(label);
 
 
-                event.appendChild(
-                    label
-                );
+                // ------------------------------------------------
+                // HOVER → RIGHT SIDE DETAILS
+                // ------------------------------------------------
 
-
-                event.title =
-                    `Assignment: ${task.task}`;
-
-
-                event.onclick =
-                    function (
-                        eventObject
-                    ) {
-
-                        eventObject.stopPropagation();
-
+                event.addEventListener(
+                    "mouseenter",
+                    function() {
 
                         showSummarySubjectDetails(
                             dateString,
@@ -3423,12 +3013,16 @@ function renderSummaryCalendar() {
                                 task.subject
                             )
                         );
-                    };
 
-
-                cell.appendChild(
-                    event
+                    }
                 );
+
+
+                event.title =
+                    `Assignment: ${task.task}`;
+
+
+                cell.appendChild(event);
             }
         );
 
@@ -3438,354 +3032,17 @@ function renderSummaryCalendar() {
         // ----------------------------------------------------
 
         cell.onclick =
-            function () {
+            function() {
 
                 showSummaryDateDetails(
                     dateString
                 );
+
             };
 
 
-        grid.appendChild(
-            cell
-        );
+        grid.appendChild(cell);
     }
-}
-
-
-// ============================================================
-// SUMMARY MONTHLY OVERVIEW
-// ============================================================
-
-function renderSummaryMonthlyOverview(
-    year,
-    month
-) {
-
-    const overview =
-        document.getElementById(
-            "summaryMonthlyOverview"
-        );
-
-
-    if (!overview) return;
-
-
-    // ========================================================
-    // MONTH SCHEDULES
-    // ========================================================
-
-    const monthSchedules =
-        schedules.filter(
-            schedule => {
-
-                const date =
-                    parseLocalDate(
-                        schedule.scheduleDate
-                    );
-
-
-                return (
-                    date.getFullYear() ===
-                        year &&
-                    date.getMonth() ===
-                        month
-                );
-            }
-        );
-
-
-    // ========================================================
-    // MONTH ASSIGNMENTS
-    // ========================================================
-
-    const monthTasks =
-        tasks.filter(
-            task => {
-
-                const date =
-                    parseLocalDate(
-                        task.dueDate
-                    );
-
-
-                return (
-                    date.getFullYear() ===
-                        year &&
-                    date.getMonth() ===
-                        month
-                );
-            }
-        );
-
-
-    // ========================================================
-    // UNIQUE BUSY DAYS
-    // ========================================================
-
-    const busyDates =
-        new Set();
-
-
-    monthSchedules.forEach(
-        schedule => {
-
-            busyDates.add(
-                schedule.scheduleDate
-            );
-        }
-    );
-
-
-    monthTasks.forEach(
-        task => {
-
-            busyDates.add(
-                task.dueDate
-            );
-        }
-    );
-
-
-    // ========================================================
-    // SUBJECT COUNTS
-    // ========================================================
-
-    const subjectCounts = {};
-
-
-    monthSchedules.forEach(
-        schedule => {
-
-            const code =
-                getSubjectCode(
-                    schedule.subject
-                );
-
-
-            if (
-                !subjectCounts[code]
-            ) {
-
-                subjectCounts[code] =
-                    0;
-            }
-
-
-            subjectCounts[code]++;
-        }
-    );
-
-
-    // ========================================================
-    // SUBJECT BREAKDOWN
-    // ========================================================
-
-    let subjectBreakdown =
-        "";
-
-
-    Object.keys(
-        subjectCounts
-    )
-        .sort()
-        .forEach(
-            code => {
-
-                subjectBreakdown += `
-
-                    <div
-                        class="summary-subject-stat"
-                    >
-
-                        <span
-                            class="summary-subject-color ${getSubjectColorClass(code)}"
-                        ></span>
-
-
-                        <span
-                            class="summary-subject-name"
-                        >
-                            ${escapeHtml(code)}
-                        </span>
-
-
-                        <strong>
-                            ${subjectCounts[code]}
-                        </strong>
-
-                    </div>
-                `;
-            }
-        );
-
-
-    if (!subjectBreakdown) {
-
-        subjectBreakdown = `
-
-            <div
-                class="summary-no-subjects"
-            >
-                No class schedules this month.
-            </div>
-        `;
-    }
-
-
-    // ========================================================
-    // BUSY LEVEL
-    // ========================================================
-
-    let busyLabel =
-        "🟢 Light";
-
-
-    if (
-        busyDates.size >= 15
-    ) {
-
-        busyLabel =
-            "🔥 Very Busy";
-
-    }
-
-    else if (
-        busyDates.size >= 8
-    ) {
-
-        busyLabel =
-            "🟠 Busy";
-
-    }
-
-    else if (
-        busyDates.size >= 4
-    ) {
-
-        busyLabel =
-            "🟡 Moderate";
-    }
-
-
-    // ========================================================
-    // MONTHLY OVERVIEW UI
-    // ========================================================
-
-    overview.innerHTML = `
-
-        <div
-            class="summary-overview-header"
-        >
-
-            <div>
-
-                <span
-                    class="summary-overview-label"
-                >
-                    MONTHLY OVERVIEW
-                </span>
-
-
-                <h3>
-
-                    ${summaryDate.toLocaleDateString(
-                        "en-US",
-                        {
-                            month:
-                                "long",
-
-                            year:
-                                "numeric"
-                        }
-                    )}
-
-                </h3>
-
-            </div>
-
-
-            <div
-                class="summary-busy-indicator"
-            >
-                ${busyLabel}
-            </div>
-
-        </div>
-
-
-        <div
-            class="summary-overview-stats"
-        >
-
-            <div
-                class="summary-overview-box"
-            >
-
-                <span>
-                    ${monthSchedules.length}
-                </span>
-
-                <small>
-                    📚 Class Schedules
-                </small>
-
-            </div>
-
-
-            <div
-                class="summary-overview-box"
-            >
-
-                <span>
-                    ${monthTasks.length}
-                </span>
-
-                <small>
-                    📝 Assignments
-                </small>
-
-            </div>
-
-
-            <div
-                class="summary-overview-box"
-            >
-
-                <span>
-                    ${busyDates.size}
-                </span>
-
-                <small>
-                    🔥 Busy Days
-                </small>
-
-            </div>
-
-        </div>
-
-
-        <div
-            class="summary-subject-breakdown"
-        >
-
-            <div
-                class="summary-breakdown-title"
-            >
-                📚 Subject Breakdown
-            </div>
-
-
-            <div
-                class="summary-subject-list"
-            >
-
-                ${subjectBreakdown}
-
-            </div>
-
-        </div>
-    `;
 }
 
 
@@ -3793,15 +3050,12 @@ function renderSummaryMonthlyOverview(
 // SUMMARY MONTH CHANGE
 // ============================================================
 
-function changeSummaryMonth(
-    direction
-) {
+function changeSummaryMonth(direction) {
 
     summaryDate.setMonth(
         summaryDate.getMonth() +
         direction
     );
-
 
     renderSummaryCalendar();
 }
@@ -3811,9 +3065,7 @@ function changeSummaryMonth(
 // SUMMARY DATE DETAILS
 // ============================================================
 
-function showSummaryDateDetails(
-    dateString
-) {
+function showSummaryDateDetails(dateString) {
 
     const details =
         document.getElementById(
@@ -4005,13 +3257,13 @@ function showSummaryDateDetails(
     }
 
 
-    details.innerHTML =
-        html;
+    details.innerHTML = html;
 }
 
 
 // ============================================================
 // SUMMARY SUBJECT DETAILS
+// HOVER TARGET
 // ============================================================
 
 function showSummarySubjectDetails(
@@ -4050,14 +3302,36 @@ function showSummarySubjectDetails(
         );
 
 
+    let fullSubjectName =
+        subjectCode;
+
+
+    if (dateSchedules.length > 0) {
+
+        fullSubjectName =
+            dateSchedules[0].subject;
+
+    } else if (dateTasks.length > 0) {
+
+        fullSubjectName =
+            dateTasks[0].subject;
+    }
+
+
+    const colorClass =
+        getSubjectColorClass(
+            subjectCode
+        );
+
+
     let html = `
 
         <div
-            class="summary-detail-subject"
+            class="summary-detail-subject ${colorClass}"
         >
-            📚 ${escapeHtml(
-                subjectCode
-            )}
+
+            📚 ${escapeHtml(subjectCode)}
+
         </div>
 
 
@@ -4066,14 +3340,24 @@ function showSummarySubjectDetails(
         >
 
             <strong>
-                📅 ${formatDisplayDate(
-                    dateString
+                ${escapeHtml(
+                    fullSubjectName
                 )}
             </strong>
+
+            <br>
+
+            📅 ${formatDisplayDate(
+                dateString
+            )}
 
         </div>
     `;
 
+
+    // ========================================================
+    // CLASS SCHEDULE DETAILS
+    // ========================================================
 
     if (
         dateSchedules.length > 0
@@ -4089,16 +3373,10 @@ function showSummarySubjectDetails(
                     >
 
                         <strong>
-                            Class Schedule
+                            📚 Class Schedule
                         </strong>
 
-                        <br>
-
-                        ${escapeHtml(
-                            schedule.subject
-                        )}
-
-                        <br>
+                        <br><br>
 
                         🕐
                         ${formatTime(
@@ -4111,12 +3389,20 @@ function showSummarySubjectDetails(
                             schedule.endTime
                         )}
 
+                        <br><br>
+
+                        💻 Online Class
+
                     </div>
                 `;
             }
         );
     }
 
+
+    // ========================================================
+    // ASSIGNMENT DETAILS
+    // ========================================================
 
     if (
         dateTasks.length > 0
@@ -4132,16 +3418,16 @@ function showSummarySubjectDetails(
                     >
 
                         <strong>
-                            Assignment
+                            📝 Assignment
                         </strong>
 
-                        <br>
+                        <br><br>
 
                         ${escapeHtml(
                             task.task
                         )}
 
-                        <br>
+                        <br><br>
 
                         Priority:
                         ${escapeHtml(
@@ -4150,8 +3436,8 @@ function showSummarySubjectDetails(
 
                         ${
                             task.completed
-                                ? "<br>✅ Completed"
-                                : ""
+                                ? "<br><br>✅ Completed"
+                                : "<br><br>⏳ Pending"
                         }
 
                     </div>
@@ -4161,8 +3447,7 @@ function showSummarySubjectDetails(
     }
 
 
-    details.innerHTML =
-        html;
+    details.innerHTML = html;
 }
 
 
@@ -4170,20 +3455,15 @@ function showSummarySubjectDetails(
 // DATE HELPERS
 // ============================================================
 
-function parseLocalDate(
-    dateString
-) {
+function parseLocalDate(dateString) {
 
     if (!dateString) {
-
         return new Date();
     }
 
 
     const parts =
-        dateString.split(
-            "-"
-        );
+        dateString.split("-");
 
 
     return new Date(
@@ -4198,47 +3478,33 @@ function parseLocalDate(
 }
 
 
-function formatDateInput(
-    date
-) {
+function formatDateInput(date) {
 
     const year =
         date.getFullYear();
 
-
     const month =
         String(
             date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
+        ).padStart(2, "0");
 
     const day =
         String(
             date.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
+        ).padStart(2, "0");
 
 
     return `${year}-${month}-${day}`;
 }
 
 
-function formatDisplayDate(
-    dateString
-) {
+function formatDisplayDate(dateString) {
 
     if (!dateString) return "";
 
 
     const date =
-        parseLocalDate(
-            dateString
-        );
+        parseLocalDate(dateString);
 
 
     return date.toLocaleDateString(
@@ -4256,9 +3522,7 @@ function formatDisplayDate(
 }
 
 
-function formatShortDate(
-    date
-) {
+function formatShortDate(date) {
 
     return date.toLocaleDateString(
         "en-US",
@@ -4277,17 +3541,13 @@ function formatShortDate(
 // TIME FORMAT
 // ============================================================
 
-function formatTime(
-    timeString
-) {
+function formatTime(timeString) {
 
     if (!timeString) return "";
 
 
     const parts =
-        timeString.split(
-            ":"
-        );
+        timeString.split(":");
 
 
     let hour =
@@ -4316,9 +3576,7 @@ function formatTime(
 // HTML ESCAPE
 // ============================================================
 
-function escapeHtml(
-    value
-) {
+function escapeHtml(value) {
 
     if (
         value === null ||
@@ -4522,9 +3780,7 @@ function setRandomMotivation() {
 
     quoteElement.textContent =
         "“" +
-        motivationalQuotes[
-            randomIndex
-        ] +
+        motivationalQuotes[randomIndex] +
         "”";
 }
 
@@ -4535,7 +3791,7 @@ function setRandomMotivation() {
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function () {
+    async function() {
 
         updateCozyHeader();
 
@@ -4594,8 +3850,7 @@ document.addEventListener(
             ) => {
 
                 if (
-                    event ===
-                        "SIGNED_IN" &&
+                    event === "SIGNED_IN" &&
                     session
                 ) {
 
@@ -4620,12 +3875,10 @@ document.addEventListener(
 
 
                 if (
-                    event ===
-                    "SIGNED_OUT"
+                    event === "SIGNED_OUT"
                 ) {
 
-                    currentUser =
-                        null;
+                    currentUser = null;
                 }
 
             }
@@ -4645,7 +3898,7 @@ if (
 
     window.addEventListener(
         "load",
-        function () {
+        function() {
 
             navigator.serviceWorker
                 .register(
@@ -4653,9 +3906,7 @@ if (
                 )
 
                 .then(
-                    function (
-                        registration
-                    ) {
+                    function(registration) {
 
                         console.log(
                             "PWA Service Worker registered:",
@@ -4666,9 +3917,7 @@ if (
                 )
 
                 .catch(
-                    function (
-                        error
-                    ) {
+                    function(error) {
 
                         console.error(
                             "PWA Service Worker registration failed:",
