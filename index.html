@@ -1,101 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My School Tracker</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+
+<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>My School Tracker</title> <link rel="stylesheet" href="style.css"> </head>
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <h1>My School Tracker</h1>
-        <p class="subtitle">Daily School Progress Tracker</p>
+    <h1>My School Tracker</h1>
+    <p class="subtitle">Daily School Progress Tracker</p>
 
-        <div class="tracker-card">
+    <div class="tracker-card">
 
-            <h2>Today's Progress</h2>
+        <h2>Today's Progress</h2>
 
-            <div class="progress-summary">
+        <div class="progress-summary">
 
-                <div class="progress-box">
-                    <span id="totalTasks">0</span>
-                    <small>Total</small>
-                </div>
-
-                <div class="progress-box">
-                    <span id="completedTasks">0</span>
-                    <small>Completed</small>
-                </div>
-
-                <div class="progress-box">
-                    <span id="pendingTasks">0</span>
-                    <small>Pending</small>
-                </div>
-
+            <div class="progress-box">
+                <span id="totalTasks">0</span>
+                <small>Total</small>
             </div>
 
-            <div class="progress-bar">
-                <div id="progressFill"></div>
+            <div class="progress-box">
+                <span id="completedTasks">0</span>
+                <small>Completed</small>
             </div>
 
-            <p id="progressText">0% Complete</p>
-
-            <label for="subject">Subject</label>
-
-            <select id="subject">
-                <option value="General Chemistry">General Chemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Programming">Programming</option>
-                <option value="Computer Fundamentals">Computer Fundamentals</option>
-            </select>
-
-            <label for="task">Topic</label>
-
-            <input type="text" id="task" placeholder="Enter a school topic">
-
-            <label for="dueDate">Due Date</label>
-
-            <input type="date" id="dueDate">
-
-            <label for="priority">Priority</label>
-
-            <select id="priority">
-                <option value="High">High</option>
-                <option value="Medium" selected>Medium</option>
-                <option value="Low">Low</option>
-            </select>
-
-            <button id="addTaskButton" onclick="addTask()">Add Task</button>
-
-            <label for="dateFilter">Filter by Date</label>
-
-            <select id="dateFilter" onchange="handleDateFilter()">
-                <option value="All">All Dates</option>
-                <option value="Today">Today</option>
-                <option value="Next7">Next 7 Days</option>
-                <option value="Overdue">Overdue</option>
-                <option value="Specific">Specific Date</option>
-            </select>
-
-            <input
-                type="date"
-                id="specificDate"
-                onchange="displayTasks()"
-                style="display: none;"
-            >
-
-            <ul id="taskList"></ul>
-
-            <p id="taskCounter">0 Tasks</p>
+            <div class="progress-box">
+                <span id="pendingTasks">0</span>
+                <small>Pending</small>
+            </div>
 
         </div>
 
+        <div class="progress-bar">
+            <div id="progressFill"></div>
+        </div>
+
+        <p id="progressText">0% Complete</p>
+
+        <label for="subject">Subject</label>
+
+        <select id="subject">
+            <option value="CHEM 001 - General Chemistry">CHEM 001 - General Chemistry</option>
+            <option value="MATH 003 - Basic Calculus">MATH 003 - Basic Calculus</option>
+            <option value="CMPE 011 - Computer Fundamentals and Programming">CMPE 011 - Computer Fundamentals and Programming</option>
+            <option value="CWTS 001 - Civic Welfare Training Service 1">CWTS 001 - Civic Welfare Training Service 1</option>
+            <option value="GEED 004 - Mathematics in the Modern World">GEED 004 - Mathematics in the Modern World</option>
+            <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">GEED 032 - Filipinolohiya at Pambansang Kaunlaran</option>
+            <option value="INEN 101 - Introduction to Industrial Engineering">INEN 101 - Introduction to Industrial Engineering</option>
+            <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">PATHFIT 1 - Physical Activity Towards Health and Fitness 1</option>
+        </select>
+
+        <label for="task">Topic</label>
+
+        <input type="text" id="task" placeholder="Enter a school topic">
+
+        <label for="dueDate">Due Date</label>
+
+        <input type="date" id="dueDate">
+
+        <label for="priority">Priority</label>
+
+        <select id="priority">
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
+        </select>
+
+        <button id="addTaskButton" onclick="addTask()">Add Task</button>
+
+        <label for="dateFilter">Filter by Date</label>
+
+        <select id="dateFilter" onchange="handleDateFilter()">
+            <option value="All">All Dates</option>
+            <option value="Today">Today</option>
+            <option value="Next7">Next 7 Days</option>
+            <option value="Overdue">Overdue</option>
+            <option value="Specific">Specific Date</option>
+        </select>
+
+        <input
+            type="date"
+            id="specificDate"
+            onchange="displayTasks()"
+            style="display: none;"
+        >
+
+        <ul id="taskList"></ul>
+
+        <p id="taskCounter">0 Tasks</p>
+
     </div>
 
-    <script src="script.js"></script>
+</div>
 
-</body>
-</html>
+<script src="script.js"></script>
