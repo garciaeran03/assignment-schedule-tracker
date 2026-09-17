@@ -1,256 +1,257 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    background: #eef2f7;
-    color: #1e293b;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f8;
+    color: #222;
 }
 
 .container {
     max-width: 1000px;
     margin: 40px auto;
+    padding: 0 20px 40px;
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 6px;
-    color: #0f172a;
-    font-size: 32px;
+    margin-bottom: 5px;
 }
 
 .subtitle {
     text-align: center;
-    color: #64748b;
-    margin-bottom: 30px;
-}
-
-
-/* ============================= */
-/* MAIN TABS */
-/* ============================= */
-
-.main-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.main-tab {
-    width: 50%;
+    color: #666;
     margin-top: 0;
-    background: #e2e8f0;
-    color: #334155;
-}
-
-.main-tab:hover {
-    background: #cbd5e1;
-    transform: none;
-}
-
-.main-tab.active {
-    background: #1e293b;
-    color: white;
-}
-
-
-/* ============================= */
-/* TRACKER CARD */
-/* ============================= */
-
-.tracker-card {
-    background: white;
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-}
-
-.tracker-card h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 22px;
-}
-
-
-/* ============================= */
-/* PROGRESS SUMMARY */
-/* ============================= */
-
-.progress-summary {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-bottom: 18px;
-}
-
-.progress-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 14px;
-    text-align: center;
-}
-
-.progress-box span {
-    display: block;
-    font-size: 24px;
-    font-weight: bold;
-    color: #0f172a;
-    margin-bottom: 4px;
-}
-
-.progress-box small {
-    color: #64748b;
-    font-size: 12px;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 10px;
-    background: #e2e8f0;
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-#progressFill {
-    width: 0%;
-    height: 100%;
-    background: #1e293b;
-    border-radius: 20px;
-    transition: width 0.3s ease;
-}
-
-#progressText {
-    text-align: right;
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 7px;
     margin-bottom: 25px;
 }
 
 
-/* ============================= */
-/* FORM */
-/* ============================= */
+/* =========================
+   MAIN TABS
+========================= */
 
-label {
-    display: block;
-    margin-top: 16px;
-    margin-bottom: 7px;
+.main-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.main-tab {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #e5e7eb;
+    cursor: pointer;
+    font-size: 16px;
     font-weight: bold;
-    color: #334155;
+}
+
+.main-tab:hover {
+    background: #d8dce1;
+}
+
+.main-tab.active {
+    background: #2563eb;
+    color: white;
+}
+
+
+/* =========================
+   ASSIGNMENT PROGRESS
+========================= */
+
+.progress-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.progress-card {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.progress-card span {
+    display: block;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.progress-card strong {
+    font-size: 25px;
+}
+
+.progress-bar-container {
+    height: 12px;
+    background: #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #2563eb;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+
+/* =========================
+   FORMS
+========================= */
+
+.form-section,
+.schedule-form {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-top: 20px;
+}
+
+.form-section h2,
+.schedule-form h2 {
+    margin-top: 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1.5fr 1fr 1fr auto;
+    gap: 10px;
+}
+
+.schedule-form-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr auto;
+    gap: 10px;
+}
+
+input,
+select,
+button {
+    font-family: inherit;
 }
 
 input,
 select {
     width: 100%;
-    box-sizing: border-box;
-    padding: 13px;
-    border: 1px solid #cbd5e1;
-    border-radius: 9px;
-    font-size: 14px;
+    padding: 11px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
     background: white;
 }
 
-input:focus,
-select:focus {
-    outline: none;
-    border-color: #64748b;
-}
-
 button {
-    width: 100%;
-    padding: 13px;
-    margin-top: 22px;
     border: none;
-    border-radius: 9px;
-    background: #1e293b;
+}
+
+#addTaskButton,
+#addScheduleButton {
+    background: #2563eb;
     color: white;
-    font-size: 15px;
-    font-weight: bold;
+    padding: 11px 16px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.2s;
+    font-weight: bold;
 }
 
-button:hover {
-    background: #334155;
-    transform: translateY(-1px);
+#addTaskButton:hover,
+#addScheduleButton:hover {
+    background: #1d4ed8;
 }
 
 
-/* ============================= */
-/* TASK LIST */
-/* ============================= */
+/* =========================
+   ASSIGNMENT FILTER
+========================= */
 
-ul {
-    padding: 0;
-    margin-top: 28px;
-    list-style: none;
-}
-
-li {
-    margin: 14px 0;
-    padding: 17px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-left: 5px solid #94a3b8;
-    border-radius: 12px;
-    transition: 0.2s;
-}
-
-li:hover {
-    background: #f1f5f9;
-    transform: translateX(2px);
-}
-
-.task-content {
+.filter-section {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: center;
+    gap: 10px;
+    margin: 25px 0 15px;
+}
+
+.filter-section label {
+    font-weight: bold;
+}
+
+
+/* =========================
+   TASK LIST
+========================= */
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-header h2 {
+    margin-bottom: 10px;
+}
+
+#taskCounter {
+    color: #666;
+    font-size: 14px;
+}
+
+.task-item {
+    background: white;
+    padding: 16px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.task-item.completed {
+    opacity: 0.65;
 }
 
 .task-checkbox {
     width: 20px;
     height: 20px;
-    margin-top: 3px;
     cursor: pointer;
-    flex-shrink: 0;
 }
 
-.task-details {
+.task-info {
     flex: 1;
 }
 
 .task-subject {
-    font-size: 14px;
     font-weight: bold;
-    color: #475569;
     margin-bottom: 5px;
 }
 
-.task-topic {
-    font-size: 17px;
-    font-weight: bold;
-    color: #0f172a;
-    margin-bottom: 7px;
+.task-name {
+    margin-bottom: 5px;
 }
 
 .task-due {
     font-size: 13px;
-    color: #64748b;
+    color: #666;
 }
 
-.task-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 14px;
-    margin-left: 32px;
-}
-
-.priority-badge {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 20px;
+.priority {
+    padding: 5px 9px;
+    border-radius: 6px;
     font-size: 12px;
     font-weight: bold;
 }
@@ -270,172 +271,104 @@ li:hover {
     color: #166534;
 }
 
-
-/* ============================= */
-/* ACTION BUTTONS */
-/* ============================= */
-
 .task-actions {
     display: flex;
     gap: 6px;
 }
 
-.edit-btn,
-.delete-btn {
-    width: auto;
-    margin: 0;
-    padding: 6px 10px;
-    font-size: 14px;
+.edit-button,
+.delete-button {
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
-.edit-btn {
-    background: #e2e8f0;
-    color: #334155;
+.edit-button {
+    background: #f3f4f6;
 }
 
-.edit-btn:hover {
-    background: #cbd5e1;
-    color: #0f172a;
-    transform: none;
-}
-
-.delete-btn {
-    background: #f1f5f9;
-    color: #64748b;
-}
-
-.delete-btn:hover {
+.delete-button {
     background: #fee2e2;
     color: #b91c1c;
-    transform: none;
-}
-
-.completed .task-topic {
-    text-decoration: line-through;
-    opacity: 0.5;
-}
-
-.completed .task-subject,
-.completed .task-due {
-    opacity: 0.5;
-}
-
-#taskCounter {
-    text-align: right;
-    color: #64748b;
-    font-size: 14px;
-    margin-top: 18px;
 }
 
 
-/* ============================= */
-/* CLASS SCHEDULE */
-/* ============================= */
+/* =========================
+   SCHEDULE
+========================= */
 
 .section-description {
-    color: #64748b;
+    color: #666;
     margin-top: -10px;
-    margin-bottom: 25px;
-    font-size: 14px;
-}
-
-.schedule-form {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 25px;
-}
-
-.schedule-form label:first-child {
-    margin-top: 0;
-}
-
-.time-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
 }
 
 .schedule-tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin: 25px 0 15px;
 }
 
 .schedule-tab {
-    width: 50%;
-    margin-top: 0;
-    background: #e2e8f0;
-    color: #334155;
-}
-
-.schedule-tab:hover {
-    background: #cbd5e1;
-    transform: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: #e5e7eb;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .schedule-tab.active {
-    background: #1e293b;
+    background: #2563eb;
     color: white;
 }
 
 
-/* ============================= */
-/* CALENDAR */
-/* ============================= */
+/* =========================
+   CALENDAR
+========================= */
 
 .calendar-header,
 .weekly-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: 18px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.calendar-header button,
+.weekly-header button {
+    background: #e5e7eb;
+    padding: 8px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 16px;
 }
 
 .calendar-header h3,
 .weekly-header h3 {
     margin: 0;
-    font-size: 20px;
-    color: #0f172a;
-}
-
-.calendar-nav {
-    width: 42px;
-    height: 42px;
-    padding: 0;
-    margin: 0;
-    font-size: 25px;
-    line-height: 1;
-    background: #e2e8f0;
-    color: #334155;
-}
-
-.calendar-nav:hover {
-    background: #cbd5e1;
-    transform: none;
 }
 
 .calendar-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.8fr);
-    gap: 20px;
-    align-items: start;
+    grid-template-columns: 1.7fr 1fr;
+    gap: 15px;
+}
+
+.calendar-main {
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    margin-bottom: 5px;
-}
-
-.calendar-weekdays div {
     text-align: center;
-    font-size: 12px;
     font-weight: bold;
-    color: #64748b;
-    padding: 8px 3px;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
 }
 
 .calendar-grid {
@@ -445,205 +378,190 @@ li:hover {
 }
 
 .calendar-day {
-    min-height: 105px;
-    padding: 8px;
+    min-height: 95px;
     background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 9px;
+    border: 1px solid #e5e7eb;
+    border-radius: 7px;
+    padding: 6px;
     cursor: pointer;
-    transition: 0.2s;
-    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .calendar-day:hover {
     background: #f1f5f9;
-    transform: translateY(-1px);
 }
 
 .calendar-day.empty {
-    background: #f8fafc;
-    opacity: 0.45;
+    background: transparent;
+    border: none;
     cursor: default;
 }
 
 .calendar-day.today {
-    border: 2px solid #1e293b;
+    border: 2px solid #2563eb;
 }
 
-.calendar-day.selected {
-    background: #e2e8f0;
-    border: 2px solid #64748b;
-}
-
-.calendar-date {
-    font-size: 13px;
+.calendar-date-number {
     font-weight: bold;
-    color: #334155;
-    margin-bottom: 7px;
+    font-size: 13px;
+    margin-bottom: 5px;
 }
 
 .calendar-event {
-    background: #1e293b;
-    color: white;
-    border-radius: 6px;
+    background: #dbeafe;
+    border-left: 3px solid #2563eb;
     padding: 5px;
     margin-bottom: 4px;
-    font-size: 10px;
-    line-height: 1.25;
+    border-radius: 4px;
+    font-size: 11px;
     cursor: pointer;
 }
 
 .calendar-event:hover {
-    background: #334155;
-}
-
-.calendar-event-time {
-    font-weight: bold;
-    margin-bottom: 2px;
+    background: #bfdbfe;
 }
 
 .calendar-event-subject {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-weight: bold;
+}
+
+.calendar-event-time {
+    color: #555;
+    margin-top: 2px;
 }
 
 
-/* ============================= */
-/* SCHEDULE DETAILS */
-/* ============================= */
+/* =========================
+   SCHEDULE DETAILS
+========================= */
 
 .schedule-details {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
+    background: white;
+    border-radius: 12px;
     padding: 20px;
-    min-height: 220px;
-    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    min-height: 250px;
 }
 
-.schedule-details h3 {
-    margin-top: 0;
-    margin-bottom: 18px;
-    font-size: 18px;
-    color: #0f172a;
+.empty-details {
+    text-align: center;
+    color: #888;
+    padding-top: 45px;
+}
+
+.empty-details div {
+    font-size: 40px;
+    margin-bottom: 10px;
 }
 
 .schedule-detail-subject {
     font-size: 18px;
     font-weight: bold;
-    color: #0f172a;
     margin-bottom: 15px;
 }
 
 .schedule-detail-item {
-    font-size: 14px;
-    color: #475569;
-    margin: 10px 0;
+    margin-bottom: 12px;
+    color: #555;
 }
 
-.empty-details {
-    color: #94a3b8;
-    font-size: 14px;
-    line-height: 1.5;
+.schedule-detail-item strong {
+    color: #222;
 }
 
 
-/* ============================= */
-/* WEEKLY VIEW */
-/* ============================= */
+/* =========================
+   WEEKLY VIEW
+========================= */
 
 .weekly-grid {
     display: grid;
-    grid-template-columns: repeat(7, minmax(130px, 1fr));
-    gap: 8px;
-    overflow-x: auto;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 7px;
 }
 
 .weekly-column {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    min-height: 280px;
-    padding: 10px;
+    background: white;
+    min-height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .weekly-day-header {
+    background: #f1f5f9;
+    padding: 10px 5px;
     text-align: center;
     font-weight: bold;
-    color: #0f172a;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 10px;
+    font-size: 13px;
 }
 
 .weekly-date {
-    display: block;
+    color: #666;
     font-size: 12px;
-    color: #64748b;
-    font-weight: normal;
     margin-top: 3px;
 }
 
 .weekly-event {
-    background: #1e293b;
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 8px;
+    margin: 8px;
+    padding: 9px;
+    background: #dbeafe;
+    border-left: 3px solid #2563eb;
+    border-radius: 6px;
     cursor: pointer;
 }
 
 .weekly-event:hover {
-    background: #334155;
-    transform: translateY(-1px);
-}
-
-.weekly-event-time {
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 5px;
+    background: #bfdbfe;
 }
 
 .weekly-event-subject {
+    font-weight: bold;
     font-size: 12px;
-    line-height: 1.3;
+}
+
+.weekly-event-time {
+    font-size: 11px;
+    color: #555;
+    margin-top: 4px;
 }
 
 .weekly-empty {
-    color: #94a3b8;
     text-align: center;
+    color: #aaa;
     font-size: 12px;
-    margin-top: 25px;
+    padding: 20px 5px;
 }
 
 
-/* ============================= */
-/* SAVED SCHEDULES */
-/* ============================= */
+/* =========================
+   SAVED SCHEDULES
+========================= */
 
 .saved-schedules {
     margin-top: 30px;
-    padding-top: 25px;
-    border-top: 1px solid #e2e8f0;
 }
 
-.saved-schedules h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    font-size: 18px;
+.saved-schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.saved-schedules h2 {
+    margin-bottom: 12px;
 }
 
 .saved-schedule-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    padding: 14px;
-    margin-bottom: 10px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: white;
+    padding: 15px;
     border-radius: 10px;
+    margin-bottom: 9px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 7px rgba(0,0,0,0.05);
 }
 
 .saved-schedule-info {
@@ -652,136 +570,98 @@ li:hover {
 
 .saved-schedule-subject {
     font-weight: bold;
-    color: #0f172a;
     margin-bottom: 5px;
 }
 
+.saved-schedule-date,
 .saved-schedule-time {
     font-size: 13px;
-    color: #64748b;
+    color: #666;
 }
 
 .saved-schedule-actions {
     display: flex;
-    gap: 6px;
+    gap: 7px;
 }
 
-.schedule-edit-btn,
-.schedule-delete-btn {
-    width: auto;
-    margin: 0;
+.saved-schedule-actions button {
     padding: 7px 10px;
-    font-size: 13px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
-.schedule-edit-btn {
-    background: #e2e8f0;
-    color: #334155;
+.saved-edit {
+    background: #f3f4f6;
 }
 
-.schedule-edit-btn:hover {
-    background: #cbd5e1;
-    transform: none;
-}
-
-.schedule-delete-btn {
-    background: #f1f5f9;
-    color: #64748b;
-}
-
-.schedule-delete-btn:hover {
+.saved-delete {
     background: #fee2e2;
     color: #b91c1c;
-    transform: none;
 }
 
 
-/* ============================= */
-/* MOBILE */
-/* ============================= */
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 800px) {
 
-    body {
-        padding: 12px;
-    }
-
-    .container {
-        margin: 20px auto;
-    }
-
-    .tracker-card {
-        padding: 20px;
+    .form-grid,
+    .schedule-form-grid {
+        grid-template-columns: 1fr 1fr;
     }
 
     .calendar-layout {
         grid-template-columns: 1fr;
     }
 
-    .calendar-day {
-        min-height: 85px;
-    }
-
-    .calendar-event {
-        font-size: 9px;
-    }
-
     .weekly-grid {
-        grid-template-columns: repeat(7, 145px);
+        overflow-x: auto;
+        grid-template-columns: repeat(7, minmax(130px, 1fr));
     }
 
 }
 
 @media (max-width: 600px) {
 
-    h1 {
-        font-size: 27px;
-    }
-
-    .main-tabs,
-    .schedule-tabs {
-        flex-direction: column;
-    }
-
-    .main-tab,
-    .schedule-tab {
-        width: 100%;
+    .container {
+        margin-top: 20px;
+        padding: 0 12px 30px;
     }
 
     .progress-summary {
         grid-template-columns: 1fr;
     }
 
-    .time-row {
+    .form-grid,
+    .schedule-form-grid {
         grid-template-columns: 1fr;
-        gap: 0;
     }
 
-    .calendar-grid {
-        gap: 3px;
+    .main-tabs {
+        flex-direction: column;
     }
 
-    .calendar-weekdays {
-        gap: 3px;
+    .schedule-tabs {
+        flex-direction: column;
     }
 
     .calendar-day {
         min-height: 70px;
-        padding: 5px;
-    }
-
-    .calendar-date {
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .calendar-event {
-        padding: 3px;
-        font-size: 8px;
+        font-size: 9px;
     }
 
     .saved-schedule-item {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .task-item {
+        flex-wrap: wrap;
     }
 
 }
