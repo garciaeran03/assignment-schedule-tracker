@@ -14,155 +14,80 @@
 
 <div class="container">
 
+    <!-- HEADER -->
+    <h1 id="greeting">Good Morning, Sir Eran ☀️</h1>
 
-    <!-- =========================
-         COZY HEADER
-    ========================= -->
+    <p class="subtitle">
+        Assignments & Class Schedule
+    </p>
 
-    <div class="welcome-header">
-
-        <div class="welcome-left">
-
-            <div id="greeting" class="greeting">
-                Good Morning ☀️
-            </div>
-
-            <div id="motivationQuote" class="motivation-quote">
-                “Small progress is still progress.”
-            </div>
-
-        </div>
-
-
-        <div class="datetime-box">
-
-            <div id="currentTime" class="current-time">
-                10:42 AM
-            </div>
-
-            <div id="currentDate" class="current-date">
-                September 17, 2026
-            </div>
-
-        </div>
-
+    <div class="cozy-info">
+        <span id="currentTime">--:--</span>
+        <span>•</span>
+        <span id="currentDate">Loading date...</span>
     </div>
 
-
-    <!-- =========================
-         SCHOOL TITLE
-    ========================= -->
-
-    <div class="school-title">
-
-        <h1>
-            My School Tracker
-        </h1>
-
-        <p class="subtitle">
-            Assignments & Class Schedule
-        </p>
-
-    </div>
+    <p id="motivationQuote" class="motivation-quote">
+        "Small progress is still progress."
+    </p>
 
 
-
-    <!-- =========================
-         MAIN TABS
-    ========================= -->
-
+    <!-- MAIN TABS -->
     <div class="main-tabs">
 
         <button
             class="main-tab active"
-            onclick="showMainTab('assignments')"
-        >
+            onclick="showMainTab('assignments')">
             📝 Assignments
         </button>
 
         <button
             class="main-tab"
-            onclick="showMainTab('schedule')"
-        >
+            onclick="showMainTab('schedule')">
             📅 Class Schedule
         </button>
 
     </div>
 
 
-
-    <!-- =========================
-         ASSIGNMENT TRACKER
-    ========================= -->
+    <!-- ================================================= -->
+    <!-- ASSIGNMENTS TAB -->
+    <!-- ================================================= -->
 
     <div id="assignmentsTab">
 
         <div class="tracker-card">
 
-            <h2>
-                Today's Progress
-            </h2>
-
-
-            <!-- PROGRESS SUMMARY -->
+            <h2>Today's Progress</h2>
 
             <div class="progress-summary">
 
                 <div class="progress-box">
-
-                    <span id="totalTasks">
-                        0
-                    </span>
-
-                    <small>
-                        Total
-                    </small>
-
+                    <span id="totalTasks">0</span>
+                    <small>Total</small>
                 </div>
 
-
                 <div class="progress-box">
-
-                    <span id="completedTasks">
-                        0
-                    </span>
-
-                    <small>
-                        Completed
-                    </small>
-
+                    <span id="completedTasks">0</span>
+                    <small>Completed</small>
                 </div>
 
-
                 <div class="progress-box">
-
-                    <span id="pendingTasks">
-                        0
-                    </span>
-
-                    <small>
-                        Pending
-                    </small>
-
+                    <span id="pendingTasks">0</span>
+                    <small>Pending</small>
                 </div>
 
             </div>
 
 
-            <!-- PROGRESS BAR -->
-
             <div class="progress-bar">
-
                 <div id="progressFill"></div>
-
             </div>
 
             <p id="progressText">
                 0% Complete
             </p>
 
-
-            <!-- SUBJECT -->
 
             <label for="subject">
                 Subject
@@ -205,8 +130,6 @@
             </select>
 
 
-            <!-- TOPIC -->
-
             <label for="task">
                 Topic
             </label>
@@ -218,8 +141,6 @@
             >
 
 
-            <!-- DUE DATE -->
-
             <label for="dueDate">
                 Due Date
             </label>
@@ -229,8 +150,6 @@
                 id="dueDate"
             >
 
-
-            <!-- PRIORITY -->
 
             <label for="priority">
                 Priority
@@ -253,17 +172,12 @@
             </select>
 
 
-            <!-- ADD TASK -->
-
             <button
                 id="addTaskButton"
-                onclick="addTask()"
-            >
+                onclick="addTask()">
                 Add Task
             </button>
 
-
-            <!-- DATE FILTER -->
 
             <label for="dateFilter">
                 Filter by Date
@@ -271,8 +185,7 @@
 
             <select
                 id="dateFilter"
-                onchange="handleDateFilter()"
-            >
+                onchange="handleDateFilter()">
 
                 <option value="All">
                     All Dates
@@ -305,10 +218,7 @@
             >
 
 
-            <!-- TASK LIST -->
-
             <ul id="taskList"></ul>
-
 
             <p id="taskCounter">
                 0 Tasks
@@ -319,10 +229,9 @@
     </div>
 
 
-
-    <!-- =========================
-         CLASS SCHEDULE
-    ========================= -->
+    <!-- ================================================= -->
+    <!-- CLASS SCHEDULE TAB -->
+    <!-- ================================================= -->
 
     <div
         id="scheduleTab"
@@ -379,15 +288,11 @@
             </select>
 
 
-            <!-- EXACT DATE -->
-
             <input
                 type="date"
                 id="scheduleDate"
             >
 
-
-            <!-- START TIME -->
 
             <select id="startTime">
 
@@ -397,8 +302,6 @@
 
             </select>
 
-
-            <!-- END TIME -->
 
             <select id="endTime">
 
@@ -411,13 +314,11 @@
 
             <button
                 id="addScheduleButton"
-                onclick="addSchedule()"
-            >
+                onclick="addSchedule()">
                 Add Schedule
             </button>
 
         </div>
-
 
 
         <!-- SCHEDULE VIEW TABS -->
@@ -426,37 +327,35 @@
 
             <button
                 class="schedule-tab active"
-                onclick="showScheduleView('calendar')"
-            >
+                onclick="showScheduleView('calendar')">
                 📅 Calendar
             </button>
 
             <button
                 class="schedule-tab"
-                onclick="showScheduleView('weekly')"
-            >
+                onclick="showScheduleView('weekly')">
                 🗓️ Weekly
             </button>
 
         </div>
 
 
-
-        <!-- =========================
-             CALENDAR VIEW
-        ========================= -->
+        <!-- ================================================= -->
+        <!-- CALENDAR VIEW -->
+        <!-- ================================================= -->
 
         <div id="calendarView">
 
             <div class="calendar-layout">
 
+
+                <!-- CALENDAR -->
+
                 <div class="calendar-main">
 
                     <div class="calendar-header">
 
-                        <button
-                            onclick="changeMonth(-1)"
-                        >
+                        <button onclick="changeMonth(-1)">
                             ◀
                         </button>
 
@@ -464,9 +363,7 @@
                             Month
                         </h3>
 
-                        <button
-                            onclick="changeMonth(1)"
-                        >
+                        <button onclick="changeMonth(1)">
                             ▶
                         </button>
 
@@ -488,19 +385,17 @@
 
                     <div
                         id="calendarGrid"
-                        class="calendar-grid"
-                    ></div>
+                        class="calendar-grid">
+                    </div>
 
                 </div>
-
 
 
                 <!-- SCHEDULE DETAILS -->
 
                 <div
                     id="scheduleDetails"
-                    class="schedule-details"
-                >
+                    class="schedule-details">
 
                     <div class="empty-details">
 
@@ -522,10 +417,9 @@
         </div>
 
 
-
-        <!-- =========================
-             WEEKLY VIEW
-        ========================= -->
+        <!-- ================================================= -->
+        <!-- WEEKLY VIEW -->
+        <!-- ================================================= -->
 
         <div
             id="weeklyView"
@@ -534,9 +428,7 @@
 
             <div class="weekly-header">
 
-                <button
-                    onclick="changeWeek(-1)"
-                >
+                <button onclick="changeWeek(-1)">
                     ◀
                 </button>
 
@@ -544,9 +436,7 @@
                     Week
                 </h3>
 
-                <button
-                    onclick="changeWeek(1)"
-                >
+                <button onclick="changeWeek(1)">
                     ▶
                 </button>
 
@@ -555,16 +445,15 @@
 
             <div
                 id="weeklyGrid"
-                class="weekly-grid"
-            ></div>
+                class="weekly-grid">
+            </div>
 
         </div>
 
 
-
-        <!-- =========================
-             SAVED SCHEDULES
-        ========================= -->
+        <!-- ================================================= -->
+        <!-- SAVED SCHEDULES -->
+        <!-- ================================================= -->
 
         <div class="saved-schedules">
 
@@ -581,18 +470,14 @@
 </div>
 
 
-
-<!-- =========================
-     SUPABASE
-========================= -->
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase-config.js"></script>
 
-<!-- EXISTING TRACKER SCRIPT -->
-
 <script src="script.js"></script>
+
 
 </body>
 </html>
