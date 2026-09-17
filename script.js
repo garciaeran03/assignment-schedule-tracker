@@ -1,6 +1,8 @@
-/* =========================================================
-   SUPABASE AUTH + CLOUD SYNC
-========================================================= */
+// ============================================================
+// MY SCHOOL TRACKER
+// ASSIGNMENTS + CLASS SCHEDULE
+// SUPABASE CLOUD SYNC
+// ============================================================
 
 let currentUser = null;
 
@@ -16,16 +18,13 @@ let weeklyDate = new Date();
 let selectedCalendarDate = null;
 
 
-/* =========================================================
-   SUPABASE CLIENT HELPER
-========================================================= */
+// ============================================================
+// SUPABASE CHECK
+// ============================================================
 
-function getSupabaseClient() {
-
-    if (
-        !window.supabaseClient ||
-        !window.supabaseClient.auth
-    ) {
+function getSupabase() {
+    if (!window.supabaseClient) {
+        alert("Supabase is not connected. Please check supabase-config.js.");
         return null;
     }
 
@@ -33,9 +32,9 @@ function getSupabaseClient() {
 }
 
 
-/* =========================================================
-   AUTH UI
-========================================================= */
+// ============================================================
+// LOGIN SCREEN
+// ============================================================
 
 function createLoginScreen() {
 
@@ -43,2284 +42,995 @@ function createLoginScreen() {
         return;
     }
 
-    const loginScreen =
-        document.createElement("div");
+    const loginScreen = document.createElement("div");
 
-    loginScreen.id =
-        "loginScreen";
+    loginScreen.id = "loginScreen";
 
     loginScreen.innerHTML = `
-
         <div class="login-card">
 
-            <div class="login-icon">
-                📚
-            </div>
+            <h2>🎓 My School Tracker</h2>
 
-            <h1>
-                My School Tracker
-            </h1>
-
-            <p class="login-subtitle">
-                Login to sync your school data
-            </p>
-
-            <label for="loginEmail">
-                Email
-            </label>
+            <p>Login to access your school tracker.</p>
 
             <input
                 type="email"
                 id="loginEmail"
-                placeholder="Enter your email"
-                autocomplete="email"
+                placeholder="Email address"
             >
-
-            <label for="loginPassword">
-                Password
-            </label>
 
             <input
                 type="password"
                 id="loginPassword"
-                placeholder="Enter your password"
-                autocomplete="current-password"
+                placeholder="Password"
             >
 
-            <button
-                id="loginButton"
-                onclick="loginUser()"
-            >
+            <button onclick="loginUser()">
                 Login
             </button>
 
-            <p id="loginError"></p>
+            <p id="loginMessage"></p>
 
         </div>
     `;
 
-    document.body.appendChild(
-        loginScreen
-    );
-
-    const passwordInput =
-        document.getElementById(
-            "loginPassword"
-        );
-
-    if (passwordInput) {
-
-        passwordInput.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (event.key === "Enter") {
-                    loginUser();
-                }
-
-            }
-        );
-    }
+    document.body.appendChild(loginScreen);
 }
 
 
-function showLoginScreen() {
-
-    let loginScreen =
-        document.getElementById(
-            "loginScreen"
-        );
-
-    if (!loginScreen) {
-
-        createLoginScreen();
-
-        loginScreen =
-            document.getElementById(
-                "loginScreen"
-            );
-    }
-
-    loginScreen.style.display =
-        "flex";
-
-    const container =
-        document.querySelector(
-            ".container"
-        );
-
-    if (container) {
-        container.style.display =
-            "none";
-    }
-}
-
-
-function hideLoginScreen() {
-
-    const loginScreen =
-        document.getElementById(
-            "loginScreen"
-        );
-
-    if (loginScreen) {
-        loginScreen.style.display =
-            "none";
-    }
-
-    const container =
-        document.querySelector(
-            ".container"
-        );
-
-    if (container) {
-        container.style.display =
-            "";
-    }
-}
-
-
-function showLoginMessage(message) {
-
-    const messageElement =
-        document.getElementById(
-            "loginError"
-        );
-
-    if (messageElement) {
-        messageElement.textContent =
-            message || "";
-    }
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
+// ============================================================
+// LOGIN
+// ============================================================
 
 async function loginUser() {
 
-    const client =
-        getSupabaseClient();
+    const supabase = getSupabase();
 
-    if (!client) {
+    if (!supabase) return;
 
-        showLoginMessage(
-            "Supabase is not connected. Please check supabase-config.js."
-        );
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
 
-        console.error(
-            "Supabase client was not found."
-        );
-
-        return;
-    }
-
-
-    const emailElement =
-        document.getElementById(
-            "loginEmail"
-        );
-
-    const passwordElement =
-        document.getElementById(
-            "loginPassword"
-        );
-
-    const loginButton =
-        document.getElementById(
-            "loginButton"
-        );
-
-
-    const email =
-        emailElement
-            ? emailElement.value.trim()
-            : "";
-
-    const password =
-        passwordElement
-            ? passwordElement.value
-            : "";
-
+    const message = document.getElementById("loginMessage");
 
     if (!email || !password) {
 
-        showLoginMessage(
-            "Please enter your email and password."
-        );
+        message.textContent = "Please enter your email and password.";
 
         return;
     }
 
+    message.textContent = "Logging in...";
 
-    if (loginButton) {
+    const { data, error } =
+        await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
 
-        loginButton.disabled =
-            true;
+    if (error) {
 
-        loginButton.textContent =
-            "Logging in...";
+        message.textContent = error.message;
+
+        return;
     }
 
+    currentUser = data.user;
 
-    showLoginMessage("");
+    const loginScreen =
+        document.getElementById("loginScreen");
 
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await client.auth.signInWithPassword({
-
-                email:
-                    email,
-
-                password:
-                    password
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Supabase login error:",
-                error
-            );
-
-            showLoginMessage(
-                error.message ||
-                "Login failed."
-            );
-
-            if (loginButton) {
-
-                loginButton.disabled =
-                    false;
-
-                loginButton.textContent =
-                    "Login";
-            }
-
-            return;
-        }
-
-
-        if (
-            !data ||
-            !data.user
-        ) {
-
-            showLoginMessage(
-                "Login failed. No user session was returned."
-            );
-
-            if (loginButton) {
-
-                loginButton.disabled =
-                    false;
-
-                loginButton.textContent =
-                    "Login";
-            }
-
-            return;
-        }
-
-
-        currentUser =
-            data.user;
-
-
-        const initialized =
-            await initializeCloudData();
-
-
-        if (!initialized) {
-
-            await client.auth.signOut();
-
-            currentUser =
-                null;
-
-            if (loginButton) {
-
-                loginButton.disabled =
-                    false;
-
-                loginButton.textContent =
-                    "Login";
-            }
-
-            return;
-        }
-
-
-        hideLoginScreen();
-
-        showLogoutButton();
-
-
-        if (loginButton) {
-
-            loginButton.disabled =
-                false;
-
-            loginButton.textContent =
-                "Login";
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Login exception:",
-            error
-        );
-
-        showLoginMessage(
-            error?.message ||
-            "Unable to login. Please try again."
-        );
-
-        if (loginButton) {
-
-            loginButton.disabled =
-                false;
-
-            loginButton.textContent =
-                "Login";
-        }
+    if (loginScreen) {
+        loginScreen.remove();
     }
+
+    document.body.classList.remove("logged-out");
+
+    await initializeTracker();
 }
 
 
-/* =========================================================
-   LOGOUT
-========================================================= */
+// ============================================================
+// LOGOUT
+// ============================================================
 
 async function logoutUser() {
 
-    const confirmed =
-        confirm(
-            "Are you sure you want to logout?"
-        );
+    const supabase = getSupabase();
 
+    if (!supabase) return;
 
-    if (!confirmed) {
-        return;
-    }
+    await supabase.auth.signOut();
 
+    currentUser = null;
 
-    const client =
-        getSupabaseClient();
-
-
-    try {
-
-        if (client) {
-            await client.auth.signOut();
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-    }
-
-
-    currentUser =
-        null;
-
-    tasks =
-        [];
-
-    schedules =
-        [];
-
-    editingIndex =
-        -1;
-
-    editingScheduleIndex =
-        -1;
-
-
-    const logoutButton =
-        document.getElementById(
-            "logoutButton"
-        );
-
-
-    if (logoutButton) {
-        logoutButton.remove();
-    }
-
-
-    showLoginScreen();
-
-    showLoginMessage("");
+    location.reload();
 }
 
 
-/* =========================================================
-   LOGOUT BUTTON
-========================================================= */
+// ============================================================
+// LOAD CLOUD DATA
+// ============================================================
 
-function showLogoutButton() {
+async function loadCloudData() {
 
-    if (
-        document.getElementById(
-            "logoutButton"
-        )
-    ) {
-        return;
-    }
+    const supabase = getSupabase();
 
-
-    const button =
-        document.createElement(
-            "button"
-        );
-
-
-    button.id =
-        "logoutButton";
-
-
-    button.textContent =
-        "Logout";
-
-
-    button.onclick =
-        logoutUser;
-
-
-    button.style.cssText = `
-        position:fixed;
-        top:18px;
-        right:18px;
-        z-index:9998;
-        border:none;
-        border-radius:10px;
-        padding:9px 14px;
-        background:#193A5D;
-        color:#F5F7FA;
-        cursor:pointer;
-        font-weight:600;
-        box-shadow:0 4px 15px rgba(0,0,0,.15);
-    `;
-
-
-    document.body.appendChild(
-        button
-    );
-}
-
-
-/* =========================================================
-   CLOUD INITIALIZATION
-========================================================= */
-
-async function initializeCloudData() {
-
-    if (!currentUser) {
-        return false;
-    }
-
-
-    const client =
-        getSupabaseClient();
-
-
-    if (!client) {
-
-        alert(
-            "Supabase is not connected. Please check supabase-config.js."
-        );
-
-        return false;
-    }
-
+    if (!supabase || !currentUser) return;
 
     try {
 
-        const localTasks =
-            JSON.parse(
-                localStorage.getItem(
-                    "schoolTasks"
-                )
-            ) || [];
-
-
-        const localSchedules =
-            JSON.parse(
-                localStorage.getItem(
-                    "classSchedules"
-                )
-            ) || [];
-
-
-        /* =========================================
-           LOAD CLOUD ASSIGNMENTS
-        ========================================= */
+        // -------------------------
+        // ASSIGNMENTS
+        // -------------------------
 
         const {
             data: cloudTasks,
             error: taskError
-        } =
-            await client
-                .from("assignments")
-                .select("*")
-                .eq(
-                    "user_id",
-                    currentUser.id
-                )
-                .order(
-                    "due_date",
-                    {
-                        ascending: true
-                    }
-                );
-
+        } = await supabase
+            .from("assignments")
+            .select("*")
+            .eq("user_id", currentUser.id)
+            .order("due_date", {
+                ascending: true
+            });
 
         if (taskError) {
-            throw taskError;
-        }
+            console.error(
+                "Assignment load error:",
+                taskError
+            );
+        } else {
 
+            if (cloudTasks && cloudTasks.length > 0) {
 
-        /* =========================================
-           MIGRATE LOCAL ASSIGNMENTS
-        ========================================= */
-
-        if (
-            cloudTasks.length === 0 &&
-            localTasks.length > 0
-        ) {
-
-            const rows =
-                localTasks
-                    .filter(
-                        task =>
-                            task.subject &&
-                            task.task &&
-                            task.dueDate
-                    )
-                    .map(
-                        task => ({
-
-                            user_id:
-                                currentUser.id,
-
-                            subject:
-                                task.subject,
-
-                            task:
-                                task.task,
-
-                            due_date:
-                                task.dueDate,
-
-                            priority:
-                                task.priority ||
-                                "Medium",
-
-                            completed:
-                                Boolean(
-                                    task.completed
-                                )
-
-                        })
-                    );
-
-
-            if (rows.length > 0) {
-
-                const {
-                    data: insertedTasks,
-                    error:
-                        insertTaskError
-                } =
-                    await client
-                        .from("assignments")
-                        .insert(rows)
-                        .select();
-
-
-                if (insertTaskError) {
-                    throw insertTaskError;
-                }
-
-
-                tasks =
-                    insertedTasks.map(
-                        task => ({
-
-                            id:
-                                task.id,
-
-                            subject:
-                                task.subject,
-
-                            task:
-                                task.task,
-
-                            dueDate:
-                                task.due_date,
-
-                            priority:
-                                task.priority,
-
-                            completed:
-                                task.completed
-
-                        })
-                    );
+                tasks = cloudTasks.map(task => ({
+                    id: task.id,
+                    subject: task.subject,
+                    task: task.task,
+                    dueDate: task.due_date,
+                    priority: task.priority,
+                    completed: task.completed,
+                    createdAt: task.created_at
+                }));
 
             } else {
 
-                tasks = [];
+                const localTasks =
+                    JSON.parse(
+                        localStorage.getItem("schoolTasks")
+                    ) || [];
+
+                tasks = localTasks;
+
+                if (localTasks.length > 0) {
+
+                    for (const task of localTasks) {
+
+                        await supabase
+                            .from("assignments")
+                            .insert({
+                                subject: task.subject,
+                                task: task.task,
+                                due_date: task.dueDate,
+                                priority: task.priority,
+                                completed: task.completed || false,
+                                user_id: currentUser.id
+                            });
+                    }
+                }
             }
-
-        } else {
-
-            tasks =
-                cloudTasks.map(
-                    task => ({
-
-                        id:
-                            task.id,
-
-                        subject:
-                            task.subject,
-
-                        task:
-                            task.task,
-
-                        dueDate:
-                            task.due_date,
-
-                        priority:
-                            task.priority,
-
-                        completed:
-                            task.completed
-
-                    })
-                );
         }
 
 
-        /* =========================================
-           LOAD CLOUD SCHEDULES
-        ========================================= */
+        // -------------------------
+        // CLASS SCHEDULES
+        // -------------------------
 
         const {
             data: cloudSchedules,
             error: scheduleError
-        } =
-            await client
-                .from("class_schedules")
-                .select("*")
-                .eq(
-                    "user_id",
-                    currentUser.id
-                )
-                .order(
-                    "schedule_date",
-                    {
-                        ascending: true
-                    }
-                );
-
+        } = await supabase
+            .from("class_schedules")
+            .select("*")
+            .eq("user_id", currentUser.id)
+            .order("schedule_date", {
+                ascending: true
+            });
 
         if (scheduleError) {
-            throw scheduleError;
-        }
 
-
-        /* =========================================
-           MIGRATE LOCAL SCHEDULES
-        ========================================= */
-
-        if (
-            cloudSchedules.length === 0 &&
-            localSchedules.length > 0
-        ) {
-
-            const rows =
-                localSchedules
-                    .filter(
-                        schedule =>
-                            schedule.subject &&
-                            schedule.date &&
-                            schedule.startTime &&
-                            schedule.endTime
-                    )
-                    .map(
-                        schedule => ({
-
-                            user_id:
-                                currentUser.id,
-
-                            subject:
-                                schedule.subject,
-
-                            schedule_date:
-                                schedule.date,
-
-                            start_time:
-                                schedule.startTime,
-
-                            end_time:
-                                schedule.endTime
-
-                        })
-                    );
-
-
-            if (rows.length > 0) {
-
-                const {
-                    data:
-                        insertedSchedules,
-                    error:
-                        insertScheduleError
-                } =
-                    await client
-                        .from(
-                            "class_schedules"
-                        )
-                        .insert(rows)
-                        .select();
-
-
-                if (insertScheduleError) {
-                    throw insertScheduleError;
-                }
-
-
-                schedules =
-                    insertedSchedules.map(
-                        schedule => ({
-
-                            id:
-                                schedule.id,
-
-                            subject:
-                                schedule.subject,
-
-                            date:
-                                schedule.schedule_date,
-
-                            startTime:
-                                schedule.start_time,
-
-                            endTime:
-                                schedule.end_time
-
-                        })
-                    );
-
-            } else {
-
-                schedules = [];
-            }
+            console.error(
+                "Schedule load error:",
+                scheduleError
+            );
 
         } else {
 
-            schedules =
-                cloudSchedules.map(
-                    schedule => ({
+            if (
+                cloudSchedules &&
+                cloudSchedules.length > 0
+            ) {
 
-                        id:
-                            schedule.id,
+                schedules =
+                    cloudSchedules.map(schedule => ({
+                        id: schedule.id,
+                        subject: schedule.subject,
+                        scheduleDate: schedule.schedule_date,
+                        startTime: schedule.start_time,
+                        endTime: schedule.end_time,
+                        createdAt: schedule.created_at
+                    }));
 
-                        subject:
-                            schedule.subject,
+            } else {
 
-                        date:
-                            schedule.schedule_date,
+                const localSchedules =
+                    JSON.parse(
+                        localStorage.getItem("classSchedules")
+                    ) || [];
 
-                        startTime:
-                            schedule.start_time,
+                schedules = localSchedules;
 
-                        endTime:
-                            schedule.end_time
+                if (localSchedules.length > 0) {
 
-                    })
-                );
+                    for (const schedule of localSchedules) {
+
+                        await supabase
+                            .from("class_schedules")
+                            .insert({
+                                subject: schedule.subject,
+                                schedule_date: schedule.scheduleDate,
+                                start_time: schedule.startTime,
+                                end_time: schedule.endTime,
+                                user_id: currentUser.id
+                            });
+                    }
+                }
+            }
         }
-
-
-        /* =========================================
-           LOCAL CACHE
-        ========================================= */
 
         localStorage.setItem(
             "schoolTasks",
-            JSON.stringify(
-                tasks
-            )
+            JSON.stringify(tasks)
         );
-
 
         localStorage.setItem(
             "classSchedules",
-            JSON.stringify(
-                schedules
-            )
+            JSON.stringify(schedules)
         );
-
-
-        displayTasks();
-
-        renderCalendar();
-
-        renderWeeklySchedule();
-
-        displaySavedSchedules();
-
-
-        return true;
-
 
     } catch (error) {
 
         console.error(
-            "Cloud initialization error:",
+            "Cloud sync error:",
             error
         );
-
-
-        alert(
-            "Unable to load your cloud data.\n\n" +
-            (
-                error?.message ||
-                "Unknown Supabase error."
-            )
-        );
-
-
-        return false;
     }
 }
 
 
-/* =========================================================
-   MAIN TABS
-========================================================= */
+// ============================================================
+// INITIALIZE TRACKER
+// ============================================================
+
+async function initializeTracker() {
+
+    await loadCloudData();
+
+    displayTasks();
+
+    populateTimeDropdowns();
+
+    renderCalendar();
+
+    renderWeekly();
+
+    displaySavedSchedules();
+
+    updateProgress();
+
+    addLogoutButton();
+}
+
+
+// ============================================================
+// LOGOUT BUTTON
+// ============================================================
+
+function addLogoutButton() {
+
+    if (document.getElementById("logoutButton")) {
+        return;
+    }
+
+    const button = document.createElement("button");
+
+    button.id = "logoutButton";
+
+    button.textContent = "Logout";
+
+    button.onclick = logoutUser;
+
+    button.style.marginTop = "15px";
+
+    const container =
+        document.querySelector(".container");
+
+    if (container) {
+        container.appendChild(button);
+    }
+}
+
+
+// ============================================================
+// MAIN TABS
+// ============================================================
 
 function showMainTab(tab) {
 
     const assignmentsTab =
-        document.getElementById(
-            "assignmentsTab"
-        );
+        document.getElementById("assignmentsTab");
 
     const scheduleTab =
-        document.getElementById(
-            "scheduleTab"
-        );
+        document.getElementById("scheduleTab");
 
-    const mainTabs =
-        document.querySelectorAll(
-            ".main-tab"
-        );
+    const tabs =
+        document.querySelectorAll(".main-tab");
 
+    tabs.forEach(button => {
+        button.classList.remove("active");
+    });
 
-    mainTabs.forEach(
-        button => {
+    if (tab === "assignments") {
 
-            button.classList.remove(
-                "active"
-            );
+        assignmentsTab.style.display = "block";
 
-        }
-    );
+        scheduleTab.style.display = "none";
 
-
-    if (
-        tab === "assignments"
-    ) {
-
-        assignmentsTab.style.display =
-            "block";
-
-        scheduleTab.style.display =
-            "none";
-
-
-        if (mainTabs[0]) {
-
-            mainTabs[0].classList.add(
-                "active"
-            );
-        }
-
-
-        displayTasks();
+        tabs[0].classList.add("active");
 
     } else {
 
-        assignmentsTab.style.display =
-            "none";
+        assignmentsTab.style.display = "none";
 
-        scheduleTab.style.display =
-            "block";
+        scheduleTab.style.display = "block";
 
-
-        if (mainTabs[1]) {
-
-            mainTabs[1].classList.add(
-                "active"
-            );
-        }
-
+        tabs[1].classList.add("active");
 
         renderCalendar();
 
-        renderWeeklySchedule();
+        renderWeekly();
 
         displaySavedSchedules();
     }
 }
 
 
-/* =========================================================
-   ASSIGNMENT FUNCTIONS
-========================================================= */
+// ============================================================
+// ASSIGNMENTS
+// ============================================================
 
 async function addTask() {
 
     if (!currentUser) {
+        alert("Please login first.");
         return;
     }
 
+    const supabase = getSupabase();
 
-    const client =
-        getSupabaseClient();
-
-
-    if (!client) {
-        alert(
-            "Supabase is not connected."
-        );
-        return;
-    }
-
+    if (!supabase) return;
 
     const subject =
-        document.getElementById(
-            "subject"
-        ).value;
-
+        document.getElementById("subject").value;
 
     const task =
-        document.getElementById(
-            "task"
-        ).value.trim();
-
+        document.getElementById("task").value.trim();
 
     const dueDate =
-        document.getElementById(
-            "dueDate"
-        ).value;
-
+        document.getElementById("dueDate").value;
 
     const priority =
-        document.getElementById(
-            "priority"
-        ).value;
+        document.getElementById("priority").value;
 
+    if (!task || !dueDate) {
 
-    if (
-        !subject ||
-        !task ||
-        !dueDate
-    ) {
-
-        alert(
-            "Please complete all assignment fields."
-        );
+        alert("Please enter the topic and due date.");
 
         return;
     }
 
 
-    try {
+    // EDIT
+    if (editingIndex !== -1) {
 
-        if (
-            editingIndex >= 0
-        ) {
+        const existingTask =
+            tasks[editingIndex];
 
-            const existingTask =
-                tasks[editingIndex];
+        const { error } =
+            await supabase
+                .from("assignments")
+                .update({
+                    subject: subject,
+                    task: task,
+                    due_date: dueDate,
+                    priority: priority
+                })
+                .eq("id", existingTask.id)
+                .eq("user_id", currentUser.id);
 
+        if (error) {
 
-            const {
-                data,
-                error
-            } =
-                await client
-                    .from("assignments")
-                    .update({
+            alert(
+                "Unable to update task: " +
+                error.message
+            );
 
-                        subject:
-                            subject,
-
-                        task:
-                            task,
-
-                        due_date:
-                            dueDate,
-
-                        priority:
-                            priority,
-
-                        completed:
-                            existingTask.completed
-
-                    })
-                    .eq(
-                        "id",
-                        existingTask.id
-                    )
-                    .eq(
-                        "user_id",
-                        currentUser.id
-                    )
-                    .select()
-                    .single();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            tasks[editingIndex] = {
-
-                id:
-                    data.id,
-
-                subject:
-                    data.subject,
-
-                task:
-                    data.task,
-
-                dueDate:
-                    data.due_date,
-
-                priority:
-                    data.priority,
-
-                completed:
-                    data.completed
-
-            };
-
-
-            editingIndex =
-                -1;
-
-
-            document.getElementById(
-                "addTaskButton"
-            ).textContent =
-                "Add Task";
-
-        } else {
-
-            const {
-                data,
-                error
-            } =
-                await client
-                    .from("assignments")
-                    .insert({
-
-                        user_id:
-                            currentUser.id,
-
-                        subject:
-                            subject,
-
-                        task:
-                            task,
-
-                        due_date:
-                            dueDate,
-
-                        priority:
-                            priority,
-
-                        completed:
-                            false
-
-                    })
-                    .select()
-                    .single();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            tasks.push({
-
-                id:
-                    data.id,
-
-                subject:
-                    data.subject,
-
-                task:
-                    data.task,
-
-                dueDate:
-                    data.due_date,
-
-                priority:
-                    data.priority,
-
-                completed:
-                    data.completed
-
-            });
+            return;
         }
 
+        tasks[editingIndex] = {
+            ...existingTask,
+            subject,
+            task,
+            dueDate,
+            priority
+        };
 
-        saveTasks();
-
-
-        document.getElementById(
-            "subject"
-        ).value = "";
-
-
-        document.getElementById(
-            "task"
-        ).value = "";
-
+        editingIndex = -1;
 
         document.getElementById(
-            "dueDate"
-        ).value = "";
+            "addTaskButton"
+        ).textContent = "Add Task";
 
-
-        document.getElementById(
-            "priority"
-        ).value =
-            "Medium";
-
-
-        displayTasks();
-
-
-    } catch (error) {
-
-        console.error(
-            "Assignment save error:",
-            error
-        );
-
-
-        alert(
-            "Unable to save assignment.\n\n" +
-            (
-                error?.message ||
-                "Unknown error."
-            )
-        );
     }
-}
 
+    // ADD
+    else {
 
-/* =========================================================
-   DISPLAY TASKS
-========================================================= */
+        const { data, error } =
+            await supabase
+                .from("assignments")
+                .insert({
+                    subject: subject,
+                    task: task,
+                    due_date: dueDate,
+                    priority: priority,
+                    completed: false,
+                    user_id: currentUser.id
+                })
+                .select()
+                .single();
 
-function displayTasks() {
+        if (error) {
 
-    const taskList =
-        document.getElementById(
-            "taskList"
-        );
+            alert(
+                "Unable to add task: " +
+                error.message
+            );
 
-    const dateFilterElement =
-        document.getElementById(
-            "dateFilter"
-        );
+            return;
+        }
 
-    const specificDateElement =
-        document.getElementById(
-            "specificDate"
-        );
-
-
-    if (
-        !taskList ||
-        !dateFilterElement
-    ) {
-        return;
+        tasks.push({
+            id: data.id,
+            subject: data.subject,
+            task: data.task,
+            dueDate: data.due_date,
+            priority: data.priority,
+            completed: data.completed,
+            createdAt: data.created_at
+        });
     }
 
 
-    const rawFilter =
-        dateFilterElement.value;
-
-
-    const filter =
-        String(rawFilter)
-            .trim()
-            .toLowerCase();
-
-
-    const specificDate =
-        specificDateElement
-            ? specificDateElement.value
-            : "";
-
-
-    taskList.innerHTML =
-        "";
-
-
-    let filteredTasks =
-        tasks.filter(
-            task => {
-
-                if (
-                    filter === "all" ||
-                    filter === ""
-                ) {
-
-                    return true;
-                }
-
-
-                if (
-                    filter === "today"
-                ) {
-
-                    return (
-                        task.dueDate ===
-                        getTodayString()
-                    );
-                }
-
-
-                if (
-                    filter === "next7" ||
-                    filter === "week"
-                ) {
-
-                    const today =
-                        new Date();
-
-
-                    today.setHours(
-                        0,
-                        0,
-                        0,
-                        0
-                    );
-
-
-                    const endDate =
-                        new Date(
-                            today
-                        );
-
-
-                    endDate.setDate(
-                        today.getDate() +
-                        6
-                    );
-
-
-                    endDate.setHours(
-                        23,
-                        59,
-                        59,
-                        999
-                    );
-
-
-                    if (!task.dueDate) {
-                        return false;
-                    }
-
-
-                    const taskDate =
-                        new Date(
-                            task.dueDate +
-                            "T00:00:00"
-                        );
-
-
-                    if (
-                        isNaN(
-                            taskDate.getTime()
-                        )
-                    ) {
-                        return false;
-                    }
-
-
-                    return (
-                        taskDate >= today &&
-                        taskDate <= endDate
-                    );
-                }
-
-
-                if (
-                    filter === "tomorrow"
-                ) {
-
-                    return (
-                        task.dueDate ===
-                        getDateAfterDays(
-                            1
-                        )
-                    );
-                }
-
-
-                if (
-                    filter === "overdue"
-                ) {
-
-                    const today =
-                        new Date();
-
-
-                    today.setHours(
-                        0,
-                        0,
-                        0,
-                        0
-                    );
-
-
-                    if (!task.dueDate) {
-                        return false;
-                    }
-
-
-                    const taskDate =
-                        new Date(
-                            task.dueDate +
-                            "T00:00:00"
-                        );
-
-
-                    return (
-                        taskDate < today
-                    );
-                }
-
-
-                if (
-                    filter === "specific"
-                ) {
-
-                    return (
-                        specificDate !== "" &&
-                        task.dueDate ===
-                        specificDate
-                    );
-                }
-
-
-                return false;
-            }
-        );
-
-
-    filteredTasks.sort(
-        (a, b) =>
-            a.dueDate.localeCompare(
-                b.dueDate
-            )
+    localStorage.setItem(
+        "schoolTasks",
+        JSON.stringify(tasks)
     );
 
+    document.getElementById("task").value = "";
 
-    if (
-        filteredTasks.length === 0
-    ) {
+    document.getElementById("dueDate").value = "";
 
-        taskList.innerHTML = `
-
-            <div class="empty-details">
-
-                <div>📋</div>
-
-                <p>
-                    No assignments found.
-                </p>
-
-            </div>
-
-        `;
-
-    } else {
-
-        filteredTasks.forEach(
-            task => {
-
-                const originalIndex =
-                    tasks.indexOf(
-                        task
-                    );
-
-
-                const taskItem =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                taskItem.className =
-                    "task-item" +
-                    (
-                        task.completed
-                            ? " completed"
-                            : ""
-                    );
-
-
-                const priorityClass =
-                    task.priority ===
-                    "High"
-
-                        ? "priority-high"
-
-                        : task.priority ===
-                          "Medium"
-
-                            ? "priority-medium"
-
-                            : "priority-low";
-
-
-                taskItem.innerHTML = `
-
-                    <input
-                        type="checkbox"
-                        class="task-checkbox"
-                        ${task.completed ? "checked" : ""}
-                        onchange="toggleTask(${originalIndex})"
-                    >
-
-                    <div class="task-info">
-
-                        <div class="task-subject">
-                            ${escapeHtml(
-                                task.subject
-                            )}
-                        </div>
-
-                        <div class="task-name">
-                            ${escapeHtml(
-                                task.task
-                            )}
-                        </div>
-
-                        <div class="task-due">
-                            Due:
-                            ${formatDate(
-                                task.dueDate
-                            )}
-                        </div>
-
-                    </div>
-
-                    <span class="priority ${priorityClass}">
-                        ${escapeHtml(
-                            task.priority
-                        )}
-                    </span>
-
-                    <div class="task-actions">
-
-                        <button
-                            class="edit-button"
-                            onclick="editTask(${originalIndex})"
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            class="delete-button"
-                            onclick="deleteTask(${originalIndex})"
-                        >
-                            Delete
-                        </button>
-
-                    </div>
-
-                `;
-
-
-                taskList.appendChild(
-                    taskItem
-                );
-            }
-        );
-    }
-
-
-    updateTaskCounter(
-        filteredTasks.length
-    );
-
+    displayTasks();
 
     updateProgress();
 }
 
 
-/* =========================================================
-   TASK ACTIONS
-========================================================= */
+// ============================================================
+// DISPLAY TASKS
+// ============================================================
 
-async function toggleTask(index) {
+function displayTasks() {
 
-    if (!currentUser) {
-        return;
+    const list =
+        document.getElementById("taskList");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    const filter =
+        document.getElementById("dateFilter").value;
+
+    const specificDate =
+        document.getElementById("specificDate").value;
+
+    const today =
+        new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    let filteredTasks = [...tasks];
+
+
+    if (filter === "Today") {
+
+        const todayString =
+            formatDateInput(today);
+
+        filteredTasks =
+            tasks.filter(
+                task => task.dueDate === todayString
+            );
+
     }
 
+    else if (filter === "Next7") {
 
-    const client =
-        getSupabaseClient();
+        const sevenDays =
+            new Date(today);
 
-
-    if (!client) {
-        return;
-    }
-
-
-    const task =
-        tasks[index];
-
-
-    if (!task) {
-        return;
-    }
-
-
-    const newCompleted =
-        !task.completed;
-
-
-    try {
-
-        const {
-            error
-        } =
-            await client
-                .from("assignments")
-                .update({
-
-                    completed:
-                        newCompleted
-
-                })
-                .eq(
-                    "id",
-                    task.id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        task.completed =
-            newCompleted;
-
-
-        saveTasks();
-
-        displayTasks();
-
-
-    } catch (error) {
-
-        console.error(
-            "Assignment update error:",
-            error
+        sevenDays.setDate(
+            sevenDays.getDate() + 7
         );
 
+        filteredTasks =
+            tasks.filter(task => {
 
-        displayTasks();
+                const due =
+                    parseLocalDate(task.dueDate);
 
+                return due >= today &&
+                    due <= sevenDays;
+            });
 
-        alert(
-            "Unable to update assignment.\n\n" +
-            (
-                error?.message ||
-                "Unknown error."
-            )
-        );
-    }
-}
-
-
-function editTask(index) {
-
-    const task =
-        tasks[index];
-
-
-    if (!task) {
-        return;
     }
 
+    else if (filter === "Overdue") {
 
-    document.getElementById(
-        "subject"
-    ).value =
-        task.subject;
+        filteredTasks =
+            tasks.filter(task => {
 
+                const due =
+                    parseLocalDate(task.dueDate);
 
-    document.getElementById(
-        "task"
-    ).value =
-        task.task;
+                return due < today &&
+                    !task.completed;
+            });
 
+    }
 
-    document.getElementById(
-        "dueDate"
-    ).value =
-        task.dueDate;
-
-
-    document.getElementById(
-        "priority"
-    ).value =
-        task.priority;
-
-
-    editingIndex =
-        index;
-
-
-    document.getElementById(
-        "addTaskButton"
-    ).textContent =
-        "Update Assignment";
-
-
-    window.scrollTo({
-
-        top:
-            0,
-
-        behavior:
-            "smooth"
-
-    });
-}
-
-
-async function deleteTask(index) {
-
-    if (
-        !confirm(
-            "Delete this assignment?"
-        )
+    else if (
+        filter === "Specific" &&
+        specificDate
     ) {
-        return;
+
+        filteredTasks =
+            tasks.filter(
+                task =>
+                    task.dueDate === specificDate
+            );
     }
 
 
-    const client =
-        getSupabaseClient();
+    filteredTasks.sort(
+        (a, b) =>
+            parseLocalDate(a.dueDate) -
+            parseLocalDate(b.dueDate)
+    );
 
 
-    if (!client) {
-        return;
-    }
+    filteredTasks.forEach(task => {
+
+        const actualIndex =
+            tasks.indexOf(task);
+
+        const li =
+            document.createElement("li");
+
+        li.className =
+            task.completed
+                ? "completed"
+                : "";
 
 
-    const task =
-        tasks[index];
+        li.innerHTML = `
+            <div class="task-info">
+
+                <strong>
+                    ${escapeHtml(task.task)}
+                </strong>
+
+                <small>
+                    ${escapeHtml(task.subject)}
+                </small>
+
+                <small>
+                    📅 ${formatDisplayDate(task.dueDate)}
+                </small>
+
+                <small>
+                    Priority: ${escapeHtml(task.priority)}
+                </small>
+
+            </div>
+
+            <div class="task-actions">
+
+                <button onclick="toggleTask(${actualIndex})">
+                    ${task.completed ? "↩️" : "✅"}
+                </button>
+
+                <button onclick="editTask(${actualIndex})">
+                    ✏️
+                </button>
+
+                <button onclick="deleteTask(${actualIndex})">
+                    🗑️
+                </button>
+
+            </div>
+        `;
+
+        list.appendChild(li);
+    });
 
 
-    if (!task) {
-        return;
-    }
+    const counter =
+        document.getElementById("taskCounter");
 
+    if (counter) {
 
-    try {
-
-        const {
-            error
-        } =
-            await client
-                .from("assignments")
-                .delete()
-                .eq(
-                    "id",
-                    task.id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        tasks.splice(
-            index,
-            1
-        );
-
-
-        saveTasks();
-
-        displayTasks();
-
-
-    } catch (error) {
-
-        console.error(
-            "Assignment delete error:",
-            error
-        );
-
-
-        alert(
-            "Unable to delete assignment.\n\n" +
+        counter.textContent =
+            filteredTasks.length +
             (
-                error?.message ||
-                "Unknown error."
-            )
-        );
+                filteredTasks.length === 1
+                    ? " Task"
+                    : " Tasks"
+            );
     }
+
+    updateProgress();
 }
 
 
-/* =========================================================
-   DATE FILTER
-========================================================= */
+// ============================================================
+// DATE FILTER
+// ============================================================
 
 function handleDateFilter() {
 
-    const filterElement =
-        document.getElementById(
-            "dateFilter"
-        );
+    const filter =
+        document.getElementById("dateFilter").value;
 
     const specificDate =
-        document.getElementById(
-            "specificDate"
-        );
+        document.getElementById("specificDate");
 
+    if (filter === "Specific") {
 
-    if (!filterElement) {
-        return;
-    }
-
-
-    const filter =
-        String(
-            filterElement.value
-        )
-        .trim()
-        .toLowerCase();
-
-
-    if (
-        filter === "specific"
-    ) {
-
-        if (specificDate) {
-
-            specificDate.style.display =
-                "block";
-        }
+        specificDate.style.display =
+            "block";
 
     } else {
 
-        if (specificDate) {
+        specificDate.style.display =
+            "none";
 
-            specificDate.style.display =
-                "none";
-
-            specificDate.value =
-                "";
-        }
+        specificDate.value = "";
     }
-
 
     displayTasks();
 }
 
 
-/* =========================================================
-   TASK STORAGE
-========================================================= */
+// ============================================================
+// TOGGLE TASK
+// ============================================================
 
-function saveTasks() {
+async function toggleTask(index) {
 
-    localStorage.setItem(
-        "schoolTasks",
-        JSON.stringify(
-            tasks
-        )
-    );
-}
+    if (!currentUser) return;
 
+    const supabase = getSupabase();
 
-function updateTaskCounter(count) {
+    if (!supabase) return;
 
-    const counter =
-        document.getElementById(
-            "taskCounter"
+    const task = tasks[index];
+
+    if (!task) return;
+
+    const newStatus =
+        !task.completed;
+
+    const { error } =
+        await supabase
+            .from("assignments")
+            .update({
+                completed: newStatus
+            })
+            .eq("id", task.id)
+            .eq("user_id", currentUser.id);
+
+    if (error) {
+
+        alert(
+            "Unable to update task: " +
+            error.message
         );
 
-
-    if (!counter) {
         return;
     }
 
+    task.completed = newStatus;
 
-    counter.textContent =
-        `${count} ${
-            count === 1
-                ? "assignment"
-                : "assignments"
-        }`;
+    localStorage.setItem(
+        "schoolTasks",
+        JSON.stringify(tasks)
+    );
+
+    displayTasks();
+
+    updateProgress();
 }
 
+
+// ============================================================
+// EDIT TASK
+// ============================================================
+
+function editTask(index) {
+
+    const task = tasks[index];
+
+    if (!task) return;
+
+    document.getElementById(
+        "subject"
+    ).value = task.subject;
+
+    document.getElementById(
+        "task"
+    ).value = task.task;
+
+    document.getElementById(
+        "dueDate"
+    ).value = task.dueDate;
+
+    document.getElementById(
+        "priority"
+    ).value = task.priority;
+
+    editingIndex = index;
+
+    document.getElementById(
+        "addTaskButton"
+    ).textContent = "Save Changes";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+// ============================================================
+// DELETE TASK
+// ============================================================
+
+async function deleteTask(index) {
+
+    if (!currentUser) return;
+
+    const task = tasks[index];
+
+    if (!task) return;
+
+    const confirmed =
+        confirm(
+            "Delete this assignment?"
+        );
+
+    if (!confirmed) return;
+
+    const supabase = getSupabase();
+
+    if (!supabase) return;
+
+    const { error } =
+        await supabase
+            .from("assignments")
+            .delete()
+            .eq("id", task.id)
+            .eq("user_id", currentUser.id);
+
+    if (error) {
+
+        alert(
+            "Unable to delete task: " +
+            error.message
+        );
+
+        return;
+    }
+
+    tasks.splice(index, 1);
+
+    localStorage.setItem(
+        "schoolTasks",
+        JSON.stringify(tasks)
+    );
+
+    displayTasks();
+
+    updateProgress();
+}
+
+
+// ============================================================
+// PROGRESS
+// ============================================================
 
 function updateProgress() {
 
     const total =
         tasks.length;
 
-
     const completed =
         tasks.filter(
-            task =>
-                task.completed
+            task => task.completed
         ).length;
 
-
     const pending =
-        total -
-        completed;
+        total - completed;
+
+    const totalElement =
+        document.getElementById("totalTasks");
+
+    const completedElement =
+        document.getElementById("completedTasks");
+
+    const pendingElement =
+        document.getElementById("pendingTasks");
+
+    if (totalElement)
+        totalElement.textContent = total;
+
+    if (completedElement)
+        completedElement.textContent = completed;
+
+    if (pendingElement)
+        pendingElement.textContent = pending;
 
 
     const percentage =
         total === 0
             ? 0
             : Math.round(
-                (
-                    completed /
-                    total
-                ) * 100
+                (completed / total) * 100
             );
 
-
-    const totalElement =
-        document.getElementById(
-            "totalTasks"
-        );
-
-    const completedElement =
-        document.getElementById(
-            "completedTasks"
-        );
-
-    const pendingElement =
-        document.getElementById(
-            "pendingTasks"
-        );
-
     const progressFill =
-        document.getElementById(
-            "progressFill"
-        );
+        document.getElementById("progressFill");
 
     const progressText =
-        document.getElementById(
-            "progressText"
-        );
+        document.getElementById("progressText");
 
-
-    if (totalElement) {
-        totalElement.textContent =
-            total;
-    }
-
-
-    if (completedElement) {
-        completedElement.textContent =
-            completed;
-    }
-
-
-    if (pendingElement) {
-        pendingElement.textContent =
-            pending;
-    }
-
-
-    if (progressFill) {
-
+    if (progressFill)
         progressFill.style.width =
             percentage + "%";
-    }
 
-
-    if (progressText) {
-
+    if (progressText)
         progressText.textContent =
-            `${percentage}% Complete`;
-    }
+            percentage + "% Complete";
 }
 
 
-/* =========================================================
-   DATE HELPERS
-========================================================= */
+// ============================================================
+// TIME DROPDOWNS
+// ============================================================
 
-function getTodayString() {
+function populateTimeDropdowns() {
 
-    const today =
-        new Date();
+    const start =
+        document.getElementById("startTime");
 
+    const end =
+        document.getElementById("endTime");
 
-    return getDateString(
-        today
-    );
-}
+    if (!start || !end) return;
 
-
-function getDateAfterDays(days) {
-
-    const date =
-        new Date();
-
-
-    date.setDate(
-        date.getDate() +
-        days
-    );
-
-
-    return getDateString(
-        date
-    );
-}
-
-
-function getDateString(date) {
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    return `${year}-${month}-${day}`;
-}
-
-
-function formatDate(dateString) {
-
-    if (!dateString) {
-        return "";
-    }
-
-
-    const date =
-        new Date(
-            dateString +
-            "T00:00:00"
-        );
-
-
-    return date.toLocaleDateString(
-        "en-US",
-        {
-            month:
-                "long",
-
-            day:
-                "numeric",
-
-            year:
-                "numeric"
-        }
-    );
-}
-
-
-function escapeHtml(value) {
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.textContent =
-        value;
-
-
-    return div.innerHTML;
-}
-
-
-/* =========================================================
-   SCHEDULE TIME DROPDOWNS
-========================================================= */
-
-function generateTimeOptions() {
-
-    const startTime =
-        document.getElementById(
-            "startTime"
-        );
-
-    const endTime =
-        document.getElementById(
-            "endTime"
-        );
-
-
-    if (
-        !startTime ||
-        !endTime
-    ) {
-        return;
-    }
-
-
-    startTime.innerHTML =
+    start.innerHTML =
         `<option value="">Start Time</option>`;
 
-
-    endTime.innerHTML =
+    end.innerHTML =
         `<option value="">End Time</option>`;
 
 
     for (
-        let hour = 7;
-        hour <= 22;
+        let hour = 0;
+        hour < 24;
         hour++
     ) {
 
         for (
-            let minute of [0, 30]
+            let minute = 0;
+            minute < 60;
+            minute += 30
         ) {
-
-            if (
-                hour === 22 &&
-                minute === 30
-            ) {
-                continue;
-            }
-
 
             const value =
                 `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 
-
             const label =
-                formatTime(
-                    value
-                );
+                formatTime(value);
+
+            const option1 =
+                document.createElement("option");
+
+            option1.value = value;
+
+            option1.textContent = label;
+
+            start.appendChild(option1);
 
 
-            startTime.innerHTML +=
-                `<option value="${value}">${label}</option>`;
-        }
-    }
+            const option2 =
+                document.createElement("option");
 
+            option2.value = value;
 
-    for (
-        let hour = 7;
-        hour <= 23;
-        hour++
-    ) {
+            option2.textContent = label;
 
-        for (
-            let minute of [0, 30]
-        ) {
-
-            if (
-                hour === 7 &&
-                minute === 0
-            ) {
-                continue;
-            }
-
-
-            if (
-                hour === 23 &&
-                minute === 30
-            ) {
-                continue;
-            }
-
-
-            const value =
-                `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-
-
-            const label =
-                formatTime(
-                    value
-                );
-
-
-            endTime.innerHTML +=
-                `<option value="${value}">${label}</option>`;
+            end.appendChild(option2);
         }
     }
 }
 
 
-function formatTime(time) {
-
-    if (!time) {
-        return "";
-    }
-
-
-    const [
-        hourString,
-        minute
-    ] =
-        time.split(":");
-
-
-    let hour =
-        parseInt(
-            hourString
-        );
-
-
-    const suffix =
-        hour >= 12
-            ? "PM"
-            : "AM";
-
-
-    if (hour === 0) {
-
-        hour =
-            12;
-
-    } else if (
-        hour > 12
-    ) {
-
-        hour -=
-            12;
-    }
-
-
-    return `${hour}:${minute} ${suffix}`;
-}
-
-
-function convertTimeToMinutes(time) {
-
-    const [
-        hours,
-        minutes
-    ] =
-        time
-            .split(":")
-            .map(Number);
-
-
-    return (
-        hours * 60 +
-        minutes
-    );
-}
-
-
-/* =========================================================
-   ADD / EDIT / DELETE SCHEDULE
-========================================================= */
+// ============================================================
+// ADD CLASS SCHEDULE
+// ============================================================
 
 async function addSchedule() {
 
     if (!currentUser) {
+
+        alert("Please login first.");
+
         return;
     }
 
+    const supabase = getSupabase();
 
-    const client =
-        getSupabaseClient();
-
-
-    if (!client) {
-        alert(
-            "Supabase is not connected."
-        );
-        return;
-    }
-
+    if (!supabase) return;
 
     const subject =
         document.getElementById(
             "scheduleSubject"
         ).value;
 
-
-    const date =
+    const scheduleDate =
         document.getElementById(
             "scheduleDate"
         ).value;
-
 
     const startTime =
         document.getElementById(
             "startTime"
         ).value;
-
 
     const endTime =
         document.getElementById(
@@ -2330,7 +1040,7 @@ async function addSchedule() {
 
     if (
         !subject ||
-        !date ||
+        !scheduleDate ||
         !startTime ||
         !endTime
     ) {
@@ -2343,14 +1053,7 @@ async function addSchedule() {
     }
 
 
-    if (
-        convertTimeToMinutes(
-            endTime
-        ) <=
-        convertTimeToMinutes(
-            startTime
-        )
-    ) {
+    if (startTime >= endTime) {
 
         alert(
             "End time must be later than start time."
@@ -2360,364 +1063,122 @@ async function addSchedule() {
     }
 
 
-    try {
+    // EDIT SCHEDULE
+    if (editingScheduleIndex !== -1) {
 
-        if (
-            editingScheduleIndex >= 0
-        ) {
+        const existing =
+            schedules[editingScheduleIndex];
 
-            const existingSchedule =
-                schedules[
-                    editingScheduleIndex
-                ];
+        const { error } =
+            await supabase
+                .from("class_schedules")
+                .update({
+                    subject: subject,
+                    schedule_date: scheduleDate,
+                    start_time: startTime,
+                    end_time: endTime
+                })
+                .eq("id", existing.id)
+                .eq("user_id", currentUser.id);
 
+        if (error) {
 
-            const {
-                data,
-                error
-            } =
-                await client
-                    .from(
-                        "class_schedules"
-                    )
-                    .update({
+            alert(
+                "Unable to update schedule: " +
+                error.message
+            );
 
-                        subject:
-                            subject,
-
-                        schedule_date:
-                            date,
-
-                        start_time:
-                            startTime,
-
-                        end_time:
-                            endTime
-
-                    })
-                    .eq(
-                        "id",
-                        existingSchedule.id
-                    )
-                    .eq(
-                        "user_id",
-                        currentUser.id
-                    )
-                    .select()
-                    .single();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            schedules[
-                editingScheduleIndex
-            ] = {
-
-                id:
-                    data.id,
-
-                subject:
-                    data.subject,
-
-                date:
-                    data.schedule_date,
-
-                startTime:
-                    data.start_time,
-
-                endTime:
-                    data.end_time
-
-            };
-
-
-            editingScheduleIndex =
-                -1;
-
-
-            document.getElementById(
-                "addScheduleButton"
-            ).textContent =
-                "Add Schedule";
-
-        } else {
-
-            const {
-                data,
-                error
-            } =
-                await client
-                    .from(
-                        "class_schedules"
-                    )
-                    .insert({
-
-                        user_id:
-                            currentUser.id,
-
-                        subject:
-                            subject,
-
-                        schedule_date:
-                            date,
-
-                        start_time:
-                            startTime,
-
-                        end_time:
-                            endTime
-
-                    })
-                    .select()
-                    .single();
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            schedules.push({
-
-                id:
-                    data.id,
-
-                subject:
-                    data.subject,
-
-                date:
-                    data.schedule_date,
-
-                startTime:
-                    data.start_time,
-
-                endTime:
-                    data.end_time
-
-            });
+            return;
         }
 
 
-        saveSchedules();
+        schedules[editingScheduleIndex] = {
+            ...existing,
+            subject,
+            scheduleDate,
+            startTime,
+            endTime
+        };
 
-
-        document.getElementById(
-            "scheduleSubject"
-        ).value =
-            "";
-
-
-        document.getElementById(
-            "scheduleDate"
-        ).value =
-            "";
-
+        editingScheduleIndex = -1;
 
         document.getElementById(
-            "startTime"
-        ).value =
-            "";
-
-
-        document.getElementById(
-            "endTime"
-        ).value =
-            "";
-
-
-        renderCalendar();
-
-        renderWeeklySchedule();
-
-        displaySavedSchedules();
-
-
-    } catch (error) {
-
-        console.error(
-            "Schedule save error:",
-            error
-        );
-
-
-        alert(
-            "Unable to save class schedule.\n\n" +
-            (
-                error?.message ||
-                "Unknown error."
-            )
-        );
+            "addScheduleButton"
+        ).textContent = "Add Schedule";
     }
-}
+
+    // ADD SCHEDULE
+    else {
+
+        const { data, error } =
+            await supabase
+                .from("class_schedules")
+                .insert({
+                    subject: subject,
+                    schedule_date: scheduleDate,
+                    start_time: startTime,
+                    end_time: endTime,
+                    user_id: currentUser.id
+                })
+                .select()
+                .single();
+
+        if (error) {
+
+            alert(
+                "Unable to add schedule: " +
+                error.message
+            );
+
+            return;
+        }
 
 
-function saveSchedules() {
+        schedules.push({
+            id: data.id,
+            subject: data.subject,
+            scheduleDate: data.schedule_date,
+            startTime: data.start_time,
+            endTime: data.end_time,
+            createdAt: data.created_at
+        });
+    }
+
 
     localStorage.setItem(
         "classSchedules",
-        JSON.stringify(
-            schedules
-        )
+        JSON.stringify(schedules)
     );
-}
-
-
-function editSchedule(index) {
-
-    const schedule =
-        schedules[index];
-
-
-    if (!schedule) {
-        return;
-    }
 
 
     document.getElementById(
         "scheduleSubject"
-    ).value =
-        schedule.subject;
-
+    ).value = "";
 
     document.getElementById(
         "scheduleDate"
-    ).value =
-        schedule.date;
-
+    ).value = "";
 
     document.getElementById(
         "startTime"
-    ).value =
-        schedule.startTime;
-
+    ).value = "";
 
     document.getElementById(
         "endTime"
-    ).value =
-        schedule.endTime;
+    ).value = "";
 
 
-    editingScheduleIndex =
-        index;
+    renderCalendar();
 
+    renderWeekly();
 
-    document.getElementById(
-        "addScheduleButton"
-    ).textContent =
-        "Update Schedule";
-
-
-    window.scrollTo({
-
-        top:
-            0,
-
-        behavior:
-            "smooth"
-
-    });
+    displaySavedSchedules();
 }
 
 
-async function deleteSchedule(index) {
-
-    if (
-        !confirm(
-            "Delete this class schedule?"
-        )
-    ) {
-        return;
-    }
-
-
-    const client =
-        getSupabaseClient();
-
-
-    if (!client) {
-        return;
-    }
-
-
-    const schedule =
-        schedules[index];
-
-
-    if (!schedule) {
-        return;
-    }
-
-
-    try {
-
-        const {
-            error
-        } =
-            await client
-                .from(
-                    "class_schedules"
-                )
-                .delete()
-                .eq(
-                    "id",
-                    schedule.id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        schedules.splice(
-            index,
-            1
-        );
-
-
-        saveSchedules();
-
-
-        renderCalendar();
-
-        renderWeeklySchedule();
-
-        displaySavedSchedules();
-
-        showScheduleDetails(
-            null
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Schedule delete error:",
-            error
-        );
-
-
-        alert(
-            "Unable to delete class schedule.\n\n" +
-            (
-                error?.message ||
-                "Unknown error."
-            )
-        );
-    }
-}
-
-
-/* =========================================================
-   SCHEDULE VIEWS
-========================================================= */
+// ============================================================
+// SCHEDULE VIEWS
+// ============================================================
 
 function showScheduleView(view) {
 
@@ -2726,49 +1187,30 @@ function showScheduleView(view) {
             "calendarView"
         );
 
-
     const weeklyView =
         document.getElementById(
             "weeklyView"
         );
-
 
     const tabs =
         document.querySelectorAll(
             ".schedule-tab"
         );
 
-
-    tabs.forEach(
-        tab => {
-
-            tab.classList.remove(
-                "active"
-            );
-
-        }
-    );
+    tabs.forEach(button => {
+        button.classList.remove("active");
+    });
 
 
-    if (
-        view === "calendar"
-    ) {
+    if (view === "calendar") {
 
         calendarView.style.display =
             "block";
 
-
         weeklyView.style.display =
             "none";
 
-
-        if (tabs[0]) {
-
-            tabs[0].classList.add(
-                "active"
-            );
-        }
-
+        tabs[0].classList.add("active");
 
         renderCalendar();
 
@@ -2777,27 +1219,19 @@ function showScheduleView(view) {
         calendarView.style.display =
             "none";
 
-
         weeklyView.style.display =
             "block";
 
+        tabs[1].classList.add("active");
 
-        if (tabs[1]) {
-
-            tabs[1].classList.add(
-                "active"
-            );
-        }
-
-
-        renderWeeklySchedule();
+        renderWeekly();
     }
 }
 
 
-/* =========================================================
-   CALENDAR
-========================================================= */
+// ============================================================
+// CALENDAR
+// ============================================================
 
 function renderCalendar() {
 
@@ -2806,28 +1240,18 @@ function renderCalendar() {
             "calendarGrid"
         );
 
-
-    const monthTitle =
+    const title =
         document.getElementById(
             "calendarMonth"
         );
 
+    if (!grid || !title) return;
 
-    if (
-        !grid ||
-        !monthTitle
-    ) {
-        return;
-    }
-
-
-    grid.innerHTML =
-        "";
+    grid.innerHTML = "";
 
 
     const year =
         calendarDate.getFullYear();
-
 
     const month =
         calendarDate.getMonth();
@@ -2837,16 +1261,12 @@ function renderCalendar() {
         calendarDate.toLocaleDateString(
             "en-US",
             {
-                month:
-                    "long",
-
-                year:
-                    "numeric"
+                month: "long",
+                year: "numeric"
             }
         );
 
-
-    monthTitle.textContent =
+    title.textContent =
         monthName;
 
 
@@ -2857,7 +1277,6 @@ function renderCalendar() {
             1
         ).getDay();
 
-
     const daysInMonth =
         new Date(
             year,
@@ -2866,118 +1285,70 @@ function renderCalendar() {
         ).getDate();
 
 
+    // EMPTY DAYS
     for (
         let i = 0;
         i < firstDay;
         i++
     ) {
 
-        const emptyDay =
-            document.createElement(
-                "div"
-            );
+        const empty =
+            document.createElement("div");
 
-
-        emptyDay.className =
+        empty.className =
             "calendar-day empty";
 
-
-        grid.appendChild(
-            emptyDay
-        );
+        grid.appendChild(empty);
     }
 
 
-    const todayString =
-        getTodayString();
-
-
+    // DAYS
     for (
         let day = 1;
         day <= daysInMonth;
         day++
     ) {
 
-        const date =
-            new Date(
-                year,
-                month,
-                day
-            );
+        const cell =
+            document.createElement("div");
 
-
-        const dateString =
-            getDateString(
-                date
-            );
-
-
-        const dayElement =
-            document.createElement(
-                "div"
-            );
-
-
-        dayElement.className =
+        cell.className =
             "calendar-day";
 
 
-        if (
-            dateString ===
-            todayString
-        ) {
+        const dateString =
+            `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-            dayElement.classList.add(
-                "today"
+
+        const todayString =
+            formatDateInput(
+                new Date()
             );
+
+
+        if (dateString === todayString) {
+            cell.classList.add("today");
         }
 
 
-        dayElement.onclick =
-            function () {
+        const dayNumber =
+            document.createElement("div");
 
-                showScheduleDetailsForDate(
-                    dateString
-                );
-            };
+        dayNumber.className =
+            "day-number";
 
-
-        const dateNumber =
-            document.createElement(
-                "div"
-            );
-
-
-        dateNumber.className =
-            "calendar-date-number";
-
-
-        dateNumber.textContent =
+        dayNumber.textContent =
             day;
 
-
-        dayElement.appendChild(
-            dateNumber
-        );
+        cell.appendChild(dayNumber);
 
 
         const daySchedules =
             schedules.filter(
                 schedule =>
-                    schedule.date ===
+                    schedule.scheduleDate ===
                     dateString
             );
-
-
-        daySchedules.sort(
-            (a, b) =>
-                convertTimeToMinutes(
-                    a.startTime
-                ) -
-                convertTimeToMinutes(
-                    b.startTime
-                )
-        );
 
 
         daySchedules.forEach(
@@ -2988,15 +1359,17 @@ function renderCalendar() {
                         "div"
                     );
 
-
                 event.className =
                     "calendar-event";
 
+                event.textContent =
+                    getSubjectCode(
+                        schedule.subject
+                    );
+
 
                 event.onclick =
-                    function (
-                        eventObject
-                    ) {
+                    function (eventObject) {
 
                         eventObject.stopPropagation();
 
@@ -3006,537 +1379,360 @@ function renderCalendar() {
                     };
 
 
-                event.innerHTML = `
-
-                    <div class="calendar-event-subject">
-                        ${escapeHtml(
-                            getShortSubject(
-                                schedule.subject
-                            )
-                        )}
-                    </div>
-
-                    <div class="calendar-event-time">
-                        ${formatTime(
-                            schedule.startTime
-                        )}
-                        -
-                        ${formatTime(
-                            schedule.endTime
-                        )}
-                    </div>
-
-                `;
-
-
-                dayElement.appendChild(
-                    event
-                );
+                cell.appendChild(event);
             }
         );
 
 
-        grid.appendChild(
-            dayElement
-        );
-    }
+        cell.onclick =
+            function () {
+
+                selectedCalendarDate =
+                    dateString;
+
+                const selectedSchedules =
+                    schedules.filter(
+                        schedule =>
+                            schedule.scheduleDate ===
+                            dateString
+                    );
 
 
-    if (
-        selectedCalendarDate
-    ) {
+                if (
+                    selectedSchedules.length > 0
+                ) {
 
-        showScheduleDetailsForDate(
-            selectedCalendarDate
-        );
+                    showScheduleDetails(
+                        selectedSchedules[0]
+                    );
+
+                } else {
+
+                    showDateDetails(
+                        dateString
+                    );
+                }
+            };
+
+
+        grid.appendChild(cell);
     }
 }
 
 
-/* =========================================================
-   CALENDAR NAVIGATION
-========================================================= */
+// ============================================================
+// CALENDAR MONTH CHANGE
+// ============================================================
 
-function changeMonth(amount) {
+function changeMonth(direction) {
 
     calendarDate.setMonth(
         calendarDate.getMonth() +
-        amount
+        direction
     );
-
-
-    selectedCalendarDate =
-        null;
-
 
     renderCalendar();
-
-    showScheduleDetails(
-        null
-    );
 }
 
 
-/* =========================================================
-   CALENDAR DETAILS
-========================================================= */
+// ============================================================
+// SHOW SCHEDULE DETAILS
+// ============================================================
 
-function showScheduleDetails(
-    schedule
-) {
+function showScheduleDetails(schedule) {
 
     const details =
         document.getElementById(
             "scheduleDetails"
         );
 
-
-    if (!details) {
-        return;
-    }
-
-
-    if (!schedule) {
-
-        details.innerHTML = `
-
-            <div class="empty-details">
-
-                <div>📅</div>
-
-                <p>
-                    Select a class from the calendar
-                    to see details.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    selectedCalendarDate =
-        schedule.date;
+    if (!details) return;
 
 
     details.innerHTML = `
 
-        <div class="schedule-detail-subject">
-            ${escapeHtml(
-                schedule.subject
-            )}
-        </div>
+        <div class="schedule-detail-card">
 
-        <div class="schedule-detail-item">
-            <strong>📅 Date:</strong><br>
-            ${formatDate(
-                schedule.date
-            )}
-        </div>
+            <div class="detail-icon">
+                📚
+            </div>
 
-        <div class="schedule-detail-item">
-            <strong>🕐 Time:</strong><br>
-            ${formatTime(
-                schedule.startTime
-            )}
-            -
-            ${formatTime(
-                schedule.endTime
-            )}
-        </div>
+            <h3>
+                ${escapeHtml(schedule.subject)}
+            </h3>
 
-        <div class="schedule-detail-item">
-            <strong>💻 Class:</strong><br>
-            Online Class
-        </div>
+            <p>
+                📅 ${formatDisplayDate(schedule.scheduleDate)}
+            </p>
 
+            <p>
+                🕐 ${formatTime(schedule.startTime)}
+                -
+                ${formatTime(schedule.endTime)}
+            </p>
+
+            <div class="detail-actions">
+
+                <button
+                    onclick="editScheduleById(${schedule.id})"
+                >
+                    ✏️ Edit
+                </button>
+
+                <button
+                    onclick="deleteScheduleById(${schedule.id})"
+                >
+                    🗑️ Delete
+                </button>
+
+            </div>
+
+        </div>
     `;
 }
 
 
-function showScheduleDetailsForDate(
-    dateString
-) {
+// ============================================================
+// SHOW DATE DETAILS
+// ============================================================
 
-    selectedCalendarDate =
-        dateString;
+function showDateDetails(dateString) {
 
-
-    const daySchedules =
-        schedules.filter(
-            schedule =>
-                schedule.date ===
-                dateString
+    const details =
+        document.getElementById(
+            "scheduleDetails"
         );
 
-
-    if (
-        daySchedules.length === 0
-    ) {
-
-        showScheduleDetails(
-            null
-        );
-
-        return;
-    }
+    if (!details) return;
 
 
-    showScheduleDetails(
-        daySchedules[0]
-    );
+    details.innerHTML = `
+
+        <div class="empty-details">
+
+            <div>📅</div>
+
+            <h3>
+                ${formatDisplayDate(dateString)}
+            </h3>
+
+            <p>
+                No class scheduled for this date.
+            </p>
+
+        </div>
+    `;
 }
 
 
-/* =========================================================
-   WEEKLY SCHEDULE
-========================================================= */
+// ============================================================
+// WEEKLY VIEW
+// ============================================================
 
-function getStartOfWeek(date) {
-
-    const result =
-        new Date(
-            date
-        );
-
-
-    const day =
-        result.getDay();
-
-
-    result.setDate(
-        result.getDate() -
-        day
-    );
-
-
-    result.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    return result;
-}
-
-
-function renderWeeklySchedule() {
+function renderWeekly() {
 
     const grid =
         document.getElementById(
             "weeklyGrid"
         );
 
-
     const title =
         document.getElementById(
             "weeklyTitle"
         );
 
+    if (!grid || !title) return;
 
-    if (
-        !grid ||
-        !title
-    ) {
-        return;
-    }
+    grid.innerHTML = "";
 
 
-    grid.innerHTML =
-        "";
+    const current =
+        new Date(weeklyDate);
+
+    const day =
+        current.getDay();
 
 
-    const weekStart =
-        getStartOfWeek(
-            weeklyDate
-        );
+    const monday =
+        new Date(current);
+
+    monday.setDate(
+        current.getDate() -
+        (day === 0 ? 6 : day - 1)
+    );
+
+    monday.setHours(0, 0, 0, 0);
 
 
-    const weekEnd =
-        new Date(
-            weekStart
-        );
+    const sunday =
+        new Date(monday);
 
-
-    weekEnd.setDate(
-        weekStart.getDate() +
-        6
+    sunday.setDate(
+        monday.getDate() + 6
     );
 
 
     title.textContent =
-        formatWeekRange(
-            weekStart,
-            weekEnd
-        );
+        `${formatShortDate(monday)} - ${formatShortDate(sunday)}`;
 
 
-    for (
-        let i = 0;
-        i < 7;
-        i++
-    ) {
+    const days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+    ];
 
-        const currentDate =
-            new Date(
-                weekStart
+
+    days.forEach(
+        (dayName, index) => {
+
+            const date =
+                new Date(monday);
+
+            date.setDate(
+                monday.getDate() +
+                index
             );
 
 
-        currentDate.setDate(
-            weekStart.getDate() +
-            i
-        );
+            const dateString =
+                formatDateInput(date);
 
 
-        const dateString =
-            getDateString(
-                currentDate
-            );
-
-
-        const dayColumn =
-            document.createElement(
-                "div"
-            );
-
-
-        dayColumn.className =
-            "weekly-column";
-
-
-        const dayHeader =
-            document.createElement(
-                "div"
-            );
-
-
-        dayHeader.className =
-            "weekly-day-header";
-
-
-        const dayName =
-            currentDate.toLocaleDateString(
-                "en-US",
-                {
-                    weekday:
-                        "short"
-                }
-            );
-
-
-        const dateText =
-            currentDate.toLocaleDateString(
-                "en-US",
-                {
-                    month:
-                        "short",
-
-                    day:
-                        "numeric"
-                }
-            );
-
-
-        dayHeader.innerHTML = `
-
-            <div>
-                ${dayName}
-            </div>
-
-            <div class="weekly-date">
-                ${dateText}
-            </div>
-
-        `;
-
-
-        dayColumn.appendChild(
-            dayHeader
-        );
-
-
-        const daySchedules =
-            schedules.filter(
-                schedule =>
-                    schedule.date ===
-                    dateString
-            );
-
-
-        daySchedules.sort(
-            (a, b) =>
-                convertTimeToMinutes(
-                    a.startTime
-                ) -
-                convertTimeToMinutes(
-                    b.startTime
-                )
-        );
-
-
-        if (
-            daySchedules.length === 0
-        ) {
-
-            const empty =
+            const column =
                 document.createElement(
                     "div"
                 );
 
-
-            empty.className =
-                "weekly-empty";
-
-
-            empty.textContent =
-                "No class";
+            column.className =
+                "weekly-column";
 
 
-            dayColumn.appendChild(
-                empty
-            );
+            const header =
+                document.createElement(
+                    "div"
+                );
 
-        } else {
+            header.className =
+                "weekly-day-header";
 
-            daySchedules.forEach(
-                schedule => {
-
-                    const event =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    event.className =
-                        "weekly-event";
+            header.innerHTML = `
+                <strong>${dayName}</strong>
+                <span>${formatShortDate(date)}</span>
+            `;
 
 
-                    event.onclick =
-                        function () {
+            column.appendChild(header);
 
-                            showScheduleDetails(
-                                schedule
+
+            const daySchedules =
+                schedules.filter(
+                    schedule =>
+                        schedule.scheduleDate ===
+                        dateString
+                );
+
+
+            if (
+                daySchedules.length === 0
+            ) {
+
+                const empty =
+                    document.createElement(
+                        "div"
+                    );
+
+                empty.className =
+                    "weekly-empty";
+
+                empty.textContent =
+                    "No class";
+
+                column.appendChild(empty);
+
+            } else {
+
+                daySchedules.forEach(
+                    schedule => {
+
+                        const event =
+                            document.createElement(
+                                "div"
                             );
 
-
-                            showScheduleView(
-                                "calendar"
-                            );
+                        event.className =
+                            "weekly-event";
 
 
-                            calendarDate =
-                                new Date(
-                                    schedule.date +
-                                    "T00:00:00"
+                        event.innerHTML = `
+
+                            <strong>
+                                ${escapeHtml(
+                                    getSubjectCode(
+                                        schedule.subject
+                                    )
+                                )}
+                            </strong>
+
+                            <span>
+                                ${formatTime(
+                                    schedule.startTime
+                                )}
+                                -
+                                ${formatTime(
+                                    schedule.endTime
+                                )}
+                            </span>
+                        `;
+
+
+                        event.onclick =
+                            function () {
+
+                                showScheduleDetails(
+                                    schedule
                                 );
 
-
-                            renderCalendar();
-                        };
-
-
-                    event.innerHTML = `
-
-                        <div class="weekly-event-subject">
-                            ${escapeHtml(
-                                getShortSubject(
-                                    schedule.subject
-                                )
-                            )}
-                        </div>
-
-                        <div class="weekly-event-time">
-                            ${formatTime(
-                                schedule.startTime
-                            )}
-                            -
-                            ${formatTime(
-                                schedule.endTime
-                            )}
-                        </div>
-
-                    `;
+                                showScheduleView(
+                                    "calendar"
+                                );
+                            };
 
 
-                    dayColumn.appendChild(
-                        event
-                    );
-                }
-            );
+                        column.appendChild(event);
+                    }
+                );
+            }
+
+
+            grid.appendChild(column);
         }
-
-
-        grid.appendChild(
-            dayColumn
-        );
-    }
+    );
 }
 
 
-/* =========================================================
-   WEEK NAVIGATION
-========================================================= */
+// ============================================================
+// CHANGE WEEK
+// ============================================================
 
-function changeWeek(amount) {
+function changeWeek(direction) {
 
     weeklyDate.setDate(
         weeklyDate.getDate() +
-        (
-            amount * 7
-        )
+        direction * 7
     );
 
-
-    renderWeeklySchedule();
+    renderWeekly();
 }
 
 
-function formatWeekRange(
-    start,
-    end
-) {
-
-    const startText =
-        start.toLocaleDateString(
-            "en-US",
-            {
-                month:
-                    "short",
-
-                day:
-                    "numeric"
-            }
-        );
-
-
-    const endText =
-        end.toLocaleDateString(
-            "en-US",
-            {
-                month:
-                    "short",
-
-                day:
-                    "numeric",
-
-                year:
-                    "numeric"
-            }
-        );
-
-
-    return `${startText} - ${endText}`;
-}
-
-
-/* =========================================================
-   SAVED SCHEDULES
-========================================================= */
+// ============================================================
+// SAVED SCHEDULES
+// ============================================================
 
 function displaySavedSchedules() {
 
@@ -3545,358 +1741,649 @@ function displaySavedSchedules() {
             "savedScheduleList"
         );
 
+    if (!list) return;
 
-    if (!list) {
-        return;
-    }
-
-
-    list.innerHTML =
-        "";
+    list.innerHTML = "";
 
 
-    if (
-        schedules.length === 0
-    ) {
+    if (schedules.length === 0) {
 
         list.innerHTML = `
-
-            <div class="empty-details">
-
-                <div>📋</div>
-
-                <p>
-                    No saved class schedules yet.
-                </p>
-
+            <div class="empty-schedules">
+                No saved class schedules yet.
             </div>
-
         `;
 
         return;
     }
 
 
-    const sortedSchedules =
-        schedules
-            .map(
-                (
-                    schedule,
-                    index
-                ) => ({
+    const sorted =
+        [...schedules].sort(
+            (a, b) => {
 
-                    schedule,
-                    index
+                const dateCompare =
+                    a.scheduleDate.localeCompare(
+                        b.scheduleDate
+                    );
 
-                })
-            )
-            .sort(
-                (a, b) =>
+                if (dateCompare !== 0) {
+                    return dateCompare;
+                }
 
-                    a.schedule.date.localeCompare(
-                        b.schedule.date
-                    )
-
-                    ||
-
-                    a.schedule.startTime.localeCompare(
-                        b.schedule.startTime
-                    )
-            );
-
-
-    sortedSchedules.forEach(
-        item => {
-
-            const schedule =
-                item.schedule;
-
-
-            const index =
-                item.index;
-
-
-            const element =
-                document.createElement(
-                    "div"
+                return a.startTime.localeCompare(
+                    b.startTime
                 );
+            }
+        );
 
 
-            element.className =
-                "saved-schedule-item";
+    sorted.forEach(schedule => {
+
+        const actualIndex =
+            schedules.indexOf(schedule);
 
 
-            element.innerHTML = `
+        const item =
+            document.createElement("div");
 
-                <div class="saved-schedule-info">
-
-                    <div class="saved-schedule-subject">
-                        ${escapeHtml(
-                            schedule.subject
-                        )}
-                    </div>
-
-                    <div class="saved-schedule-date">
-                        📅 ${formatDate(
-                            schedule.date
-                        )}
-                    </div>
-
-                    <div class="saved-schedule-time">
-                        🕐
-                        ${formatTime(
-                            schedule.startTime
-                        )}
-                        -
-                        ${formatTime(
-                            schedule.endTime
-                        )}
-                    </div>
-
-                </div>
-
-                <div class="saved-schedule-actions">
-
-                    <button
-                        class="saved-edit"
-                        onclick="editSchedule(${index})"
-                    >
-                        Edit
-                    </button>
-
-                    <button
-                        class="saved-delete"
-                        onclick="deleteSchedule(${index})"
-                    >
-                        Delete
-                    </button>
-
-                </div>
-
-            `;
+        item.className =
+            "saved-schedule-item";
 
 
-            list.appendChild(
-                element
-            );
+        item.innerHTML = `
+
+            <div class="saved-schedule-info">
+
+                <strong>
+                    ${escapeHtml(
+                        schedule.subject
+                    )}
+                </strong>
+
+                <span>
+                    📅 ${formatDisplayDate(
+                        schedule.scheduleDate
+                    )}
+                </span>
+
+                <span>
+                    🕐 ${formatTime(
+                        schedule.startTime
+                    )}
+                    -
+                    ${formatTime(
+                        schedule.endTime
+                    )}
+                </span>
+
+            </div>
+
+            <div class="saved-schedule-actions">
+
+                <button
+                    onclick="editSchedule(${actualIndex})"
+                >
+                    ✏️
+                </button>
+
+                <button
+                    onclick="deleteSchedule(${actualIndex})"
+                >
+                    🗑️
+                </button>
+
+            </div>
+        `;
+
+
+        list.appendChild(item);
+    });
+}
+
+
+// ============================================================
+// EDIT SCHEDULE
+// ============================================================
+
+function editSchedule(index) {
+
+    const schedule =
+        schedules[index];
+
+    if (!schedule) return;
+
+
+    document.getElementById(
+        "scheduleSubject"
+    ).value =
+        schedule.subject;
+
+    document.getElementById(
+        "scheduleDate"
+    ).value =
+        schedule.scheduleDate;
+
+    document.getElementById(
+        "startTime"
+    ).value =
+        schedule.startTime.slice(0, 5);
+
+    document.getElementById(
+        "endTime"
+    ).value =
+        schedule.endTime.slice(0, 5);
+
+
+    editingScheduleIndex =
+        index;
+
+
+    document.getElementById(
+        "addScheduleButton"
+    ).textContent =
+        "Save Changes";
+
+
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth"
+    });
+}
+
+
+// ============================================================
+// EDIT SCHEDULE BY ID
+// ============================================================
+
+function editScheduleById(id) {
+
+    const index =
+        schedules.findIndex(
+            schedule =>
+                Number(schedule.id) === Number(id)
+        );
+
+    if (index === -1) return;
+
+    editSchedule(index);
+}
+
+
+// ============================================================
+// DELETE SCHEDULE
+// ============================================================
+
+async function deleteSchedule(index) {
+
+    if (!currentUser) return;
+
+    const schedule =
+        schedules[index];
+
+    if (!schedule) return;
+
+
+    const confirmed =
+        confirm(
+            "Delete this class schedule?"
+        );
+
+    if (!confirmed) return;
+
+
+    const supabase = getSupabase();
+
+    if (!supabase) return;
+
+
+    const { error } =
+        await supabase
+            .from("class_schedules")
+            .delete()
+            .eq("id", schedule.id)
+            .eq("user_id", currentUser.id);
+
+
+    if (error) {
+
+        alert(
+            "Unable to delete schedule: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    schedules.splice(index, 1);
+
+
+    localStorage.setItem(
+        "classSchedules",
+        JSON.stringify(schedules)
+    );
+
+
+    renderCalendar();
+
+    renderWeekly();
+
+    displaySavedSchedules();
+
+
+    const details =
+        document.getElementById(
+            "scheduleDetails"
+        );
+
+    if (details) {
+
+        details.innerHTML = `
+            <div class="empty-details">
+                <div>📅</div>
+                <p>Select a class from the calendar to see details.</p>
+            </div>
+        `;
+    }
+}
+
+
+// ============================================================
+// DELETE SCHEDULE BY ID
+// ============================================================
+
+async function deleteScheduleById(id) {
+
+    const index =
+        schedules.findIndex(
+            schedule =>
+                Number(schedule.id) === Number(id)
+        );
+
+    if (index === -1) return;
+
+    await deleteSchedule(index);
+}
+
+
+// ============================================================
+// SUBJECT CODE
+// ============================================================
+
+function getSubjectCode(subject) {
+
+    if (!subject) return "";
+
+    const dashIndex =
+        subject.indexOf(" - ");
+
+    if (dashIndex !== -1) {
+
+        return subject.substring(
+            0,
+            dashIndex
+        );
+    }
+
+    return subject;
+}
+
+
+// ============================================================
+// DATE HELPERS
+// ============================================================
+
+function parseLocalDate(dateString) {
+
+    if (!dateString) {
+        return new Date();
+    }
+
+    const parts =
+        dateString.split("-");
+
+    return new Date(
+        Number(parts[0]),
+        Number(parts[1]) - 1,
+        Number(parts[2])
+    );
+}
+
+
+function formatDateInput(date) {
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+function formatDisplayDate(dateString) {
+
+    if (!dateString) return "";
+
+    const date =
+        parseLocalDate(dateString);
+
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
         }
     );
 }
 
 
-/* =========================================================
-   SUBJECT SHORT NAME
-========================================================= */
+function formatShortDate(date) {
 
-function getShortSubject(subject) {
-
-    if (!subject) {
-        return "";
-    }
-
-
-    const parts =
-        subject.split(
-            " - "
-        );
-
-
-    return parts[0];
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric"
+        }
+    );
 }
 
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
+// ============================================================
+// TIME FORMAT
+// ============================================================
+
+function formatTime(timeString) {
+
+    if (!timeString) return "";
+
+    const parts =
+        timeString.split(":");
+
+    let hour =
+        Number(parts[0]);
+
+    const minute =
+        parts[1] || "00";
+
+    const suffix =
+        hour >= 12
+            ? "PM"
+            : "AM";
+
+    hour =
+        hour % 12 || 12;
+
+    return `${hour}:${minute} ${suffix}`;
+}
+
+
+// ============================================================
+// HTML ESCAPE
+// ============================================================
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ============================================================
+// COZY HEADER
+// GREETING + LIVE TIME + DATE + RANDOM QUOTE
+// ============================================================
+
+function updateCozyHeader() {
+
+    const now =
+        new Date();
+
+
+    const hour =
+        now.getHours();
+
+
+    let greeting =
+        "Good Evening 🌙";
+
+
+    if (
+        hour >= 5 &&
+        hour < 12
+    ) {
+
+        greeting =
+            "Good Morning ☀️";
+
+    } else if (
+        hour >= 12 &&
+        hour < 18
+    ) {
+
+        greeting =
+            "Good Afternoon 🌤️";
+    }
+
+
+    const greetingElement =
+        document.getElementById(
+            "greeting"
+        );
+
+    const timeElement =
+        document.getElementById(
+            "currentTime"
+        );
+
+    const dateElement =
+        document.getElementById(
+            "currentDate"
+        );
+
+
+    if (greetingElement) {
+
+        greetingElement.textContent =
+            greeting;
+    }
+
+
+    if (timeElement) {
+
+        timeElement.textContent =
+            now.toLocaleTimeString(
+                "en-US",
+                {
+                    hour: "numeric",
+                    minute: "2-digit"
+                }
+            );
+    }
+
+
+    if (dateElement) {
+
+        dateElement.textContent =
+            now.toLocaleDateString(
+                "en-US",
+                {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric"
+                }
+            );
+    }
+}
+
+
+// ============================================================
+// MOTIVATIONAL QUOTES
+// ============================================================
+
+const motivationalQuotes = [
+
+    "Small progress is still progress.",
+
+    "One task at a time. You’ve got this.",
+
+    "Keep going. Future you will thank you.",
+
+    "Progress, not perfection.",
+
+    "You don't have to finish everything today.",
+
+    "A little effort every day adds up.",
+
+    "Stay consistent. Your goals are worth it.",
+
+    "Learn today. Improve tomorrow.",
+
+    "Slow progress is still moving forward.",
+
+    "You are doing better than you think.",
+
+    "Keep showing up for yourself.",
+
+    "Every completed task is one step forward.",
+
+    "Your future self is counting on you.",
+
+    "Focus on progress, not pressure.",
+
+    "You can do hard things."
+];
+
+
+function setRandomMotivation() {
+
+    const quoteElement =
+        document.getElementById(
+            "motivationQuote"
+        );
+
+    if (!quoteElement) return;
+
+
+    const randomIndex =
+        Math.floor(
+            Math.random() *
+            motivationalQuotes.length
+        );
+
+
+    quoteElement.textContent =
+        "“" +
+        motivationalQuotes[randomIndex] +
+        "”";
+}
+
+
+// ============================================================
+// INITIAL PAGE LOAD
+// ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     async function () {
 
-        createLoginScreen();
+        updateCozyHeader();
 
-        showLoginScreen();
+        setRandomMotivation();
 
-        generateTimeOptions();
-
-
-        /* =========================================
-           CHECK SUPABASE CONNECTION
-        ========================================= */
-
-        const client =
-            getSupabaseClient();
-
-
-        if (!client) {
-
-            showLoginMessage(
-                "Supabase configuration is missing. Please check supabase-config.js."
-            );
-
-            console.error(
-                "supabaseClient was not found. Check supabase-config.js and index.html."
-            );
-
-            return;
-        }
-
-
-        console.log(
-            "Supabase client detected."
+        // Update time every second
+        setInterval(
+            updateCozyHeader,
+            1000
         );
 
 
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await client.auth.getSession();
+        const supabase =
+            getSupabase();
 
 
-            if (error) {
+        if (!supabase) {
 
-                console.error(
-                    "Session error:",
-                    error
-                );
+            createLoginScreen();
 
-                showLoginMessage(
-                    error.message ||
-                    "Unable to check login session."
-                );
-
-                return;
-            }
-
-
-            if (
-                data &&
-                data.session &&
-                data.session.user
-            ) {
-
-                currentUser =
-                    data.session.user;
-
-
-                const initialized =
-                    await initializeCloudData();
-
-
-                if (initialized) {
-
-                    hideLoginScreen();
-
-                    showLogoutButton();
-
-                } else {
-
-                    await client.auth.signOut();
-
-                    currentUser =
-                        null;
-                }
-            }
-
-
-        } catch (error) {
-
-            console.error(
-                "Session check error:",
-                error
-            );
-
-            showLoginMessage(
-                error?.message ||
-                "Unable to connect to Supabase."
-            );
-        }
-    }
-);
-
-
-/* =========================================================
-   AUTH STATE LISTENER
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        const client =
-            getSupabaseClient();
-
-
-        if (!client) {
             return;
         }
 
 
-        client.auth.onAuthStateChange(
-            async function (
-                event,
+        const {
+            data: {
                 session
-            ) {
-
-                console.log(
-                    "Auth event:",
-                    event
-                );
+            }
+        } =
+            await supabase.auth.getSession();
 
 
-                if (
-                    event ===
-                    "SIGNED_OUT"
-                ) {
+        if (session) {
 
-                    currentUser =
-                        null;
+            currentUser =
+                session.user;
 
-                    tasks =
-                        [];
+            await initializeTracker();
 
-                    schedules =
-                        [];
+        } else {
 
-                    editingIndex =
-                        -1;
-
-                    editingScheduleIndex =
-                        -1;
+            createLoginScreen();
+        }
 
 
-                    const logoutButton =
-                        document.getElementById(
-                            "logoutButton"
-                        );
-
-
-                    if (logoutButton) {
-                        logoutButton.remove();
-                    }
-
-
-                    showLoginScreen();
-
-                    return;
-                }
-
+        // Auth state listener
+        supabase.auth.onAuthStateChange(
+            async (event, session) => {
 
                 if (
-                    event ===
-                        "SIGNED_IN" &&
-                    session &&
-                    session.user
+                    event === "SIGNED_IN" &&
+                    session
                 ) {
 
                     currentUser =
                         session.user;
+
+                    const loginScreen =
+                        document.getElementById(
+                            "loginScreen"
+                        );
+
+                    if (loginScreen) {
+                        loginScreen.remove();
+                    }
+
+                    await initializeTracker();
+
                 }
 
+
+                if (
+                    event === "SIGNED_OUT"
+                ) {
+
+                    currentUser = null;
+                }
             }
         );
+
     }
 );
