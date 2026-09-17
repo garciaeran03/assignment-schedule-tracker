@@ -952,6 +952,65 @@ ul {
 
 
 /* =========================
+   SCHEDULE COLOR SYSTEM
+========================= */
+
+/*
+   Color assignment is controlled by JavaScript.
+
+   schedule-color-1 = earliest class
+   schedule-color-2 = second class
+   schedule-color-3 = third class
+
+   The colors repeat if there are more than 3 classes.
+*/
+
+.calendar-event.schedule-color-1,
+.weekly-event.schedule-color-1 {
+    background: #a8b89f;
+
+    color: #263126;
+
+    border-left-color: #6f8068;
+}
+
+.calendar-event.schedule-color-1:hover,
+.weekly-event.schedule-color-1:hover {
+    background: #9daf94;
+}
+
+
+.calendar-event.schedule-color-2,
+.weekly-event.schedule-color-2 {
+    background: #9eb5c4;
+
+    color: #26313a;
+
+    border-left-color: #667f91;
+}
+
+.calendar-event.schedule-color-2:hover,
+.weekly-event.schedule-color-2:hover {
+    background: #90aaba;
+}
+
+
+.calendar-event.schedule-color-3,
+.weekly-event.schedule-color-3 {
+    background: #b5a6c7;
+
+    color: #30283a;
+
+    border-left-color: #806d95;
+}
+
+.calendar-event.schedule-color-3:hover,
+.weekly-event.schedule-color-3:hover {
+    background: #aa99bd;
+}
+
+
+/* =========================
    SCHEDULE DETAILS
 ========================= */
 
