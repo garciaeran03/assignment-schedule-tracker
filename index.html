@@ -473,23 +473,82 @@
     >
 
         <h2>
-            📊 Summary
+            📊 Monthly Summary
         </h2>
 
 
-        <div class="summary-placeholder">
+        <div class="summary-calendar-layout">
 
-            <div class="summary-placeholder-icon">
-                📅
+            <!-- SUMMARY CALENDAR -->
+
+            <div class="summary-calendar-main">
+
+                <div class="summary-calendar-header">
+
+                    <button
+                        type="button"
+                        onclick="changeSummaryMonth(-1)"
+                    >
+                        ◀
+                    </button>
+
+
+                    <h3 id="summaryCalendarMonth">
+                        Month
+                    </h3>
+
+
+                    <button
+                        type="button"
+                        onclick="changeSummaryMonth(1)"
+                    >
+                        ▶
+                    </button>
+
+                </div>
+
+
+                <div class="summary-calendar-weekdays">
+
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+
+                </div>
+
+
+                <div
+                    id="summaryCalendarGrid"
+                    class="summary-calendar-grid"
+                ></div>
+
             </div>
 
-            <h3>
-                Monthly Summary
-            </h3>
 
-            <p>
-                Your classes and assignment deadlines will appear here.
-            </p>
+            <!-- SUMMARY DETAILS -->
+
+            <div
+                id="summaryDetails"
+                class="summary-details"
+            >
+
+                <div class="empty-details">
+
+                    <div>
+                        📊
+                    </div>
+
+                    <p>
+                        Select a subject from the calendar to see details.
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
