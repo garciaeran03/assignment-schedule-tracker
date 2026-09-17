@@ -1,22 +1,26 @@
 {
+  "id": "/assignment-schedule-tracker/",
   "name": "My School Tracker",
   "short_name": "School Tracker",
   "description": "Assignments and Class Schedule Tracker",
-  "start_url": "./",
+  "start_url": "/assignment-schedule-tracker/",
+  "scope": "/assignment-schedule-tracker/",
   "display": "standalone",
   "background_color": "#f6f0e7",
   "theme_color": "#6f4e37",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/assignment-schedule-tracker/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "/assignment-schedule-tracker/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
