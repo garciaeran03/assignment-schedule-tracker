@@ -8,13 +8,14 @@
     <title>My School Tracker</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6f4e37">
 </head>
 
 <body>
 
 <div class="container">
 
-    <!-- HEADER -->
     <h1 id="greeting">Good Morning, Sir Eran ☀️</h1>
 
     <p class="subtitle">
@@ -31,28 +32,15 @@
         "Small progress is still progress."
     </p>
 
-
-    <!-- MAIN TABS -->
     <div class="main-tabs">
-
-        <button
-            class="main-tab active"
-            onclick="showMainTab('assignments')">
+        <button class="main-tab active" onclick="showMainTab('assignments')">
             📝 Assignments
         </button>
 
-        <button
-            class="main-tab"
-            onclick="showMainTab('schedule')">
+        <button class="main-tab" onclick="showMainTab('schedule')">
             📅 Class Schedule
         </button>
-
     </div>
-
-
-    <!-- ================================================= -->
-    <!-- ASSIGNMENTS TAB -->
-    <!-- ================================================= -->
 
     <div id="assignmentsTab">
 
@@ -79,7 +67,6 @@
 
             </div>
 
-
             <div class="progress-bar">
                 <div id="progressFill"></div>
             </div>
@@ -87,7 +74,6 @@
             <p id="progressText">
                 0% Complete
             </p>
-
 
             <label for="subject">
                 Subject
@@ -129,7 +115,6 @@
 
             </select>
 
-
             <label for="task">
                 Topic
             </label>
@@ -140,7 +125,6 @@
                 placeholder="Enter a school topic"
             >
 
-
             <label for="dueDate">
                 Due Date
             </label>
@@ -149,7 +133,6 @@
                 type="date"
                 id="dueDate"
             >
-
 
             <label for="priority">
                 Priority
@@ -161,7 +144,10 @@
                     High
                 </option>
 
-                <option value="Medium" selected>
+                <option
+                    value="Medium"
+                    selected
+                >
                     Medium
                 </option>
 
@@ -171,13 +157,12 @@
 
             </select>
 
-
             <button
                 id="addTaskButton"
-                onclick="addTask()">
+                onclick="addTask()"
+            >
                 Add Task
             </button>
-
 
             <label for="dateFilter">
                 Filter by Date
@@ -185,7 +170,8 @@
 
             <select
                 id="dateFilter"
-                onchange="handleDateFilter()">
+                onchange="handleDateFilter()"
+            >
 
                 <option value="All">
                     All Dates
@@ -209,14 +195,12 @@
 
             </select>
 
-
             <input
                 type="date"
                 id="specificDate"
                 onchange="displayTasks()"
                 style="display: none;"
             >
-
 
             <ul id="taskList"></ul>
 
@@ -229,10 +213,6 @@
     </div>
 
 
-    <!-- ================================================= -->
-    <!-- CLASS SCHEDULE TAB -->
-    <!-- ================================================= -->
-
     <div
         id="scheduleTab"
         style="display: none;"
@@ -241,9 +221,6 @@
         <h2>
             📅 Class Schedule
         </h2>
-
-
-        <!-- SCHEDULE FORM -->
 
         <div class="schedule-form schedule-form-grid">
 
@@ -314,42 +291,36 @@
 
             <button
                 id="addScheduleButton"
-                onclick="addSchedule()">
+                onclick="addSchedule()"
+            >
                 Add Schedule
             </button>
 
         </div>
 
 
-        <!-- SCHEDULE VIEW TABS -->
-
         <div class="schedule-tabs">
 
             <button
                 class="schedule-tab active"
-                onclick="showScheduleView('calendar')">
+                onclick="showScheduleView('calendar')"
+            >
                 📅 Calendar
             </button>
 
             <button
                 class="schedule-tab"
-                onclick="showScheduleView('weekly')">
+                onclick="showScheduleView('weekly')"
+            >
                 🗓️ Weekly
             </button>
 
         </div>
 
 
-        <!-- ================================================= -->
-        <!-- CALENDAR VIEW -->
-        <!-- ================================================= -->
-
         <div id="calendarView">
 
             <div class="calendar-layout">
-
-
-                <!-- CALENDAR -->
 
                 <div class="calendar-main">
 
@@ -385,17 +356,16 @@
 
                     <div
                         id="calendarGrid"
-                        class="calendar-grid">
-                    </div>
+                        class="calendar-grid"
+                    ></div>
 
                 </div>
 
 
-                <!-- SCHEDULE DETAILS -->
-
                 <div
                     id="scheduleDetails"
-                    class="schedule-details">
+                    class="schedule-details"
+                >
 
                     <div class="empty-details">
 
@@ -404,8 +374,7 @@
                         </div>
 
                         <p>
-                            Select a class from the calendar
-                            to see details.
+                            Select a class from the calendar to see details.
                         </p>
 
                     </div>
@@ -416,10 +385,6 @@
 
         </div>
 
-
-        <!-- ================================================= -->
-        <!-- WEEKLY VIEW -->
-        <!-- ================================================= -->
 
         <div
             id="weeklyView"
@@ -445,15 +410,11 @@
 
             <div
                 id="weeklyGrid"
-                class="weekly-grid">
-            </div>
+                class="weekly-grid"
+            ></div>
 
         </div>
 
-
-        <!-- ================================================= -->
-        <!-- SAVED SCHEDULES -->
-        <!-- ================================================= -->
 
         <div class="saved-schedules">
 
@@ -470,14 +431,12 @@
 </div>
 
 
-<!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="supabase-config.js"></script>
 
 <script src="script.js"></script>
 
-
 </body>
+
 </html>
