@@ -14,8 +14,57 @@
 
 <div class="container">
 
-    <h1>My School Tracker</h1>
-    <p class="subtitle">Assignments & Class Schedule</p>
+
+    <!-- =========================
+         COZY HEADER
+    ========================= -->
+
+    <div class="welcome-header">
+
+        <div class="welcome-left">
+
+            <div id="greeting" class="greeting">
+                Good Morning ☀️
+            </div>
+
+            <div id="motivationQuote" class="motivation-quote">
+                “Small progress is still progress.”
+            </div>
+
+        </div>
+
+
+        <div class="datetime-box">
+
+            <div id="currentTime" class="current-time">
+                10:42 AM
+            </div>
+
+            <div id="currentDate" class="current-date">
+                September 17, 2026
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SCHOOL TITLE
+    ========================= -->
+
+    <div class="school-title">
+
+        <h1>
+            My School Tracker
+        </h1>
+
+        <p class="subtitle">
+            Assignments & Class Schedule
+        </p>
+
+    </div>
+
 
 
     <!-- =========================
@@ -41,6 +90,7 @@
     </div>
 
 
+
     <!-- =========================
          ASSIGNMENT TRACKER
     ========================= -->
@@ -49,7 +99,9 @@
 
         <div class="tracker-card">
 
-            <h2>Today's Progress</h2>
+            <h2>
+                Today's Progress
+            </h2>
 
 
             <!-- PROGRESS SUMMARY -->
@@ -58,27 +110,39 @@
 
                 <div class="progress-box">
 
-                    <span id="totalTasks">0</span>
+                    <span id="totalTasks">
+                        0
+                    </span>
 
-                    <small>Total</small>
-
-                </div>
-
-
-                <div class="progress-box">
-
-                    <span id="completedTasks">0</span>
-
-                    <small>Completed</small>
+                    <small>
+                        Total
+                    </small>
 
                 </div>
 
 
                 <div class="progress-box">
 
-                    <span id="pendingTasks">0</span>
+                    <span id="completedTasks">
+                        0
+                    </span>
 
-                    <small>Pending</small>
+                    <small>
+                        Completed
+                    </small>
+
+                </div>
+
+
+                <div class="progress-box">
+
+                    <span id="pendingTasks">
+                        0
+                    </span>
+
+                    <small>
+                        Pending
+                    </small>
 
                 </div>
 
@@ -517,14 +581,17 @@
 </div>
 
 
+
 <!-- =========================
      SUPABASE
 ========================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase-config.js"></script>
 
 <!-- EXISTING TRACKER SCRIPT -->
+
 <script src="script.js"></script>
 
 </body>
