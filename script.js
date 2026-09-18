@@ -4,6 +4,7 @@
 // SUPABASE CLOUD SYNC
 // ============================================================
 
+
 let currentUser = null;
 
 let tasks = [];
@@ -13,6 +14,8 @@ let schedules = [];
 let editingIndex = -1;
 
 let editingScheduleIndex = -1;
+
+let assignmentMode = "task";
 
 let calendarDate = new Date();
 
@@ -24,7 +27,7 @@ let selectedCalendarDate = null;
 
 
 // ============================================================
-// SUPABASE
+// SUPABASE CHECK
 // ============================================================
 
 function getSupabase() {
@@ -43,7 +46,7 @@ function getSupabase() {
 
 
 // ============================================================
-// LOGIN
+// LOGIN SCREEN
 // ============================================================
 
 function createLoginScreen() {
@@ -55,14 +58,15 @@ function createLoginScreen() {
     const loginScreen =
         document.createElement("div");
 
-    loginScreen.id =
-        "loginScreen";
+    loginScreen.id = "loginScreen";
 
     loginScreen.innerHTML = `
 
         <div class="login-card">
 
-            <h2>🎓 My School Tracker</h2>
+            <h2>
+                🎓 My School Tracker
+            </h2>
 
             <p>
                 Login to access your school tracker.
@@ -87,11 +91,16 @@ function createLoginScreen() {
             <p id="loginMessage"></p>
 
         </div>
+
     `;
 
     document.body.appendChild(loginScreen);
 }
 
+
+// ============================================================
+// LOGIN
+// ============================================================
 
 async function loginUser() {
 
@@ -100,16 +109,19 @@ async function loginUser() {
     if (!supabase) return;
 
     const email =
-        document.getElementById("loginEmail")
+        document
+            .getElementById("loginEmail")
             .value
             .trim();
 
     const password =
-        document.getElementById("loginPassword")
+        document
+            .getElementById("loginPassword")
             .value;
 
     const message =
         document.getElementById("loginMessage");
+
 
     if (!email || !password) {
 
@@ -119,8 +131,10 @@ async function loginUser() {
         return;
     }
 
+
     message.textContent =
         "Logging in...";
+
 
     const {
         data,
@@ -128,10 +142,12 @@ async function loginUser() {
     } =
         await supabase.auth.signInWithPassword({
 
-            email,
-            password
+            email: email,
+
+            password: password
 
         });
+
 
     if (error) {
 
@@ -141,8 +157,9 @@ async function loginUser() {
         return;
     }
 
-    currentUser =
-        data.user;
+
+    currentUser = data.user;
+
 
     const loginScreen =
         document.getElementById("loginScreen");
@@ -151,16 +168,23 @@ async function loginUser() {
         loginScreen.remove();
     }
 
-    document.body.classList.remove("logged-out");
+
+    document.body.classList.remove(
+        "logged-out"
+    );
+
 
     await initializeTracker();
 }
 
 
+// ============================================================
+// LOGOUT
+// ============================================================
+
 async function logoutUser() {
 
-    const supabase =
-        getSupabase();
+    const supabase = getSupabase();
 
     if (!supabase) return;
 
@@ -173,17 +197,47 @@ async function logoutUser() {
 
 
 // ============================================================
+// NORMALIZE ASSIGNMENT TYPE
+// ============================================================
+
+function normalizeAssignmentType(type) {
+
+    if (!type) {
+        return "task";
+    }
+
+    const value =
+        String(type).toLowerCase().trim();
+
+
+    if (
+        value === "reminder" ||
+        value === "reminders"
+    ) {
+        return "reminder";
+    }
+
+
+    return "task";
+}
+
+
+// ============================================================
 // LOAD CLOUD DATA
+// SUPABASE IS THE SOURCE OF TRUTH
 // ============================================================
 
 async function loadCloudData() {
 
-    const supabase =
-        getSupabase();
+    const supabase = getSupabase();
 
-    if (!supabase || !currentUser) return;
+    if (!supabase || !currentUser) {
+        return;
+    }
+
 
     try {
+
 
         // ====================================================
         // ASSIGNMENTS + REMINDERS
@@ -218,33 +272,37 @@ async function loadCloudData() {
         } else {
 
             tasks =
-                (cloudTasks || []).map(task => ({
+                (cloudTasks || []).map(
+                    task => ({
 
-                    id:
-                        task.id,
+                        id:
+                            task.id,
 
-                    subject:
-                        task.subject,
+                        subject:
+                            task.subject || "",
 
-                    task:
-                        task.task,
+                        task:
+                            task.task || "",
 
-                    dueDate:
-                        task.due_date,
+                        dueDate:
+                            task.due_date,
 
-                    priority:
-                        task.priority,
+                        priority:
+                            task.priority || "Medium",
 
-                    completed:
-                        task.completed,
+                        completed:
+                            Boolean(task.completed),
 
-                    type:
-                        task.type || "task",
+                        type:
+                            normalizeAssignmentType(
+                                task.type
+                            ),
 
-                    createdAt:
-                        task.created_at
+                        createdAt:
+                            task.created_at
 
-                }));
+                    })
+                );
         }
 
 
@@ -307,6 +365,10 @@ async function loadCloudData() {
         }
 
 
+        // ====================================================
+        // UPDATE LOCAL CACHE
+        // ====================================================
+
         localStorage.setItem(
             "schoolTasks",
             JSON.stringify(tasks)
@@ -316,6 +378,7 @@ async function loadCloudData() {
             "classSchedules",
             JSON.stringify(schedules)
         );
+
 
     } catch (error) {
 
@@ -328,12 +391,17 @@ async function loadCloudData() {
 
 
 // ============================================================
-// INITIALIZE
+// INITIALIZE TRACKER
 // ============================================================
 
 async function initializeTracker() {
 
     await loadCloudData();
+
+    setAssignmentMode(
+        "task",
+        false
+    );
 
     displayTasks();
 
@@ -367,6 +435,7 @@ function addLogoutButton() {
         return;
     }
 
+
     const button =
         document.createElement("button");
 
@@ -379,13 +448,12 @@ function addLogoutButton() {
     button.onclick =
         logoutUser;
 
-    button.style.marginTop =
-        "15px";
 
     const container =
         document.querySelector(
             ".container"
         );
+
 
     if (container) {
 
@@ -422,6 +490,7 @@ function showMainTab(tab) {
             ".main-tab"
         );
 
+
     tabs.forEach(button => {
 
         button.classList.remove(
@@ -440,18 +509,21 @@ function showMainTab(tab) {
             "none";
 
         if (summaryTab) {
+
             summaryTab.style.display =
                 "none";
         }
 
+
         if (tabs[0]) {
+
             tabs[0].classList.add(
                 "active"
             );
         }
 
-        displayTasks();
 
+        displayTasks();
     }
 
 
@@ -464,22 +536,25 @@ function showMainTab(tab) {
             "block";
 
         if (summaryTab) {
+
             summaryTab.style.display =
                 "none";
         }
 
+
         if (tabs[1]) {
+
             tabs[1].classList.add(
                 "active"
             );
         }
+
 
         renderCalendar();
 
         renderWeekly();
 
         displaySavedSchedules();
-
     }
 
 
@@ -491,16 +566,21 @@ function showMainTab(tab) {
         scheduleTab.style.display =
             "none";
 
+
         if (summaryTab) {
+
             summaryTab.style.display =
                 "block";
         }
 
+
         if (tabs[2]) {
+
             tabs[2].classList.add(
                 "active"
             );
         }
+
 
         renderSummaryCalendar();
     }
@@ -508,10 +588,19 @@ function showMainTab(tab) {
 
 
 // ============================================================
-// TASK / REMINDER TYPE SWITCH
+// ASSIGNMENT MODE
 // ============================================================
 
-function showEntryType(type) {
+function setAssignmentMode(
+    mode,
+    preserveEditing = true
+) {
+
+    assignmentMode =
+        mode === "reminder"
+            ? "reminder"
+            : "task";
+
 
     const taskForm =
         document.getElementById(
@@ -525,30 +614,58 @@ function showEntryType(type) {
 
     const taskButton =
         document.getElementById(
-            "taskTypeButton"
+            "taskModeButton"
         );
 
     const reminderButton =
         document.getElementById(
-            "reminderTypeButton"
+            "reminderModeButton"
+        );
+
+    const title =
+        document.getElementById(
+            "assignmentFormTitle"
         );
 
 
-    if (type === "task") {
+    if (!taskForm || !reminderForm) {
+        return;
+    }
+
+
+    if (assignmentMode === "task") {
 
         taskForm.style.display =
-            "flex";
+            "block";
 
         reminderForm.style.display =
             "none";
 
-        taskButton.classList.add(
-            "active"
-        );
 
-        reminderButton.classList.remove(
-            "active"
-        );
+        if (taskButton) {
+
+            taskButton.classList.add(
+                "active"
+            );
+        }
+
+
+        if (reminderButton) {
+
+            reminderButton.classList.remove(
+                "active"
+            );
+        }
+
+
+        if (title) {
+
+            title.textContent =
+                editingIndex !== -1 &&
+                preserveEditing
+                    ? "Edit Task"
+                    : "Add New Task";
+        }
 
     } else {
 
@@ -556,31 +673,52 @@ function showEntryType(type) {
             "none";
 
         reminderForm.style.display =
-            "flex";
+            "block";
 
-        taskButton.classList.remove(
-            "active"
-        );
 
-        reminderButton.classList.add(
-            "active"
-        );
+        if (taskButton) {
+
+            taskButton.classList.remove(
+                "active"
+            );
+        }
+
+
+        if (reminderButton) {
+
+            reminderButton.classList.add(
+                "active"
+            );
+        }
+
+
+        if (title) {
+
+            title.textContent =
+                editingIndex !== -1 &&
+                preserveEditing
+                    ? "Edit Reminder"
+                    : "Add Reminder";
+        }
     }
 }
 
 
 // ============================================================
-// ADD TASK
+// ADD TASK / EDIT TASK
 // ============================================================
 
 async function addTask() {
 
     if (!currentUser) {
 
-        alert("Please login first.");
+        alert(
+            "Please login first."
+        );
 
         return;
     }
+
 
     const supabase =
         getSupabase();
@@ -589,30 +727,34 @@ async function addTask() {
 
 
     const subject =
-        document.getElementById(
-            "subject"
-        ).value;
+        document
+            .getElementById("subject")
+            .value;
+
 
     const task =
-        document.getElementById(
-            "task"
-        ).value.trim();
+        document
+            .getElementById("task")
+            .value
+            .trim();
+
 
     const dueDate =
-        document.getElementById(
-            "dueDate"
-        ).value;
+        document
+            .getElementById("dueDate")
+            .value;
+
 
     const priority =
-        document.getElementById(
-            "priority"
-        ).value;
+        document
+            .getElementById("priority")
+            .value;
 
 
     if (!task || !dueDate) {
 
         alert(
-            "Please enter the topic and due date."
+            "Please enter the topic and deadline."
         );
 
         return;
@@ -628,6 +770,15 @@ async function addTask() {
         const existingTask =
             tasks[editingIndex];
 
+
+        if (!existingTask) {
+
+            cancelAssignmentEdit();
+
+            return;
+        }
+
+
         const {
             error
         } =
@@ -635,14 +786,17 @@ async function addTask() {
                 .from("assignments")
                 .update({
 
-                    subject,
+                    subject:
+                        subject,
 
-                    task,
+                    task:
+                        task,
 
                     due_date:
                         dueDate,
 
-                    priority,
+                    priority:
+                        priority,
 
                     type:
                         "task"
@@ -673,13 +827,17 @@ async function addTask() {
 
             ...existingTask,
 
-            subject,
+            subject:
+                subject,
 
-            task,
+            task:
+                task,
 
-            dueDate,
+            dueDate:
+                dueDate,
 
-            priority,
+            priority:
+                priority,
 
             type:
                 "task"
@@ -687,14 +845,9 @@ async function addTask() {
         };
 
 
-        editingIndex =
-            -1;
+        editingIndex = -1;
 
 
-        document.getElementById(
-            "addTaskButton"
-        ).textContent =
-            "Add Task";
     }
 
 
@@ -712,23 +865,26 @@ async function addTask() {
                 .from("assignments")
                 .insert({
 
-                    subject,
+                    subject:
+                        subject,
 
-                    task,
+                    task:
+                        task,
 
                     due_date:
                         dueDate,
 
-                    priority,
+                    priority:
+                        priority,
 
                     completed:
                         false,
 
-                    type:
-                        "task",
-
                     user_id:
-                        currentUser.id
+                        currentUser.id,
+
+                    type:
+                        "task"
 
                 })
                 .select()
@@ -764,10 +920,12 @@ async function addTask() {
                 data.priority,
 
             completed:
-                data.completed,
+                Boolean(data.completed),
 
             type:
-                data.type || "task",
+                normalizeAssignmentType(
+                    data.type
+                ),
 
             createdAt:
                 data.created_at
@@ -776,16 +934,13 @@ async function addTask() {
     }
 
 
-    saveTasksLocally();
+    localStorage.setItem(
+        "schoolTasks",
+        JSON.stringify(tasks)
+    );
 
 
-    document.getElementById(
-        "task"
-    ).value = "";
-
-    document.getElementById(
-        "dueDate"
-    ).value = "";
+    resetAssignmentForm();
 
 
     displayTasks();
@@ -797,17 +952,20 @@ async function addTask() {
 
 
 // ============================================================
-// ADD REMINDER
+// ADD REMINDER / EDIT REMINDER
 // ============================================================
 
 async function addReminder() {
 
     if (!currentUser) {
 
-        alert("Please login first.");
+        alert(
+            "Please login first."
+        );
 
         return;
     }
+
 
     const supabase =
         getSupabase();
@@ -815,116 +973,212 @@ async function addReminder() {
     if (!supabase) return;
 
 
-    const subject =
-        document.getElementById(
-            "reminderSubject"
-        ).value;
+    const reminderText =
+        document
+            .getElementById("reminderText")
+            .value
+            .trim();
 
-    const reminder =
-        document.getElementById(
-            "reminderText"
-        ).value.trim();
+
+    const reminderSubject =
+        document
+            .getElementById("reminderSubject")
+            .value;
+
 
     const reminderDate =
-        document.getElementById(
-            "reminderDate"
-        ).value;
+        document
+            .getElementById("reminderDate")
+            .value;
 
 
-    if (!reminder || !reminderDate) {
+    if (!reminderText || !reminderDate) {
 
         alert(
-            "Please enter the reminder and reminder date."
+            "Please enter the reminder and date."
         );
 
         return;
     }
 
 
-    const {
-        data,
-        error
-    } =
-        await supabase
-            .from("assignments")
-            .insert({
+    // ========================================================
+    // EDIT REMINDER
+    // ========================================================
 
-                subject:
-                    subject || null,
+    if (editingIndex !== -1) {
 
-                task:
-                    reminder,
+        const existingReminder =
+            tasks[editingIndex];
 
-                due_date:
-                    reminderDate,
 
-                priority:
-                    "Low",
+        if (!existingReminder) {
 
-                completed:
-                    false,
+            cancelAssignmentEdit();
 
-                type:
-                    "reminder",
+            return;
+        }
 
-                user_id:
+
+        const {
+            error
+        } =
+            await supabase
+                .from("assignments")
+                .update({
+
+                    subject:
+                        reminderSubject,
+
+                    task:
+                        reminderText,
+
+                    due_date:
+                        reminderDate,
+
+                    priority:
+                        null,
+
+                    type:
+                        "reminder"
+
+                })
+                .eq(
+                    "id",
+                    existingReminder.id
+                )
+                .eq(
+                    "user_id",
                     currentUser.id
-
-            })
-            .select()
-            .single();
+                );
 
 
-    if (error) {
+        if (error) {
 
-        alert(
-            "Unable to add reminder: " +
-            error.message
-        );
+            alert(
+                "Unable to update reminder: " +
+                error.message
+            );
 
-        return;
+            return;
+        }
+
+
+        tasks[editingIndex] = {
+
+            ...existingReminder,
+
+            subject:
+                reminderSubject,
+
+            task:
+                reminderText,
+
+            dueDate:
+                reminderDate,
+
+            priority:
+                null,
+
+            type:
+                "reminder"
+
+        };
+
+
+        editingIndex = -1;
+
     }
 
 
-    tasks.push({
+    // ========================================================
+    // ADD NEW REMINDER
+    // ========================================================
 
-        id:
-            data.id,
+    else {
 
-        subject:
-            data.subject,
+        const {
+            data,
+            error
+        } =
+            await supabase
+                .from("assignments")
+                .insert({
 
-        task:
-            data.task,
+                    subject:
+                        reminderSubject,
 
-        dueDate:
-            data.due_date,
+                    task:
+                        reminderText,
 
-        priority:
-            data.priority,
+                    due_date:
+                        reminderDate,
 
-        completed:
-            data.completed,
+                    priority:
+                        null,
 
-        type:
-            data.type || "reminder",
+                    completed:
+                        false,
 
-        createdAt:
-            data.created_at
+                    user_id:
+                        currentUser.id,
 
-    });
+                    type:
+                        "reminder"
+
+                })
+                .select()
+                .single();
 
 
-    saveTasksLocally();
+        if (error) {
+
+            alert(
+                "Unable to add reminder: " +
+                error.message
+            );
+
+            return;
+        }
 
 
-    document.getElementById(
-        "reminderText"
-    ).value = "";
+        tasks.push({
 
-    document.getElementById(
-        "reminderDate"
-    ).value = "";
+            id:
+                data.id,
+
+            subject:
+                data.subject || "",
+
+            task:
+                data.task,
+
+            dueDate:
+                data.due_date,
+
+            priority:
+                data.priority,
+
+            completed:
+                Boolean(data.completed),
+
+            type:
+                "reminder",
+
+            createdAt:
+                data.created_at
+
+        });
+    }
+
+
+    localStorage.setItem(
+        "schoolTasks",
+        JSON.stringify(tasks)
+    );
+
+
+    resetAssignmentForm();
 
 
     displayTasks();
@@ -936,15 +1190,129 @@ async function addReminder() {
 
 
 // ============================================================
-// LOCAL SAVE
+// RESET ASSIGNMENT FORM
 // ============================================================
 
-function saveTasksLocally() {
+function resetAssignmentForm() {
 
-    localStorage.setItem(
-        "schoolTasks",
-        JSON.stringify(tasks)
+    editingIndex = -1;
+
+
+    const subject =
+        document.getElementById(
+            "subject"
+        );
+
+    const task =
+        document.getElementById(
+            "task"
+        );
+
+    const dueDate =
+        document.getElementById(
+            "dueDate"
+        );
+
+    const priority =
+        document.getElementById(
+            "priority"
+        );
+
+    const reminderText =
+        document.getElementById(
+            "reminderText"
+        );
+
+    const reminderSubject =
+        document.getElementById(
+            "reminderSubject"
+        );
+
+    const reminderDate =
+        document.getElementById(
+            "reminderDate"
+        );
+
+
+    if (subject) {
+        subject.selectedIndex = 0;
+    }
+
+    if (task) {
+        task.value = "";
+    }
+
+    if (dueDate) {
+        dueDate.value = "";
+    }
+
+    if (priority) {
+        priority.value = "Medium";
+    }
+
+    if (reminderText) {
+        reminderText.value = "";
+    }
+
+    if (reminderSubject) {
+        reminderSubject.value = "";
+    }
+
+    if (reminderDate) {
+        reminderDate.value = "";
+    }
+
+
+    const addTaskButton =
+        document.getElementById(
+            "addTaskButton"
+        );
+
+    if (addTaskButton) {
+
+        addTaskButton.textContent =
+            "➕ Add Task";
+    }
+
+
+    const addReminderButton =
+        document.getElementById(
+            "addReminderButton"
+        );
+
+    if (addReminderButton) {
+
+        addReminderButton.textContent =
+            "🔔 Add Reminder";
+    }
+
+
+    const cancelButton =
+        document.getElementById(
+            "cancelAssignmentEditButton"
+        );
+
+    if (cancelButton) {
+
+        cancelButton.style.display =
+            "none";
+    }
+
+
+    setAssignmentMode(
+        "task",
+        false
     );
+}
+
+
+// ============================================================
+// CANCEL ASSIGNMENT EDIT
+// ============================================================
+
+function cancelAssignmentEdit() {
+
+    resetAssignmentForm();
 }
 
 
@@ -965,22 +1333,38 @@ function displayTasks() {
     list.innerHTML = "";
 
 
-    const typeFilter =
+    const typeFilterElement =
         document.getElementById(
             "typeFilter"
-        )?.value || "All";
+        );
 
-
-    const dateFilter =
+    const dateFilterElement =
         document.getElementById(
             "dateFilter"
-        )?.value || "All";
+        );
+
+    const specificDateElement =
+        document.getElementById(
+            "specificDate"
+        );
+
+
+    const typeFilter =
+        typeFilterElement
+            ? typeFilterElement.value
+            : "All";
+
+
+    const filter =
+        dateFilterElement
+            ? dateFilterElement.value
+            : "All";
 
 
     const specificDate =
-        document.getElementById(
-            "specificDate"
-        )?.value || "";
+        specificDateElement
+            ? specificDateElement.value
+            : "";
 
 
     const today =
@@ -994,33 +1378,40 @@ function displayTasks() {
     );
 
 
-    let filteredTasks =
-        [...tasks];
-
-
+    // ========================================================
     // TYPE FILTER
+    // ========================================================
 
-    if (typeFilter !== "All") {
+    let filteredTasks =
+        tasks.filter(item => {
 
-        filteredTasks =
-            filteredTasks.filter(
-                item =>
-                    (
-                        item.type ||
-                        "task"
-                    ) === typeFilter
-            );
-    }
+            const itemType =
+                normalizeAssignmentType(
+                    item.type
+                );
 
 
+            if (
+                typeFilter !== "All" &&
+                itemType !== typeFilter
+            ) {
+                return false;
+            }
+
+
+            return true;
+        });
+
+
+    // ========================================================
     // DATE FILTER
+    // ========================================================
 
-    if (dateFilter === "Today") {
+    if (filter === "Today") {
 
         const todayString =
-            formatDateInput(
-                today
-            );
+            formatDateInput(today);
+
 
         filteredTasks =
             filteredTasks.filter(
@@ -1031,7 +1422,7 @@ function displayTasks() {
     }
 
 
-    else if (dateFilter === "Next7") {
+    else if (filter === "Next7") {
 
         const sevenDays =
             new Date(today);
@@ -1050,6 +1441,7 @@ function displayTasks() {
                             item.dueDate
                         );
 
+
                     return (
                         due >= today &&
                         due <= sevenDays
@@ -1059,7 +1451,7 @@ function displayTasks() {
     }
 
 
-    else if (dateFilter === "Overdue") {
+    else if (filter === "Overdue") {
 
         filteredTasks =
             filteredTasks.filter(
@@ -1069,6 +1461,7 @@ function displayTasks() {
                         parseLocalDate(
                             item.dueDate
                         );
+
 
                     return (
                         due < today &&
@@ -1080,7 +1473,7 @@ function displayTasks() {
 
 
     else if (
-        dateFilter === "Specific" &&
+        filter === "Specific" &&
         specificDate
     ) {
 
@@ -1093,10 +1486,14 @@ function displayTasks() {
     }
 
 
+    // ========================================================
+    // SORT
+    // ========================================================
+
     filteredTasks.sort(
         (a, b) => {
 
-            const dateDifference =
+            const dateCompare =
                 parseLocalDate(
                     a.dueDate
                 ) -
@@ -1104,47 +1501,56 @@ function displayTasks() {
                     b.dueDate
                 );
 
-            if (
-                dateDifference !== 0
-            ) {
-                return dateDifference;
+
+            if (dateCompare !== 0) {
+                return dateCompare;
             }
 
+
             return (
-                String(a.task)
-                    .localeCompare(
-                        String(b.task)
-                    )
+                normalizeAssignmentType(
+                    a.type
+                ) === "reminder"
+                    ? 1
+                    : -1
             );
         }
     );
 
 
-    // EMPTY
+    // ========================================================
+    // EMPTY STATE
+    // ========================================================
+
+    const emptyState =
+        document.getElementById(
+            "emptyTaskState"
+        );
+
 
     if (
         filteredTasks.length === 0
     ) {
 
-        list.innerHTML = `
+        if (emptyState) {
 
-            <div class="empty-task-list">
+            emptyState.style.display =
+                "block";
+        }
 
-                ${
-                    typeFilter === "reminder"
-                        ? "🔔 No reminders found."
-                        : typeFilter === "task"
-                            ? "📝 No deadlines found."
-                            : "📋 No tasks or reminders found."
-                }
+    } else {
 
-            </div>
-        `;
+        if (emptyState) {
 
+            emptyState.style.display =
+                "none";
+        }
     }
 
 
-    // ITEMS
+    // ========================================================
+    // RENDER
+    // ========================================================
 
     filteredTasks.forEach(item => {
 
@@ -1152,159 +1558,211 @@ function displayTasks() {
             tasks.indexOf(item);
 
 
-        const li =
-            document.createElement(
-                "div"
+        const itemType =
+            normalizeAssignmentType(
+                item.type
             );
 
 
-        const type =
-            item.type ||
-            "task";
-
-
-        const priority =
-            item.priority ||
-            "Low";
+        const li =
+            document.createElement(
+                "li"
+            );
 
 
         const priorityClass =
-            priority
-                .toLowerCase()
-                .replace(
-                    " ",
-                    "-"
+            getPriorityClass(
+                item.priority
+            );
+
+
+        if (
+            itemType === "reminder"
+        ) {
+
+            li.className =
+                "reminder-item" +
+                (
+                    item.completed
+                        ? " completed"
+                        : ""
                 );
 
+        } else {
 
-        li.className =
-            "task-item " +
-            (
-                item.completed
-                    ? "completed "
-                    : ""
-            ) +
-            "priority-" +
-            priorityClass;
-
-
-        const typeBadge =
-            type === "reminder"
-
-                ? `
-                    <span
-                        class="task-type-badge reminder"
-                    >
-                        🔔 REMINDER
-                    </span>
-                  `
-
-                : `
-                    <span
-                        class="task-type-badge deadline"
-                    >
-                        📝 DEADLINE
-                    </span>
-                  `;
+            li.className =
+                priorityClass +
+                (
+                    item.completed
+                        ? " completed"
+                        : ""
+                );
+        }
 
 
-        const priorityBadge =
-            type === "task"
-
-                ? `
-                    <span
-                        class="priority-badge ${priorityClass}"
-                    >
-                        ${getPriorityIcon(priority)}
-                        ${escapeHtml(priority)}
-                    </span>
-                  `
-
-                : "";
-
-
-        const subjectHTML =
+        const subjectText =
             item.subject
-
-                ? `
-                    <small>
-                        📚 ${escapeHtml(
-                            item.subject
-                        )}
-                    </small>
-                  `
-
-                : "";
+                ? escapeHtml(
+                    item.subject
+                )
+                : "General Reminder";
 
 
-        li.innerHTML = `
+        if (
+            itemType === "reminder"
+        ) {
 
-            <div class="task-info">
+            li.innerHTML = `
 
-                <div class="task-title-row">
+                <div class="task-info">
 
-                    ${typeBadge}
+                    <span class="task-type-badge reminder">
+                        🔔 Reminder
+                    </span>
 
                     <strong>
-                        ${escapeHtml(
-                            item.task
-                        )}
+                        ${escapeHtml(item.task)}
                     </strong>
+
+                    ${
+                        item.subject
+                            ? `
+                                <small>
+                                    📚 ${subjectText}
+                                </small>
+                              `
+                            : ""
+                    }
+
+                    <small>
+                        📅 ${formatDisplayDate(
+                            item.dueDate
+                        )}
+                    </small>
 
                 </div>
 
-                ${subjectHTML}
 
-                <small>
-                    📅 ${formatDisplayDate(
-                        item.dueDate
-                    )}
-                </small>
+                <div class="task-actions">
 
-                ${priorityBadge}
+                    <button
+                        onclick="toggleTask(${actualIndex})"
+                        title="${
+                            item.completed
+                                ? "Mark as pending"
+                                : "Mark as completed"
+                        }"
+                    >
+                        ${
+                            item.completed
+                                ? "↩️"
+                                : "✅"
+                        }
+                    </button>
 
-            </div>
+                    <button
+                        onclick="editTask(${actualIndex})"
+                        title="Edit"
+                    >
+                        ✏️
+                    </button>
+
+                    <button
+                        onclick="deleteTask(${actualIndex})"
+                        title="Delete"
+                    >
+                        🗑️
+                    </button>
+
+                </div>
+
+            `;
+
+        } else {
+
+            li.innerHTML = `
+
+                <div class="task-info">
+
+                    <span class="task-type-badge deadline">
+                        📝 Deadline
+                    </span>
+
+                    <strong>
+                        ${escapeHtml(item.task)}
+                    </strong>
+
+                    <small>
+                        📚 ${subjectText}
+                    </small>
+
+                    <small>
+                        📅 ${formatDisplayDate(
+                            item.dueDate
+                        )}
+                    </small>
+
+                    <span
+                        class="priority-badge ${getPriorityName(
+                            item.priority
+                        )}"
+                    >
+                        ${getPriorityIcon(
+                            item.priority
+                        )}
+                        ${escapeHtml(
+                            item.priority || "Medium"
+                        )}
+                    </span>
+
+                </div>
 
 
-            <div class="task-actions">
+                <div class="task-actions">
 
-                <button
-                    onclick="toggleTask(${actualIndex})"
-                    title="${
-                        item.completed
-                            ? "Mark as pending"
-                            : "Mark as completed"
-                    }"
-                >
-                    ${
-                        item.completed
-                            ? "↩️"
-                            : "✅"
-                    }
-                </button>
+                    <button
+                        onclick="toggleTask(${actualIndex})"
+                        title="${
+                            item.completed
+                                ? "Mark as pending"
+                                : "Mark as completed"
+                        }"
+                    >
+                        ${
+                            item.completed
+                                ? "↩️"
+                                : "✅"
+                        }
+                    </button>
 
-                <button
-                    onclick="editTask(${actualIndex})"
-                    title="Edit"
-                >
-                    ✏️
-                </button>
+                    <button
+                        onclick="editTask(${actualIndex})"
+                        title="Edit"
+                    >
+                        ✏️
+                    </button>
 
-                <button
-                    onclick="deleteTask(${actualIndex})"
-                    title="Delete"
-                >
-                    🗑️
-                </button>
+                    <button
+                        onclick="deleteTask(${actualIndex})"
+                        title="Delete"
+                    >
+                        🗑️
+                    </button>
 
-            </div>
-        `;
+                </div>
+
+            `;
+        }
 
 
         list.appendChild(li);
 
     });
 
+
+    // ========================================================
+    // COUNTER
+    // ========================================================
 
     const counter =
         document.getElementById(
@@ -1314,39 +1772,62 @@ function displayTasks() {
 
     if (counter) {
 
-        counter.textContent =
-            filteredTasks.length +
-            (
-                filteredTasks.length === 1
-                    ? " Item"
-                    : " Items"
-            );
+        const deadlineCount =
+            filteredTasks.filter(
+                item =>
+                    normalizeAssignmentType(
+                        item.type
+                    ) === "task"
+            ).length;
+
+
+        const reminderCount =
+            filteredTasks.filter(
+                item =>
+                    normalizeAssignmentType(
+                        item.type
+                    ) === "reminder"
+            ).length;
+
+
+        if (
+            typeFilter === "task"
+        ) {
+
+            counter.textContent =
+                deadlineCount +
+                (
+                    deadlineCount === 1
+                        ? " Deadline"
+                        : " Deadlines"
+                );
+
+        } else if (
+            typeFilter === "reminder"
+        ) {
+
+            counter.textContent =
+                reminderCount +
+                (
+                    reminderCount === 1
+                        ? " Reminder"
+                        : " Reminders"
+                );
+
+        } else {
+
+            counter.textContent =
+                filteredTasks.length +
+                (
+                    filteredTasks.length === 1
+                        ? " Item"
+                        : " Items"
+                );
+        }
     }
 
 
     updateProgress();
-}
-
-
-// ============================================================
-// PRIORITY ICON
-// ============================================================
-
-function getPriorityIcon(priority) {
-
-    if (priority === "Urgent") {
-        return "🔴";
-    }
-
-    if (priority === "High") {
-        return "🟠";
-    }
-
-    if (priority === "Medium") {
-        return "🟡";
-    }
-
-    return "🟢";
 }
 
 
@@ -1357,14 +1838,12 @@ function getPriorityIcon(priority) {
 function handleDateFilter() {
 
     const filter =
-        document.getElementById(
-            "dateFilter"
-        ).value;
+        document
+            .getElementById(
+                "dateFilter"
+            )
+            .value;
 
-    const specificGroup =
-        document.getElementById(
-            "specificDateGroup"
-        );
 
     const specificDate =
         document.getElementById(
@@ -1372,18 +1851,19 @@ function handleDateFilter() {
         );
 
 
-    if (filter === "Specific") {
+    if (
+        filter === "Specific"
+    ) {
 
-        specificGroup.style.display =
+        specificDate.style.display =
             "block";
 
     } else {
 
-        specificGroup.style.display =
+        specificDate.style.display =
             "none";
 
-        specificDate.value =
-            "";
+        specificDate.value = "";
     }
 
 
@@ -1399,20 +1879,21 @@ async function toggleTask(index) {
 
     if (!currentUser) return;
 
+
     const supabase =
         getSupabase();
 
     if (!supabase) return;
 
 
-    const task =
+    const item =
         tasks[index];
 
-    if (!task) return;
+    if (!item) return;
 
 
     const newStatus =
-        !task.completed;
+        !item.completed;
 
 
     const {
@@ -1428,7 +1909,7 @@ async function toggleTask(index) {
             })
             .eq(
                 "id",
-                task.id
+                item.id
             )
             .eq(
                 "user_id",
@@ -1447,11 +1928,14 @@ async function toggleTask(index) {
     }
 
 
-    task.completed =
+    item.completed =
         newStatus;
 
 
-    saveTasksLocally();
+    localStorage.setItem(
+        "schoolTasks",
+        JSON.stringify(tasks)
+    );
 
 
     displayTasks();
@@ -1474,16 +1958,24 @@ function editTask(index) {
     if (!item) return;
 
 
-    const type =
-        item.type ||
-        "task";
+    editingIndex =
+        index;
 
 
-    if (type === "reminder") {
-
-        showEntryType(
-            "reminder"
+    const itemType =
+        normalizeAssignmentType(
+            item.type
         );
+
+
+    if (
+        itemType === "reminder"
+    ) {
+
+        document.getElementById(
+            "reminderText"
+        ).value =
+            item.task || "";
 
 
         document.getElementById(
@@ -1493,72 +1985,88 @@ function editTask(index) {
 
 
         document.getElementById(
-            "reminderText"
+            "reminderDate"
         ).value =
-            item.task;
+            item.dueDate || "";
 
 
         document.getElementById(
-            "reminderDate"
-        ).value =
-            item.dueDate;
+            "addReminderButton"
+        ).textContent =
+            "💾 Save Reminder";
 
 
-        alert(
-            "Reminder editing will create a replacement when you save. Delete the old reminder after saving if needed."
+        setAssignmentMode(
+            "reminder"
         );
 
+    } else {
 
-        return;
+        document.getElementById(
+            "subject"
+        ).value =
+            item.subject || "";
+
+
+        document.getElementById(
+            "task"
+        ).value =
+            item.task || "";
+
+
+        document.getElementById(
+            "dueDate"
+        ).value =
+            item.dueDate || "";
+
+
+        document.getElementById(
+            "priority"
+        ).value =
+            item.priority || "Medium";
+
+
+        document.getElementById(
+            "addTaskButton"
+        ).textContent =
+            "💾 Save Task";
+
+
+        setAssignmentMode(
+            "task"
+        );
     }
 
 
-    showEntryType(
-        "task"
-    );
+    const cancelButton =
+        document.getElementById(
+            "cancelAssignmentEditButton"
+        );
 
 
-    document.getElementById(
-        "subject"
-    ).value =
-        item.subject;
+    if (cancelButton) {
+
+        cancelButton.style.display =
+            "block";
+    }
 
 
-    document.getElementById(
-        "task"
-    ).value =
-        item.task;
+    const formPanel =
+        document.querySelector(
+            ".assignment-form-panel"
+        );
 
 
-    document.getElementById(
-        "dueDate"
-    ).value =
-        item.dueDate;
+    if (formPanel) {
 
+        formPanel.scrollIntoView({
 
-    document.getElementById(
-        "priority"
-    ).value =
-        item.priority;
+            behavior: "smooth",
 
+            block: "start"
 
-    editingIndex =
-        index;
-
-
-    document.getElementById(
-        "addTaskButton"
-    ).textContent =
-        "Save Changes";
-
-
-    window.scrollTo({
-
-        top: 0,
-
-        behavior: "smooth"
-
-    });
+        });
+    }
 }
 
 
@@ -1571,21 +2079,23 @@ async function deleteTask(index) {
     if (!currentUser) return;
 
 
-    const task =
+    const item =
         tasks[index];
 
-    if (!task) return;
+    if (!item) return;
 
 
-    const itemName =
-        task.type === "reminder"
-            ? "reminder"
-            : "assignment";
+    const itemType =
+        normalizeAssignmentType(
+            item.type
+        );
 
 
     const confirmed =
         confirm(
-            `Delete this ${itemName}?`
+            itemType === "reminder"
+                ? "Delete this reminder?"
+                : "Delete this assignment?"
         );
 
 
@@ -1607,7 +2117,7 @@ async function deleteTask(index) {
             .delete()
             .eq(
                 "id",
-                task.id
+                item.id
             )
             .eq(
                 "user_id",
@@ -1623,6 +2133,7 @@ async function deleteTask(index) {
             error
         );
 
+
         alert(
             "Unable to delete item:\n\n" +
             error.message
@@ -1636,6 +2147,23 @@ async function deleteTask(index) {
         !deletedRows ||
         deletedRows.length === 0
     ) {
+
+        console.error(
+            "Assignment was not deleted from Supabase.",
+            {
+
+                itemId:
+                    item.id,
+
+                userId:
+                    currentUser.id,
+
+                deletedRows:
+                    deletedRows
+
+            }
+        );
+
 
         alert(
             "The item was NOT deleted from the cloud.\n\n" +
@@ -1652,7 +2180,24 @@ async function deleteTask(index) {
     );
 
 
-    saveTasksLocally();
+    localStorage.setItem(
+        "schoolTasks",
+        JSON.stringify(tasks)
+    );
+
+
+    if (
+        editingIndex === index
+    ) {
+
+        resetAssignmentForm();
+
+    } else if (
+        editingIndex > index
+    ) {
+
+        editingIndex--;
+    }
 
 
     displayTasks();
@@ -1665,31 +2210,29 @@ async function deleteTask(index) {
 
 // ============================================================
 // PROGRESS
+// ONLY FORMAL DEADLINES COUNT
+// REMINDERS DO NOT AFFECT ACADEMIC PROGRESS
 // ============================================================
 
 function updateProgress() {
 
-    // Reminders are intentionally excluded
-    // from assignment completion progress.
-
-    const assignmentTasks =
+    const deadlineTasks =
         tasks.filter(
             item =>
-                (
-                    item.type ||
-                    "task"
+                normalizeAssignmentType(
+                    item.type
                 ) === "task"
         );
 
 
     const total =
-        assignmentTasks.length;
+        deadlineTasks.length;
 
 
     const completed =
-        assignmentTasks.filter(
-            task =>
-                task.completed
+        deadlineTasks.filter(
+            item =>
+                item.completed
         ).length;
 
 
@@ -1714,16 +2257,21 @@ function updateProgress() {
 
 
     if (totalElement) {
+
         totalElement.textContent =
             total;
     }
 
+
     if (completedElement) {
+
         completedElement.textContent =
             completed;
     }
 
+
     if (pendingElement) {
+
         pendingElement.textContent =
             pending;
     }
@@ -1768,6 +2316,80 @@ function updateProgress() {
 
 
 // ============================================================
+// PRIORITY HELPERS
+// ============================================================
+
+function getPriorityName(priority) {
+
+    if (!priority) {
+        return "medium";
+    }
+
+
+    return String(priority)
+        .toLowerCase()
+        .replace(/\s+/g, "-");
+}
+
+
+function getPriorityClass(priority) {
+
+    const name =
+        getPriorityName(
+            priority
+        );
+
+
+    if (
+        name === "urgent"
+    ) {
+        return "priority-urgent";
+    }
+
+
+    if (
+        name === "high"
+    ) {
+        return "priority-high";
+    }
+
+
+    if (
+        name === "low"
+    ) {
+        return "priority-low";
+    }
+
+
+    return "priority-medium";
+}
+
+
+function getPriorityIcon(priority) {
+
+    const name =
+        getPriorityName(
+            priority
+        );
+
+
+    if (name === "urgent") {
+        return "🔴";
+    }
+
+    if (name === "high") {
+        return "🟠";
+    }
+
+    if (name === "low") {
+        return "🟢";
+    }
+
+    return "🟡";
+}
+
+
+// ============================================================
 // TIME DROPDOWNS
 // ============================================================
 
@@ -1784,7 +2406,9 @@ function populateTimeDropdowns() {
         );
 
 
-    if (!start || !end) return;
+    if (!start || !end) {
+        return;
+    }
 
 
     start.innerHTML =
@@ -1808,6 +2432,7 @@ function populateTimeDropdowns() {
 
             const value =
                 `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+
 
             const label =
                 formatTime(value);
@@ -1849,7 +2474,7 @@ function populateTimeDropdowns() {
 
 
 // ============================================================
-// ADD SCHEDULE
+// ADD CLASS SCHEDULE
 // ============================================================
 
 async function addSchedule() {
@@ -1875,15 +2500,18 @@ async function addSchedule() {
             "scheduleSubject"
         ).value;
 
+
     const scheduleDate =
         document.getElementById(
             "scheduleDate"
         ).value;
 
+
     const startTime =
         document.getElementById(
             "startTime"
         ).value;
+
 
     const endTime =
         document.getElementById(
@@ -1918,6 +2546,10 @@ async function addSchedule() {
     }
 
 
+    // ========================================================
+    // EDIT
+    // ========================================================
+
     if (
         editingScheduleIndex !== -1
     ) {
@@ -1932,12 +2564,11 @@ async function addSchedule() {
             error
         } =
             await supabase
-                .from(
-                    "class_schedules"
-                )
+                .from("class_schedules")
                 .update({
 
-                    subject,
+                    subject:
+                        subject,
 
                     schedule_date:
                         scheduleDate,
@@ -1994,23 +2625,26 @@ async function addSchedule() {
         document.getElementById(
             "addScheduleButton"
         ).textContent =
-            "Add Schedule";
-    }
+            "➕ Add Schedule";
 
 
-    else {
+    } else {
+
+
+        // ====================================================
+        // ADD
+        // ====================================================
 
         const {
             data,
             error
         } =
             await supabase
-                .from(
-                    "class_schedules"
-                )
+                .from("class_schedules")
                 .insert({
 
-                    subject,
+                    subject:
+                        subject,
 
                     schedule_date:
                         scheduleDate,
@@ -2076,13 +2710,16 @@ async function addSchedule() {
         "scheduleSubject"
     ).value = "";
 
+
     document.getElementById(
         "scheduleDate"
     ).value = "";
 
+
     document.getElementById(
         "startTime"
     ).value = "";
+
 
     document.getElementById(
         "endTime"
@@ -2121,16 +2758,17 @@ function showScheduleView(view) {
         );
 
 
-    tabs.forEach(button => {
+    tabs.forEach(
+        button =>
+            button.classList.remove(
+                "active"
+            )
+    );
 
-        button.classList.remove(
-            "active"
-        );
 
-    });
-
-
-    if (view === "calendar") {
+    if (
+        view === "calendar"
+    ) {
 
         calendarView.style.display =
             "block";
@@ -2140,6 +2778,7 @@ function showScheduleView(view) {
 
 
         if (tabs[0]) {
+
             tabs[0].classList.add(
                 "active"
             );
@@ -2148,9 +2787,7 @@ function showScheduleView(view) {
 
         renderCalendar();
 
-    }
-
-    else {
+    } else {
 
         calendarView.style.display =
             "none";
@@ -2160,6 +2797,7 @@ function showScheduleView(view) {
 
 
         if (tabs[1]) {
+
             tabs[1].classList.add(
                 "active"
             );
@@ -2172,7 +2810,7 @@ function showScheduleView(view) {
 
 
 // ============================================================
-// SCHEDULE COLORS
+// SCHEDULE COLOR ORDER
 // ============================================================
 
 function getScheduleColorClass(
@@ -2189,11 +2827,14 @@ function getScheduleColorClass(
                         b.startTime
                     );
 
+
                 if (
                     startCompare !== 0
                 ) {
+
                     return startCompare;
                 }
+
 
                 return a.endTime.localeCompare(
                     b.endTime
@@ -2227,7 +2868,7 @@ function getScheduleColorClass(
 
 
 // ============================================================
-// CALENDAR
+// CLASS SCHEDULE CALENDAR
 // ============================================================
 
 function renderCalendar() {
@@ -2243,7 +2884,9 @@ function renderCalendar() {
         );
 
 
-    if (!grid || !title) return;
+    if (!grid || !title) {
+        return;
+    }
 
 
     grid.innerHTML = "";
@@ -2313,6 +2956,7 @@ function renderCalendar() {
                 "div"
             );
 
+
         cell.className =
             "calendar-day";
 
@@ -2321,11 +2965,15 @@ function renderCalendar() {
             `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
 
-        if (
-            dateString ===
+        const todayString =
             formatDateInput(
                 new Date()
-            )
+            );
+
+
+        if (
+            dateString ===
+            todayString
         ) {
 
             cell.classList.add(
@@ -2339,11 +2987,14 @@ function renderCalendar() {
                 "div"
             );
 
+
         dayNumber.className =
             "day-number";
 
+
         dayNumber.textContent =
             day;
+
 
         cell.appendChild(
             dayNumber
@@ -2365,11 +3016,14 @@ function renderCalendar() {
                                 b.startTime
                             );
 
+
                         if (
                             startCompare !== 0
                         ) {
+
                             return startCompare;
                         }
+
 
                         return a.endTime.localeCompare(
                             b.endTime
@@ -2387,12 +3041,16 @@ function renderCalendar() {
                     );
 
 
-                event.className =
-                    "calendar-event " +
+                const colorClass =
                     getScheduleColorClass(
                         schedule,
                         daySchedules
                     );
+
+
+                event.className =
+                    "calendar-event " +
+                    colorClass;
 
 
                 event.textContent =
@@ -2402,9 +3060,7 @@ function renderCalendar() {
 
 
                 event.onclick =
-                    function(
-                        eventObject
-                    ) {
+                    function(eventObject) {
 
                         eventObject.stopPropagation();
 
@@ -2437,8 +3093,7 @@ function renderCalendar() {
 
 
                 if (
-                    selectedSchedules.length >
-                    0
+                    selectedSchedules.length > 0
                 ) {
 
                     showScheduleDetails(
@@ -2461,6 +3116,10 @@ function renderCalendar() {
 }
 
 
+// ============================================================
+// CHANGE MONTH
+// ============================================================
+
 function changeMonth(direction) {
 
     calendarDate.setMonth(
@@ -2468,12 +3127,13 @@ function changeMonth(direction) {
         direction
     );
 
+
     renderCalendar();
 }
 
 
 // ============================================================
-// SCHEDULE DETAILS
+// SHOW SCHEDULE DETAILS
 // ============================================================
 
 function showScheduleDetails(
@@ -2484,6 +3144,7 @@ function showScheduleDetails(
         document.getElementById(
             "scheduleDetails"
         );
+
 
     if (!details) return;
 
@@ -2535,9 +3196,14 @@ function showScheduleDetails(
             </div>
 
         </div>
+
     `;
 }
 
+
+// ============================================================
+// SHOW EMPTY DATE DETAILS
+// ============================================================
 
 function showDateDetails(
     dateString
@@ -2548,6 +3214,7 @@ function showDateDetails(
             "scheduleDetails"
         );
 
+
     if (!details) return;
 
 
@@ -2555,7 +3222,9 @@ function showDateDetails(
 
         <div class="empty-details">
 
-            <div>📅</div>
+            <div>
+                📅
+            </div>
 
             <h3>
                 ${formatDisplayDate(
@@ -2568,12 +3237,13 @@ function showDateDetails(
             </p>
 
         </div>
+
     `;
 }
 
 
 // ============================================================
-// WEEKLY
+// WEEKLY VIEW
 // ============================================================
 
 function renderWeekly() {
@@ -2589,7 +3259,9 @@ function renderWeekly() {
         );
 
 
-    if (!grid || !title) return;
+    if (!grid || !title) {
+        return;
+    }
 
 
     grid.innerHTML = "";
@@ -2599,6 +3271,7 @@ function renderWeekly() {
         new Date(
             weeklyDate
         );
+
 
     const day =
         current.getDay();
@@ -2664,6 +3337,7 @@ function renderWeekly() {
                     monday
                 );
 
+
             date.setDate(
                 monday.getDate() +
                 index
@@ -2681,6 +3355,7 @@ function renderWeekly() {
                     "div"
                 );
 
+
             column.className =
                 "weekly-column";
 
@@ -2689,6 +3364,7 @@ function renderWeekly() {
                 document.createElement(
                     "div"
                 );
+
 
             header.className =
                 "weekly-day-header";
@@ -2729,11 +3405,14 @@ function renderWeekly() {
                                     b.startTime
                                 );
 
+
                             if (
                                 startCompare !== 0
                             ) {
+
                                 return startCompare;
                             }
+
 
                             return a.endTime.localeCompare(
                                 b.endTime
@@ -2743,8 +3422,7 @@ function renderWeekly() {
 
 
             if (
-                daySchedules.length ===
-                0
+                daySchedules.length === 0
             ) {
 
                 const empty =
@@ -2752,11 +3430,14 @@ function renderWeekly() {
                         "div"
                     );
 
+
                 empty.className =
                     "weekly-empty";
 
+
                 empty.textContent =
                     "No class";
+
 
                 column.appendChild(
                     empty
@@ -2773,12 +3454,16 @@ function renderWeekly() {
                             );
 
 
-                        event.className =
-                            "weekly-event " +
+                        const colorClass =
                             getScheduleColorClass(
                                 schedule,
                                 daySchedules
                             );
+
+
+                        event.className =
+                            "weekly-event " +
+                            colorClass;
 
 
                         event.innerHTML = `
@@ -2833,12 +3518,19 @@ function renderWeekly() {
 }
 
 
-function changeWeek(direction) {
+// ============================================================
+// CHANGE WEEK
+// ============================================================
+
+function changeWeek(
+    direction
+) {
 
     weeklyDate.setDate(
         weeklyDate.getDate() +
         direction * 7
     );
+
 
     renderWeekly();
 }
@@ -2855,23 +3547,11 @@ function displaySavedSchedules() {
             "savedScheduleList"
         );
 
+
     if (!list) return;
 
 
     list.innerHTML = "";
-
-
-    const count =
-        document.getElementById(
-            "scheduleCount"
-        );
-
-
-    if (count) {
-
-        count.textContent =
-            schedules.length;
-    }
 
 
     if (
@@ -2882,9 +3562,10 @@ function displaySavedSchedules() {
 
             <div class="empty-schedules">
 
-                📅 No saved class schedules yet.
+                No saved class schedules yet.
 
             </div>
+
         `;
 
         return;
@@ -2900,11 +3581,14 @@ function displaySavedSchedules() {
                         b.scheduleDate
                     );
 
+
                 if (
                     dateCompare !== 0
                 ) {
+
                     return dateCompare;
                 }
+
 
                 return a.startTime.localeCompare(
                     b.startTime
@@ -2926,6 +3610,7 @@ function displaySavedSchedules() {
                 document.createElement(
                     "div"
                 );
+
 
             item.className =
                 "saved-schedule-item";
@@ -2977,6 +3662,7 @@ function displaySavedSchedules() {
                     </button>
 
                 </div>
+
             `;
 
 
@@ -2992,10 +3678,13 @@ function displaySavedSchedules() {
 // EDIT SCHEDULE
 // ============================================================
 
-function editSchedule(index) {
+function editSchedule(
+    index
+) {
 
     const schedule =
         schedules[index];
+
 
     if (!schedule) return;
 
@@ -3037,34 +3726,49 @@ function editSchedule(index) {
     document.getElementById(
         "addScheduleButton"
     ).textContent =
-        "Save Changes";
+        "💾 Save Changes";
 
 
-    window.scrollTo({
+    const form =
+        document.querySelector(
+            ".schedule-form"
+        );
 
-        top: 0,
 
-        behavior: "smooth"
+    if (form) {
 
-    });
+        form.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "start"
+
+        });
+    }
 }
 
 
-function editScheduleById(id) {
+// ============================================================
+// EDIT SCHEDULE BY ID
+// ============================================================
+
+function editScheduleById(
+    id
+) {
 
     const index =
         schedules.findIndex(
             schedule =>
-                Number(
-                    schedule.id
-                ) ===
+                Number(schedule.id) ===
                 Number(id)
         );
 
 
     if (
         index === -1
-    ) return;
+    ) {
+        return;
+    }
 
 
     editSchedule(
@@ -3075,15 +3779,19 @@ function editScheduleById(id) {
 
 // ============================================================
 // DELETE SCHEDULE
+// VERIFIED SUPABASE DELETE
 // ============================================================
 
-async function deleteSchedule(index) {
+async function deleteSchedule(
+    index
+) {
 
     if (!currentUser) return;
 
 
     const schedule =
         schedules[index];
+
 
     if (!schedule) return;
 
@@ -3100,6 +3808,7 @@ async function deleteSchedule(index) {
     const supabase =
         getSupabase();
 
+
     if (!supabase) return;
 
 
@@ -3108,9 +3817,7 @@ async function deleteSchedule(index) {
         error
     } =
         await supabase
-            .from(
-                "class_schedules"
-            )
+            .from("class_schedules")
             .delete()
             .eq(
                 "id",
@@ -3130,6 +3837,7 @@ async function deleteSchedule(index) {
             error
         );
 
+
         alert(
             "Unable to delete schedule:\n\n" +
             error.message
@@ -3143,6 +3851,23 @@ async function deleteSchedule(index) {
         !deletedRows ||
         deletedRows.length === 0
     ) {
+
+        console.error(
+            "Schedule was not deleted from Supabase.",
+            {
+
+                scheduleId:
+                    schedule.id,
+
+                userId:
+                    currentUser.id,
+
+                deletedRows:
+                    deletedRows
+
+            }
+        );
+
 
         alert(
             "The class schedule was NOT deleted from the cloud.\n\n" +
@@ -3188,7 +3913,9 @@ async function deleteSchedule(index) {
 
             <div class="empty-details">
 
-                <div>📅</div>
+                <div>
+                    📅
+                </div>
 
                 <p>
                     Select a class from the calendar
@@ -3196,26 +3923,33 @@ async function deleteSchedule(index) {
                 </p>
 
             </div>
+
         `;
     }
 }
 
 
-async function deleteScheduleById(id) {
+// ============================================================
+// DELETE SCHEDULE BY ID
+// ============================================================
+
+async function deleteScheduleById(
+    id
+) {
 
     const index =
         schedules.findIndex(
             schedule =>
-                Number(
-                    schedule.id
-                ) ===
+                Number(schedule.id) ===
                 Number(id)
         );
 
 
     if (
         index === -1
-    ) return;
+    ) {
+        return;
+    }
 
 
     await deleteSchedule(
@@ -3225,12 +3959,16 @@ async function deleteScheduleById(id) {
 
 
 // ============================================================
-// SUBJECT HELPERS
+// SUBJECT CODE
 // ============================================================
 
-function getSubjectCode(subject) {
+function getSubjectCode(
+    subject
+) {
 
-    if (!subject) return "";
+    if (!subject) {
+        return "";
+    }
 
 
     const dashIndex =
@@ -3253,6 +3991,10 @@ function getSubjectCode(subject) {
     return subject;
 }
 
+
+// ============================================================
+// SUBJECT COLOR SYSTEM
+// ============================================================
 
 const subjectColors = {
 
@@ -3302,6 +4044,23 @@ function getSubjectColorClass(
 
 // ============================================================
 // SUMMARY
+// ONLY FORMAL DEADLINES ARE SHOWN
+// REMINDERS STAY IN ASSIGNMENTS
+// ============================================================
+
+function getDeadlineTasks() {
+
+    return tasks.filter(
+        task =>
+            normalizeAssignmentType(
+                task.type
+            ) === "task"
+    );
+}
+
+
+// ============================================================
+// SUMMARY CALENDAR
 // ============================================================
 
 function renderSummaryCalendar() {
@@ -3312,120 +4071,8 @@ function renderSummaryCalendar() {
         );
 
 
-    if (!summaryTab) return;
-
-
-    let calendarLayout =
-        document.getElementById(
-            "summaryCalendarLayout"
-        );
-
-
-    if (!calendarLayout) {
-
-        summaryTab.innerHTML = `
-
-            <h2>
-                📊 Summary
-            </h2>
-
-            <div
-                id="summaryCalendarLayout"
-                class="summary-calendar-layout"
-            >
-
-                <div class="summary-calendar-main">
-
-                    <div class="summary-calendar-header">
-
-                        <button
-                            onclick="changeSummaryMonth(-1)"
-                        >
-                            ◀
-                        </button>
-
-                        <h3 id="summaryCalendarMonth">
-                            Month
-                        </h3>
-
-                        <button
-                            onclick="changeSummaryMonth(1)"
-                        >
-                            ▶
-                        </button>
-
-                    </div>
-
-                    <div class="summary-calendar-weekdays">
-
-                        <div>Sun</div>
-                        <div>Mon</div>
-                        <div>Tue</div>
-                        <div>Wed</div>
-                        <div>Thu</div>
-                        <div>Fri</div>
-                        <div>Sat</div>
-
-                    </div>
-
-                    <div
-                        id="summaryCalendarGrid"
-                        class="summary-calendar-grid"
-                    ></div>
-
-                    <div class="summary-legend">
-
-                        <div class="summary-legend-item">
-
-                            <span
-                                class="summary-legend-dot schedule"
-                            ></span>
-
-                            Class Schedule
-
-                        </div>
-
-                        <div class="summary-legend-item">
-
-                            <span
-                                class="summary-legend-dot assignment"
-                            ></span>
-
-                            Assignment Deadline
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div
-                    id="summaryDetails"
-                    class="summary-details"
-                >
-
-                    <div class="summary-empty-details">
-
-                        <div>📅</div>
-
-                        <p>
-                            Hover over a subject
-                            to see its details.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-        `;
-
-
-        calendarLayout =
-            document.getElementById(
-                "summaryCalendarLayout"
-            );
+    if (!summaryTab) {
+        return;
     }
 
 
@@ -3440,7 +4087,9 @@ function renderSummaryCalendar() {
         );
 
 
-    if (!grid || !title) return;
+    if (!grid || !title) {
+        return;
+    }
 
 
     grid.innerHTML = "";
@@ -3479,6 +4128,10 @@ function renderSummaryCalendar() {
         ).getDate();
 
 
+    const deadlineTasks =
+        getDeadlineTasks();
+
+
     for (
         let i = 0;
         i < firstDay;
@@ -3490,8 +4143,10 @@ function renderSummaryCalendar() {
                 "div"
             );
 
+
         empty.className =
             "summary-calendar-day empty";
+
 
         grid.appendChild(
             empty
@@ -3514,15 +4169,20 @@ function renderSummaryCalendar() {
                 "div"
             );
 
+
         cell.className =
             "summary-calendar-day";
 
 
-        if (
-            dateString ===
+        const todayString =
             formatDateInput(
                 new Date()
-            )
+            );
+
+
+        if (
+            dateString ===
+            todayString
         ) {
 
             cell.classList.add(
@@ -3536,18 +4196,23 @@ function renderSummaryCalendar() {
                 "div"
             );
 
+
         dateNumber.className =
             "summary-date-number";
 
+
         dateNumber.textContent =
             day;
+
 
         cell.appendChild(
             dateNumber
         );
 
 
-        // SCHEDULES
+        // ====================================================
+        // SCHEDULE EVENTS
+        // ====================================================
 
         const daySchedules =
             schedules
@@ -3557,10 +4222,26 @@ function renderSummaryCalendar() {
                         dateString
                 )
                 .sort(
-                    (a, b) =>
-                        a.startTime.localeCompare(
-                            b.startTime
-                        )
+                    (a, b) => {
+
+                        const startCompare =
+                            a.startTime.localeCompare(
+                                b.startTime
+                            );
+
+
+                        if (
+                            startCompare !== 0
+                        ) {
+
+                            return startCompare;
+                        }
+
+
+                        return a.endTime.localeCompare(
+                            b.endTime
+                        );
+                    }
                 );
 
 
@@ -3585,6 +4266,7 @@ function renderSummaryCalendar() {
                         "span"
                     );
 
+
                 dot.className =
                     "summary-event-dot";
 
@@ -3594,8 +4276,10 @@ function renderSummaryCalendar() {
                         "span"
                     );
 
+
                 label.className =
                     "summary-event-label";
+
 
                 label.textContent =
                     getSubjectCode(
@@ -3625,13 +4309,29 @@ function renderSummaryCalendar() {
                             )
 
                         );
-
                     }
                 );
 
 
                 event.title =
                     `${schedule.subject} • ${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}`;
+
+
+                event.onclick =
+                    function(eventObject) {
+
+                        eventObject.stopPropagation();
+
+                        showSummarySubjectDetails(
+
+                            dateString,
+
+                            getSubjectCode(
+                                schedule.subject
+                            )
+
+                        );
+                    };
 
 
                 cell.appendChild(
@@ -3641,10 +4341,12 @@ function renderSummaryCalendar() {
         );
 
 
-        // TASKS + REMINDERS
+        // ====================================================
+        // DEADLINE EVENTS
+        // ====================================================
 
         const dayTasks =
-            tasks.filter(
+            deadlineTasks.filter(
                 task =>
                     task.dueDate ===
                     dateString
@@ -3660,14 +4362,6 @@ function renderSummaryCalendar() {
                     );
 
 
-                const isReminder =
-                    (
-                        task.type ||
-                        "task"
-                    ) ===
-                    "reminder";
-
-
                 event.className =
                     "summary-event assignment " +
                     getSubjectColorClass(
@@ -3680,6 +4374,7 @@ function renderSummaryCalendar() {
                         "span"
                     );
 
+
                 dot.className =
                     "summary-event-dot";
 
@@ -3689,23 +4384,15 @@ function renderSummaryCalendar() {
                         "span"
                     );
 
+
                 label.className =
                     "summary-event-label";
 
 
                 label.textContent =
-                    isReminder
-                        ? "🔔 " +
-                          (
-                              task.subject
-                                  ? getSubjectCode(
-                                        task.subject
-                                    )
-                                  : "Reminder"
-                          )
-                        : getSubjectCode(
-                            task.subject
-                        );
+                    getSubjectCode(
+                        task.subject
+                    );
 
 
                 event.appendChild(
@@ -3721,34 +4408,38 @@ function renderSummaryCalendar() {
                     "mouseenter",
                     function() {
 
-                        if (isReminder) {
+                        showSummarySubjectDetails(
 
-                            showSummaryReminderDetails(
-                                dateString,
-                                task
-                            );
+                            dateString,
 
-                        } else {
+                            getSubjectCode(
+                                task.subject
+                            )
 
-                            showSummarySubjectDetails(
-
-                                dateString,
-
-                                getSubjectCode(
-                                    task.subject
-                                )
-
-                            );
-                        }
-
+                        );
                     }
                 );
 
 
                 event.title =
-                    isReminder
-                        ? `Reminder: ${task.task}`
-                        : `Assignment: ${task.task}`;
+                    `Assignment: ${task.task}`;
+
+
+                event.onclick =
+                    function(eventObject) {
+
+                        eventObject.stopPropagation();
+
+                        showSummarySubjectDetails(
+
+                            dateString,
+
+                            getSubjectCode(
+                                task.subject
+                            )
+
+                        );
+                    };
 
 
                 cell.appendChild(
@@ -3774,6 +4465,10 @@ function renderSummaryCalendar() {
 }
 
 
+// ============================================================
+// CHANGE SUMMARY MONTH
+// ============================================================
+
 function changeSummaryMonth(
     direction
 ) {
@@ -3782,6 +4477,7 @@ function changeSummaryMonth(
         summaryDate.getMonth() +
         direction
     );
+
 
     renderSummaryCalendar();
 }
@@ -3813,7 +4509,7 @@ function showSummaryDateDetails(
 
 
     const dateTasks =
-        tasks.filter(
+        getDeadlineTasks().filter(
             task =>
                 task.dueDate ===
                 dateString
@@ -3829,7 +4525,9 @@ function showSummaryDateDetails(
 
             <div class="summary-empty-details">
 
-                <div>📅</div>
+                <div>
+                    📅
+                </div>
 
                 <h3>
                     ${formatDisplayDate(
@@ -3838,11 +4536,12 @@ function showSummaryDateDetails(
                 </h3>
 
                 <p>
-                    No classes, deadlines,
-                    or reminders for this date.
+                    No classes or assignment
+                    deadlines for this date.
                 </p>
 
             </div>
+
         `;
 
         return;
@@ -3858,6 +4557,7 @@ function showSummaryDateDetails(
             )}
 
         </div>
+
     `;
 
 
@@ -3874,6 +4574,7 @@ function showSummaryDateDetails(
                 </strong>
 
             </div>
+
         `;
 
 
@@ -3900,44 +4601,26 @@ function showSummaryDateDetails(
 
                         <br>
 
-                        🕐
-                        ${formatTime(
+                        🕐 ${formatTime(
                             schedule.startTime
                         )}
+
                         -
+
                         ${formatTime(
                             schedule.endTime
                         )}
 
                     </div>
+
                 `;
             }
         );
     }
 
 
-    const reminders =
-        dateTasks.filter(
-            task =>
-                (
-                    task.type ||
-                    "task"
-                ) === "reminder"
-        );
-
-
-    const deadlines =
-        dateTasks.filter(
-            task =>
-                (
-                    task.type ||
-                    "task"
-                ) === "task"
-        );
-
-
     if (
-        deadlines.length > 0
+        dateTasks.length > 0
     ) {
 
         html += `
@@ -3949,10 +4632,11 @@ function showSummaryDateDetails(
                 </strong>
 
             </div>
+
         `;
 
 
-        deadlines.forEach(
+        dateTasks.forEach(
             task => {
 
                 html += `
@@ -3976,11 +4660,9 @@ function showSummaryDateDetails(
                         <br>
 
                         Priority:
-                        ${getPriorityIcon(
-                            task.priority
-                        )}
                         ${escapeHtml(
-                            task.priority
+                            task.priority ||
+                            "Medium"
                         )}
 
                         ${
@@ -3990,60 +4672,7 @@ function showSummaryDateDetails(
                         }
 
                     </div>
-                `;
-            }
-        );
-    }
 
-
-    if (
-        reminders.length > 0
-    ) {
-
-        html += `
-
-            <div class="summary-detail-item">
-
-                <strong>
-                    🔔 Reminders
-                </strong>
-
-            </div>
-        `;
-
-
-        reminders.forEach(
-            reminder => {
-
-                html += `
-
-                    <div class="summary-detail-item">
-
-                        <strong>
-                            🔔 Reminder
-                        </strong>
-
-                        <br>
-
-                        ${escapeHtml(
-                            reminder.task
-                        )}
-
-                        ${
-                            reminder.subject
-                                ? `<br><br>📚 ${escapeHtml(
-                                    reminder.subject
-                                  )}`
-                                : ""
-                        }
-
-                        ${
-                            reminder.completed
-                                ? "<br><br>✅ Done"
-                                : "<br><br>⏳ Pending"
-                        }
-
-                    </div>
                 `;
             }
         );
@@ -4077,28 +4706,21 @@ function showSummarySubjectDetails(
         schedules.filter(
             schedule =>
                 schedule.scheduleDate ===
-                    dateString &&
+                dateString &&
                 getSubjectCode(
                     schedule.subject
-                ) ===
-                    subjectCode
+                ) === subjectCode
         );
 
 
     const dateTasks =
-        tasks.filter(
+        getDeadlineTasks().filter(
             task =>
                 task.dueDate ===
-                    dateString &&
+                dateString &&
                 getSubjectCode(
                     task.subject
-                ) ===
-                    subjectCode &&
-                (
-                    task.type ||
-                    "task"
-                ) ===
-                    "task"
+                ) === subjectCode
         );
 
 
@@ -4140,6 +4762,7 @@ function showSummarySubjectDetails(
 
         </div>
 
+
         <div class="summary-detail-item">
 
             <strong>
@@ -4155,6 +4778,7 @@ function showSummarySubjectDetails(
             )}
 
         </div>
+
     `;
 
 
@@ -4175,11 +4799,12 @@ function showSummarySubjectDetails(
 
                         <br><br>
 
-                        🕐
-                        ${formatTime(
+                        🕐 ${formatTime(
                             schedule.startTime
                         )}
+
                         -
+
                         ${formatTime(
                             schedule.endTime
                         )}
@@ -4189,6 +4814,7 @@ function showSummarySubjectDetails(
                         💻 Online Class
 
                     </div>
+
                 `;
             }
         );
@@ -4219,11 +4845,9 @@ function showSummarySubjectDetails(
                         <br><br>
 
                         Priority:
-                        ${getPriorityIcon(
-                            task.priority
-                        )}
                         ${escapeHtml(
-                            task.priority
+                            task.priority ||
+                            "Medium"
                         )}
 
                         ${
@@ -4233,6 +4857,7 @@ function showSummarySubjectDetails(
                         }
 
                     </div>
+
                 `;
             }
         );
@@ -4245,68 +4870,6 @@ function showSummarySubjectDetails(
 
 
 // ============================================================
-// SUMMARY REMINDER DETAILS
-// ============================================================
-
-function showSummaryReminderDetails(
-    dateString,
-    reminder
-) {
-
-    const details =
-        document.getElementById(
-            "summaryDetails"
-        );
-
-
-    if (!details) return;
-
-
-    details.innerHTML = `
-
-        <div class="summary-detail-subject">
-
-            🔔 Reminder
-
-        </div>
-
-
-        <div class="summary-detail-item">
-
-            <strong>
-                ${escapeHtml(
-                    reminder.task
-                )}
-            </strong>
-
-            <br><br>
-
-            📅 ${formatDisplayDate(
-                dateString
-            )}
-
-            ${
-                reminder.subject
-                    ? `<br><br>📚 ${escapeHtml(
-                        reminder.subject
-                      )}`
-                    : ""
-            }
-
-            <br><br>
-
-            ${
-                reminder.completed
-                    ? "✅ Completed"
-                    : "⏳ Pending"
-            }
-
-        </div>
-    `;
-}
-
-
-// ============================================================
 // DATE HELPERS
 // ============================================================
 
@@ -4315,6 +4878,7 @@ function parseLocalDate(
 ) {
 
     if (!dateString) {
+
         return new Date();
     }
 
@@ -4342,6 +4906,7 @@ function formatDateInput(
     const year =
         date.getFullYear();
 
+
     const month =
         String(
             date.getMonth() + 1
@@ -4349,6 +4914,7 @@ function formatDateInput(
             2,
             "0"
         );
+
 
     const day =
         String(
@@ -4367,7 +4933,9 @@ function formatDisplayDate(
     dateString
 ) {
 
-    if (!dateString) return "";
+    if (!dateString) {
+        return "";
+    }
 
 
     const date =
@@ -4379,13 +4947,9 @@ function formatDisplayDate(
     return date.toLocaleDateString(
         "en-US",
         {
-
             month: "short",
-
             day: "numeric",
-
             year: "numeric"
-
         }
     );
 }
@@ -4398,25 +4962,24 @@ function formatShortDate(
     return date.toLocaleDateString(
         "en-US",
         {
-
             month: "short",
-
             day: "numeric"
-
         }
     );
 }
 
 
 // ============================================================
-// TIME
+// TIME FORMAT
 // ============================================================
 
 function formatTime(
     timeString
 ) {
 
-    if (!timeString) return "";
+    if (!timeString) {
+        return "";
+    }
 
 
     const parts =
@@ -4428,8 +4991,7 @@ function formatTime(
 
 
     const minute =
-        parts[1] ||
-        "00";
+        parts[1] || "00";
 
 
     const suffix =
@@ -4439,8 +5001,7 @@ function formatTime(
 
 
     hour =
-        hour % 12 ||
-        12;
+        hour % 12 || 12;
 
 
     return `${hour}:${minute} ${suffix}`;
@@ -4448,7 +5009,7 @@ function formatTime(
 
 
 // ============================================================
-// ESCAPE HTML
+// HTML ESCAPE
 // ============================================================
 
 function escapeHtml(
@@ -4494,7 +5055,7 @@ function escapeHtml(
 
 
 // ============================================================
-// HEADER
+// COZY HEADER
 // ============================================================
 
 function updateCozyHeader() {
@@ -4519,9 +5080,7 @@ function updateCozyHeader() {
         greeting =
             "Good Morning, Sir Eran ☀️";
 
-    }
-
-    else if (
+    } else if (
         hour >= 12 &&
         hour < 18
     ) {
@@ -4536,10 +5095,12 @@ function updateCozyHeader() {
             "greeting"
         );
 
+
     const timeElement =
         document.getElementById(
             "currentTime"
         );
+
 
     const dateElement =
         document.getElementById(
@@ -4560,13 +5121,8 @@ function updateCozyHeader() {
             now.toLocaleTimeString(
                 "en-US",
                 {
-
-                    hour:
-                        "numeric",
-
-                    minute:
-                        "2-digit"
-
+                    hour: "numeric",
+                    minute: "2-digit"
                 }
             );
     }
@@ -4578,16 +5134,9 @@ function updateCozyHeader() {
             now.toLocaleDateString(
                 "en-US",
                 {
-
-                    month:
-                        "long",
-
-                    day:
-                        "numeric",
-
-                    year:
-                        "numeric"
-
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric"
                 }
             );
     }
@@ -4595,7 +5144,7 @@ function updateCozyHeader() {
 
 
 // ============================================================
-// MOTIVATION
+// MOTIVATIONAL QUOTES
 // ============================================================
 
 const motivationalQuotes = [
@@ -4641,7 +5190,9 @@ function setRandomMotivation() {
         );
 
 
-    if (!quoteElement) return;
+    if (!quoteElement) {
+        return;
+    }
 
 
     const randomIndex =
@@ -4653,7 +5204,9 @@ function setRandomMotivation() {
 
     quoteElement.textContent =
         "“" +
-        motivationalQuotes[randomIndex] +
+        motivationalQuotes[
+            randomIndex
+        ] +
         "”";
 }
 
@@ -4702,11 +5255,10 @@ document.addEventListener(
             currentUser =
                 session.user;
 
+
             await initializeTracker();
 
-        }
-
-        else {
+        } else {
 
             createLoginScreen();
         }
@@ -4717,6 +5269,7 @@ document.addEventListener(
                 event,
                 session
             ) => {
+
 
                 if (
                     event === "SIGNED_IN" &&
@@ -4759,7 +5312,7 @@ document.addEventListener(
 
 
 // ============================================================
-// PWA
+// PWA SERVICE WORKER
 // ============================================================
 
 if (
@@ -4774,11 +5327,8 @@ if (
                 .register(
                     "./service-worker.js"
                 )
-
                 .then(
-                    function(
-                        registration
-                    ) {
+                    function(registration) {
 
                         console.log(
                             "PWA Service Worker registered:",
@@ -4787,7 +5337,6 @@ if (
 
                     }
                 )
-
                 .catch(
                     function(error) {
 
@@ -4798,6 +5347,7 @@ if (
 
                     }
                 );
+
         }
     );
 }
