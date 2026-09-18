@@ -13,7 +13,6 @@ html {
 body {
     margin: 0;
     padding: 0;
-
     font-family:
         Inter,
         system-ui,
@@ -47,10 +46,8 @@ body {
 
 .cozy-header {
     background: rgba(255, 252, 247, 0.92);
-
     border: 1px solid #ddd2c5;
     border-radius: 22px;
-
     padding: 22px 24px;
     margin-bottom: 20px;
 
@@ -66,7 +63,7 @@ body {
     color: #4d443c;
 }
 
-.cozy-header .subtitle {
+.subtitle {
     margin: 6px 0 0;
     color: #81766d;
     font-size: 14px;
@@ -74,12 +71,9 @@ body {
 
 .cozy-info {
     display: flex;
+    gap: 9px;
     align-items: center;
-    gap: 8px;
-
     margin-top: 10px;
-
-    color: #91857b;
     font-size: 13px;
 }
 
@@ -92,9 +86,8 @@ body {
     color: #91857b;
 }
 
-#motivationQuote {
-    margin: 12px 0 0;
-
+.motivation-quote {
+    margin-top: 12px;
     color: #74685f;
     font-size: 14px;
     font-style: italic;
@@ -108,25 +101,19 @@ body {
 .main-tabs {
     display: flex;
     gap: 8px;
-
     margin-bottom: 18px;
-
     flex-wrap: wrap;
 }
 
 .main-tab {
     border: 1px solid #d6c9bb;
-
     background: rgba(255, 252, 247, 0.8);
-
     color: #665b52;
 
     padding: 10px 17px;
-
     border-radius: 12px;
 
     cursor: pointer;
-
     font-weight: 700;
 
     transition: 0.2s ease;
@@ -139,9 +126,7 @@ body {
 
 .main-tab.active {
     background: #75675b;
-
     border-color: #75675b;
-
     color: #fffaf4;
 
     box-shadow:
@@ -159,12 +144,10 @@ body {
 .tracker-card,
 .assignment-form-panel,
 .assignment-list-panel,
-.schedule-main-column,
-.saved-schedules {
+.calendar-main-panel,
+.schedule-details {
     background: rgba(255, 252, 247, 0.94);
-
     border: 1px solid #ddd2c5;
-
     border-radius: 18px;
 
     box-shadow:
@@ -172,7 +155,7 @@ body {
 }
 
 .tracker-card {
-    padding: 20px;
+    padding: 18px 20px;
     margin-bottom: 18px;
 }
 
@@ -198,15 +181,12 @@ textarea {
     padding: 11px 13px;
 
     border-radius: 10px;
-
     border: 1px solid #d4c7ba;
 
     background: #fffdf9;
-
     color: #49413b;
 
     outline: none;
-
     font-size: 14px;
 
     transition: 0.2s ease;
@@ -223,17 +203,14 @@ textarea:focus {
 
 button {
     border: none;
-
     border-radius: 10px;
 
     padding: 10px 15px;
 
     background: #77695d;
-
     color: white;
 
     font-weight: 700;
-
     cursor: pointer;
 
     transition: 0.2s ease;
@@ -241,7 +218,6 @@ button {
 
 button:hover {
     background: #62564d;
-
     transform: translateY(-1px);
 }
 
@@ -260,54 +236,40 @@ button:active {
 
 .progress-summary {
     display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
 }
 
 .progress-box {
-    padding: 13px;
+    background: #faf5ee;
+    border: 1px solid #e4d9ce;
+    border-radius: 12px;
 
-    background: #faf5ef;
-
-    border: 1px solid #e3d8cd;
-
-    border-radius: 13px;
-
+    padding: 12px;
     text-align: center;
 }
 
 .progress-box span {
     display: block;
 
-    font-size: 23px;
-
+    font-size: 22px;
     font-weight: 900;
 
-    color: #5c5047;
+    color: #5b5047;
 }
 
 .progress-box small {
-    display: block;
-
-    margin-top: 2px;
-
-    color: #887c72;
-
+    color: #897d73;
     font-size: 11px;
 }
 
 .progress-bar {
     width: 100%;
+    height: 11px;
 
-    height: 12px;
-
-    margin-top: 15px;
+    margin-top: 14px;
 
     border-radius: 999px;
-
     background: #e1d7cd;
 
     overflow: hidden;
@@ -315,7 +277,6 @@ button:active {
 
 #progressFill {
     height: 100%;
-
     width: 0%;
 
     border-radius: inherit;
@@ -329,13 +290,12 @@ button:active {
     margin: 7px 0 0;
 
     font-size: 13px;
-
     color: #81766d;
 }
 
 
 /* ============================================================
-   ASSIGNMENT LAYOUT
+   ASSIGNMENTS TWO-COLUMN LAYOUT
 ============================================================ */
 
 .assignment-layout {
@@ -343,7 +303,7 @@ button:active {
 
     grid-template-columns:
         minmax(280px, 0.72fr)
-        minmax(0, 1.65fr);
+        minmax(0, 1.6fr);
 
     gap: 18px;
 
@@ -359,7 +319,6 @@ button:active {
     padding: 20px;
 
     position: sticky;
-
     top: 15px;
 }
 
@@ -367,58 +326,37 @@ button:active {
     margin-bottom: 5px;
 }
 
-.panel-heading p,
-.list-panel-header p,
-.saved-schedules-header p {
-    margin: 0;
+.panel-heading p {
+    margin: 0 0 16px;
 
-    color: #8a7e74;
-
-    font-size: 12px;
-
+    color: #877b71;
+    font-size: 13px;
     line-height: 1.5;
 }
 
-
-/* MODE TABS */
-
 .assignment-mode-tabs {
     display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr 1fr;
 
     gap: 7px;
 
-    margin: 17px 0;
+    margin-bottom: 17px;
 }
 
 .assignment-mode-button {
-    padding: 10px 8px;
-
     background: #eee6dd;
+    color: #675d55;
 
     border: 1px solid #d7cbbf;
 
-    color: #675d55;
-
-    font-size: 12px;
-}
-
-.assignment-mode-button:hover {
-    background: #e4d9ce;
+    padding: 10px 8px;
 }
 
 .assignment-mode-button.active {
     background: #75675b;
-
-    border-color: #75675b;
-
     color: white;
+    border-color: #75675b;
 }
-
-
-/* FORM LABELS */
 
 .assignment-form-panel label {
     display: block;
@@ -428,22 +366,15 @@ button:active {
     color: #655a51;
 
     font-size: 12px;
-
     font-weight: 800;
 }
 
 .optional-label {
-    color: #a0958c;
-
+    color: #a09287;
     font-weight: 500;
-
-    font-size: 10px;
 }
 
-
-/* FORM BUTTONS */
-
-.primary-form-button {
+.primary-action-button {
     width: 100%;
 
     margin-top: 17px;
@@ -453,8 +384,12 @@ button:active {
     background: #75675b;
 }
 
-.reminder-button {
-    background: #7d6b5e;
+.primary-action-button:hover {
+    background: #62564d;
+}
+
+.reminder-action-button {
+    background: #827467;
 }
 
 .cancel-edit-button {
@@ -462,13 +397,12 @@ button:active {
 
     margin-top: 8px;
 
-    background: #e7ddd3;
-
-    color: #675c53;
+    background: #e8dfd5;
+    color: #675b52;
 }
 
 .cancel-edit-button:hover {
-    background: #ddd0c3;
+    background: #ddd2c7;
 }
 
 
@@ -484,20 +418,22 @@ button:active {
 
 .list-panel-header {
     display: flex;
-
     justify-content: space-between;
-
     align-items: flex-start;
 
     margin-bottom: 15px;
 }
 
 .list-panel-header h2 {
-    margin-bottom: 5px;
+    margin: 0 0 4px;
 }
 
+.list-panel-header p {
+    margin: 0;
 
-/* FILTERS */
+    color: #897d73;
+    font-size: 13px;
+}
 
 .assignment-filters {
     display: grid;
@@ -505,19 +441,18 @@ button:active {
     grid-template-columns:
         minmax(130px, 0.75fr)
         minmax(150px, 0.9fr)
-        minmax(150px, 0.9fr);
+        minmax(145px, 0.9fr);
 
-    gap: 9px;
+    gap: 8px;
 
-    padding: 12px;
+    margin-bottom: 12px;
 
-    margin-bottom: 13px;
+    padding: 11px;
 
-    background: #f8f2eb;
+    background: #f7f1ea;
 
-    border: 1px solid #e4d9ce;
-
-    border-radius: 13px;
+    border: 1px solid #e5dbd0;
+    border-radius: 12px;
 }
 
 .filter-group label {
@@ -525,59 +460,29 @@ button:active {
 
     margin-bottom: 5px;
 
-    color: #776b62;
+    color: #74685f;
 
-    font-size: 10px;
-
+    font-size: 11px;
     font-weight: 800;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.3px;
 }
 
-.filter-group input,
-.filter-group select {
+.filter-group select,
+.assignment-filters > input {
     padding: 9px 10px;
-
-    font-size: 12px;
 }
-
-
-/* LIST SCROLL */
 
 .assignment-list-scroll {
     max-height: 610px;
 
     overflow-y: auto;
 
-    padding-right: 3px;
+    padding-right: 4px;
 }
-
-.assignment-list-scroll::-webkit-scrollbar {
-    width: 7px;
-}
-
-.assignment-list-scroll::-webkit-scrollbar-track {
-    background: #eee6dd;
-
-    border-radius: 10px;
-}
-
-.assignment-list-scroll::-webkit-scrollbar-thumb {
-    background: #c5b7a9;
-
-    border-radius: 10px;
-}
-
-
-/* TASK LIST */
 
 #taskList {
     list-style: none;
 
     padding: 0;
-
     margin: 0;
 }
 
@@ -585,73 +490,44 @@ button:active {
     display: flex;
 
     justify-content: space-between;
+    align-items: center;
 
     gap: 15px;
-
-    align-items: center;
 
     padding: 14px;
 
     margin-bottom: 9px;
 
     border: 1px solid #ded3c7;
-
     border-radius: 14px;
 
     background: #fffdf9;
 
-    border-left: 5px solid #bcae9f;
-
     transition:
         transform 0.15s ease,
-        box-shadow 0.15s ease;
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
 }
 
 #taskList li:hover {
     transform: translateY(-1px);
+
+    border-color: #cfc0b2;
 
     box-shadow:
         0 5px 14px rgba(70, 58, 48, 0.07);
 }
 
 #taskList li.completed {
-    opacity: 0.62;
+    opacity: 0.6;
 }
 
-
-/* PRIORITY COLORS */
-
-#taskList li.priority-urgent {
-    border-left-color: #c56f67;
+#taskList li.completed .item-title {
+    text-decoration: line-through;
 }
-
-#taskList li.priority-high {
-    border-left-color: #cf9461;
-}
-
-#taskList li.priority-medium {
-    border-left-color: #c8aa62;
-}
-
-#taskList li.priority-low {
-    border-left-color: #7e9a78;
-}
-
-
-/* REMINDER */
-
-#taskList li.reminder-item {
-    border-left-color: #8b789b;
-
-    background: #fcf9fd;
-}
-
-
-/* TASK INFO */
 
 .task-info {
     display: flex;
-
     flex-direction: column;
 
     gap: 5px;
@@ -659,92 +535,60 @@ button:active {
     min-width: 0;
 }
 
-.task-info strong {
-    color: #4e453e;
+.item-title-row {
+    display: flex;
 
-    line-height: 1.35;
+    align-items: center;
+
+    gap: 7px;
+
+    flex-wrap: wrap;
 }
 
-.task-info small {
+.item-title {
+    color: #4e453e;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    word-break: break-word;
+}
+
+.item-type-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 4px 7px;
+
+    border-radius: 999px;
+
+    font-size: 9px;
+    font-weight: 900;
+
+    white-space: nowrap;
+}
+
+.item-type-badge.task {
+    background: #eee4d9;
+    color: #725f4f;
+}
+
+.item-type-badge.reminder {
+    background: #e9e0ea;
+    color: #69586e;
+}
+
+.task-meta {
     color: #81766d;
 
     font-size: 11px;
+    line-height: 1.4;
 }
 
-.task-type-badge {
-    display: inline-flex;
-
-    align-items: center;
-
-    width: fit-content;
-
-    padding: 3px 7px;
-
-    border-radius: 999px;
-
-    font-size: 9px;
-
-    font-weight: 900;
-
-    letter-spacing: 0.2px;
-
-    text-transform: uppercase;
+.task-meta strong {
+    color: #665b52;
 }
-
-.task-type-badge.deadline {
-    background: #eee7df;
-
-    color: #76695f;
-}
-
-.task-type-badge.reminder {
-    background: #eee5f1;
-
-    color: #725f7d;
-}
-
-.priority-badge {
-    display: inline-flex;
-
-    width: fit-content;
-
-    align-items: center;
-
-    padding: 3px 7px;
-
-    border-radius: 999px;
-
-    font-size: 9px;
-
-    font-weight: 900;
-}
-
-.priority-badge.urgent {
-    background: #f2dedb;
-
-    color: #98534d;
-}
-
-.priority-badge.high {
-    background: #f3e4d6;
-
-    color: #9a6841;
-}
-
-.priority-badge.medium {
-    background: #f2ead1;
-
-    color: #8c7436;
-}
-
-.priority-badge.low {
-    background: #e3eadf;
-
-    color: #5d7658;
-}
-
-
-/* ACTIONS */
 
 .task-actions {
     display: flex;
@@ -760,32 +604,80 @@ button:active {
     font-size: 13px;
 }
 
+.priority-badge {
+    display: inline-flex;
 
-/* EMPTY */
+    align-items: center;
 
-.empty-task-state {
+    width: fit-content;
+
+    padding: 3px 7px;
+
+    border-radius: 6px;
+
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.priority-urgent {
+    background: #f0d9d5;
+    color: #8b5149;
+    border-left: 4px solid #b96b60;
+}
+
+.priority-high {
+    background: #f1e0d2;
+    color: #8a6245;
+    border-left: 4px solid #c68a5d;
+}
+
+.priority-medium {
+    background: #eee7d1;
+    color: #7e7146;
+    border-left: 4px solid #b6a45e;
+}
+
+.priority-low {
+    background: #dfe8dc;
+    color: #5e7457;
+    border-left: 4px solid #829875;
+}
+
+.reminder-item {
+    border-left: 5px solid #9a83a0 !important;
+}
+
+.task-item {
+    border-left: 5px solid #9b8977 !important;
+}
+
+.reminder-check-button {
+    background: #827467;
+}
+
+.reminder-check-button:hover {
+    background: #695c52;
+}
+
+.empty-task-list {
     text-align: center;
 
-    padding: 45px 20px;
+    padding: 45px 15px;
 
-    color: #958980;
+    color: #91857b;
 }
 
-.empty-task-icon {
-    font-size: 35px;
+.empty-task-list > div {
+    font-size: 32px;
 
-    margin-bottom: 8px;
-
-    opacity: 0.7;
+    margin-bottom: 7px;
 }
 
-.empty-task-state strong {
-    display: block;
-
-    color: #6e6259;
+.empty-task-list strong {
+    color: #6c6057;
 }
 
-.empty-task-state p {
+.empty-task-list p {
     margin: 5px 0 0;
 
     font-size: 12px;
@@ -794,9 +686,10 @@ button:active {
 .task-counter {
     margin: 12px 2px 0;
 
-    color: #8a7e74;
+    color: #8c8076;
 
     font-size: 11px;
+    text-align: right;
 }
 
 
@@ -808,30 +701,182 @@ button:active {
     background: rgba(255, 252, 247, 0.94);
 
     border: 1px solid #ddd2c5;
-
     border-radius: 16px;
 
-    padding: 15px;
+    padding: 14px;
 
     margin-bottom: 15px;
 
     box-shadow:
-        0 6px 18px rgba(70, 58, 48, 0.05);
+        0 8px 25px rgba(70, 58, 48, 0.05);
 }
 
 .schedule-form-grid {
     display: grid;
 
     grid-template-columns:
-        minmax(200px, 2fr)
-        minmax(140px, 1fr)
-        minmax(120px, 0.8fr)
-        minmax(120px, 0.8fr)
+        minmax(210px, 2fr)
+        minmax(130px, 1fr)
+        minmax(120px, 1fr)
+        minmax(120px, 1fr)
         auto;
 
     gap: 9px;
 
     align-items: center;
+}
+
+
+/* ============================================================
+   SCHEDULE CONTENT LAYOUT
+============================================================ */
+
+.schedule-content-layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.65fr)
+        minmax(290px, 0.75fr);
+
+    gap: 18px;
+
+    align-items: start;
+}
+
+.schedule-main-column {
+    min-width: 0;
+}
+
+.saved-schedules {
+    position: sticky;
+    top: 15px;
+
+    min-width: 0;
+
+    background: rgba(255, 252, 247, 0.97);
+
+    border: 1px solid #ddd2c5;
+    border-radius: 18px;
+
+    padding: 18px;
+
+    box-shadow:
+        0 8px 25px rgba(70, 58, 48, 0.07);
+}
+
+.saved-schedules-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin-bottom: 13px;
+}
+
+.saved-schedules-header h3 {
+    margin: 0 0 4px;
+}
+
+.saved-schedules-header p {
+    margin: 0;
+
+    color: #897d73;
+
+    font-size: 11px;
+}
+
+.schedule-count {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 28px;
+    height: 28px;
+
+    padding: 0 7px;
+
+    border-radius: 999px;
+
+    background: #eee5dc;
+    color: #6e6258;
+
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.saved-schedule-list {
+    max-height: 650px;
+
+    overflow-y: auto;
+
+    padding-right: 3px;
+}
+
+.saved-schedule-item {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+
+    background: #fffdf9;
+
+    border: 1px solid #ddd2c6;
+    border-radius: 12px;
+
+    padding: 11px;
+
+    margin-bottom: 8px;
+}
+
+.saved-schedule-info {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+    min-width: 0;
+}
+
+.saved-schedule-info strong {
+    color: #50463e;
+
+    font-size: 12px;
+}
+
+.saved-schedule-info span {
+    color: #867a70;
+
+    font-size: 11px;
+}
+
+.saved-schedule-actions {
+    display: flex;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+}
+
+.saved-schedule-actions button {
+    padding: 7px 8px;
+
+    font-size: 12px;
+}
+
+.empty-schedules {
+    text-align: center;
+
+    padding: 35px 10px;
+
+    color: #978b81;
+
+    font-size: 12px;
 }
 
 
@@ -844,7 +889,7 @@ button:active {
 
     gap: 8px;
 
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .schedule-tab {
@@ -865,70 +910,33 @@ button:active {
 
 
 /* ============================================================
-   SCHEDULE CONTENT LAYOUT
-============================================================ */
-
-.schedule-content-layout {
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, 1.7fr)
-        minmax(290px, 0.75fr);
-
-    gap: 18px;
-
-    align-items: start;
-}
-
-.schedule-main-column {
-    min-width: 0;
-}
-
-
-/* ============================================================
    CALENDAR
 ============================================================ */
 
 .calendar-main-panel {
-    background: rgba(255, 252, 247, 0.96);
-
-    border: 1px solid #ddd2c5;
-
-    border-radius: 18px;
-
     padding: 15px;
-
-    box-shadow:
-        0 8px 25px rgba(70, 58, 48, 0.06);
 }
 
 .calendar-header {
-    display: grid;
+    display: flex;
 
-    grid-template-columns:
-        42px 1fr 42px;
-
+    justify-content: space-between;
     align-items: center;
-
-    gap: 10px;
 
     margin-bottom: 12px;
 }
 
 .calendar-header button {
-    width: 42px;
-
-    height: 38px;
+    width: 40px;
+    height: 36px;
 
     padding: 0;
 
-    border-radius: 10px;
+    border-radius: 9px;
 }
 
 .calendar-header h3 {
     margin: 0;
-
-    text-align: center;
 
     font-size: 20px;
 }
@@ -948,7 +956,6 @@ button:active {
     text-align: center;
 
     font-size: 11px;
-
     font-weight: 800;
 
     color: #82766c;
@@ -956,6 +963,8 @@ button:active {
     padding: 7px 3px;
 
     text-transform: uppercase;
+
+    min-width: 0;
 }
 
 .calendar-grid {
@@ -1002,7 +1011,7 @@ button:active {
 }
 
 .calendar-event {
-    padding: 6px 7px;
+    padding: 6px;
 
     margin-bottom: 5px;
 
@@ -1013,7 +1022,6 @@ button:active {
     cursor: pointer;
 
     font-size: 10px;
-
     font-weight: 800;
 
     transition: 0.15s ease;
@@ -1031,9 +1039,7 @@ button:active {
 .calendar-event.schedule-color-1,
 .weekly-event.schedule-color-1 {
     background: #a8b89f;
-
     color: #263126;
-
     border-left-color: #6f8068;
 }
 
@@ -1045,9 +1051,7 @@ button:active {
 .calendar-event.schedule-color-2,
 .weekly-event.schedule-color-2 {
     background: #9eb5c4;
-
     color: #26313a;
-
     border-left-color: #667f91;
 }
 
@@ -1059,9 +1063,7 @@ button:active {
 .calendar-event.schedule-color-3,
 .weekly-event.schedule-color-3 {
     background: #b5a6c7;
-
     color: #30283a;
-
     border-left-color: #806d95;
 }
 
@@ -1073,9 +1075,7 @@ button:active {
 .calendar-event.schedule-color-4,
 .weekly-event.schedule-color-4 {
     background: #c5a88c;
-
     color: #3f2e20;
-
     border-left-color: #987455;
 }
 
@@ -1090,25 +1090,15 @@ button:active {
 ============================================================ */
 
 .schedule-details {
-    margin-top: 15px;
+    margin-top: 12px;
 
-    background: rgba(255, 252, 247, 0.96);
-
-    border: 1px solid #ddd2c5;
-
-    border-radius: 18px;
-
-    padding: 18px;
-
-    box-shadow:
-        0 8px 25px rgba(70, 58, 48, 0.06);
+    padding: 15px;
 }
 
 .schedule-detail-card {
     background: #fffdf9;
 
     border: 1px solid #ddd2c6;
-
     border-radius: 15px;
 
     padding: 18px;
@@ -1146,133 +1136,8 @@ button:active {
     padding: 25px 10px;
 }
 
-.empty-details h3 {
-    margin-bottom: 5px;
-}
-
-
-/* ============================================================
-   SAVED SCHEDULES RIGHT PANEL
-============================================================ */
-
-.saved-schedules {
-    padding: 18px;
-
-    position: sticky;
-
-    top: 15px;
-
-    min-width: 0;
-
-    max-height: calc(100vh - 110px);
-
-    overflow: hidden;
-}
-
-.saved-schedules-header {
-    margin-bottom: 14px;
-
-    padding-bottom: 12px;
-
-    border-bottom: 1px solid #e5dbd0;
-}
-
-.saved-schedules-header h3 {
-    margin: 0 0 4px;
-
-    font-size: 17px;
-}
-
-.saved-schedule-list {
-    max-height: calc(100vh - 230px);
-
-    overflow-y: auto;
-
-    padding-right: 3px;
-}
-
-.saved-schedule-list::-webkit-scrollbar {
-    width: 7px;
-}
-
-.saved-schedule-list::-webkit-scrollbar-track {
-    background: #eee6dd;
-
-    border-radius: 10px;
-}
-
-.saved-schedule-list::-webkit-scrollbar-thumb {
-    background: #c5b7a9;
-
-    border-radius: 10px;
-}
-
-.saved-schedule-item {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 10px;
-
-    background: #fffdf9;
-
-    border: 1px solid #ddd2c6;
-
-    border-radius: 12px;
-
-    padding: 12px;
-
-    margin-bottom: 8px;
-}
-
-.saved-schedule-info {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 4px;
-
-    min-width: 0;
-}
-
-.saved-schedule-info strong {
-    color: #50463e;
-
-    font-size: 12px;
-
-    line-height: 1.35;
-}
-
-.saved-schedule-info span {
-    color: #867a70;
-
-    font-size: 10px;
-}
-
-.saved-schedule-actions {
-    display: flex;
-
-    gap: 5px;
-
-    flex-shrink: 0;
-}
-
-.saved-schedule-actions button {
-    padding: 7px 8px;
-
-    font-size: 12px;
-}
-
-.empty-schedules {
-    text-align: center;
-
-    color: #958980;
-
-    padding: 35px 15px;
-
-    font-size: 12px;
+.empty-details > div {
+    font-size: 32px;
 }
 
 
@@ -1283,8 +1148,7 @@ button:active {
 .weekly-header {
     display: grid;
 
-    grid-template-columns:
-        42px 1fr 42px;
+    grid-template-columns: 42px 1fr 42px;
 
     align-items: center;
 
@@ -1292,13 +1156,18 @@ button:active {
 
     margin-bottom: 13px;
 
-    padding: 12px 0;
+    padding: 10px;
+
+    background: rgba(255, 252, 247, 0.94);
+
+    border: 1px solid #ddd2c5;
+
+    border-radius: 15px;
 }
 
 .weekly-header button {
     width: 42px;
-
-    height: 38px;
+    height: 36px;
 
     padding: 0;
 }
@@ -1307,6 +1176,8 @@ button:active {
     margin: 0;
 
     text-align: center;
+
+    font-size: 18px;
 }
 
 .weekly-grid {
@@ -1418,7 +1289,6 @@ button:active {
     background: rgba(255, 252, 247, 0.96);
 
     border: 1px solid #ddd2c5;
-
     border-radius: 18px;
 
     padding: 15px;
@@ -1430,8 +1300,7 @@ button:active {
 .summary-calendar-header {
     display: grid;
 
-    grid-template-columns:
-        42px 1fr 42px;
+    grid-template-columns: 42px 1fr 42px;
 
     align-items: center;
 
@@ -1442,7 +1311,6 @@ button:active {
 
 .summary-calendar-header button {
     width: 42px;
-
     height: 38px;
 
     padding: 0;
@@ -1475,7 +1343,6 @@ button:active {
     text-align: center;
 
     font-size: 11px;
-
     font-weight: 800;
 
     color: #82766c;
@@ -1548,11 +1415,9 @@ button:active {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     width: 25px;
-
     height: 25px;
 
     margin-bottom: 6px;
@@ -1562,7 +1427,6 @@ button:active {
     color: #62574e;
 
     font-size: 12px;
-
     font-weight: 900;
 }
 
@@ -1596,7 +1460,6 @@ button:active {
     border-radius: 6px;
 
     font-size: 10px;
-
     font-weight: 800;
 
     text-align: left;
@@ -1630,7 +1493,6 @@ button:active {
 
 .summary-event-dot {
     width: 7px;
-
     height: 7px;
 
     min-width: 7px;
@@ -1791,7 +1653,6 @@ button:active {
     border-radius: 10px;
 
     font-size: 14px;
-
     font-weight: 900;
 
     border-left: 5px solid transparent;
@@ -1847,7 +1708,6 @@ button:active {
 
 .summary-legend-dot {
     width: 9px;
-
     height: 9px;
 
     border-radius: 50%;
@@ -1878,7 +1738,6 @@ button:active {
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     padding: 20px;
@@ -1929,17 +1788,6 @@ button:active {
 
 
 /* ============================================================
-   LOGOUT
-============================================================ */
-
-#logoutButton {
-    margin-top: 15px;
-
-    background: #75675b;
-}
-
-
-/* ============================================================
    RESPONSIVE
 ============================================================ */
 
@@ -1959,10 +1807,6 @@ button:active {
 
     .saved-schedules {
         position: static;
-
-        max-height: none;
-
-        overflow: visible;
     }
 
     .saved-schedule-list {
@@ -1993,28 +1837,28 @@ button:active {
         grid-template-columns:
             repeat(7, minmax(125px, 1fr));
     }
+
 }
 
 
-@media (max-width: 850px) {
+@media (max-width: 800px) {
+
+    .assignment-filters {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .assignment-filters > input {
+        grid-column: 1 / -1;
+    }
 
     .schedule-form-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr 1fr;
     }
 
     .schedule-form-grid button {
-        width: 100%;
-    }
-
-    .assignment-filters {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-    }
-
-    .specific-date-group {
         grid-column: 1 / -1;
     }
+
 }
 
 
@@ -2056,7 +1900,7 @@ button:active {
     }
 
     .progress-box {
-        padding: 10px 5px;
+        padding: 9px 5px;
     }
 
     .progress-box span {
@@ -2067,29 +1911,30 @@ button:active {
         grid-template-columns: 1fr;
     }
 
-    .specific-date-group {
+    .assignment-filters > input {
         grid-column: auto;
+    }
+
+    #taskList li {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .task-actions {
+        width: 100%;
+    }
+
+    .task-actions button {
+        flex: 1;
     }
 
     .schedule-form-grid {
         grid-template-columns: 1fr;
     }
 
-    .calendar-header {
-        grid-template-columns:
-            36px 1fr 36px;
-
-        gap: 5px;
-    }
-
-    .calendar-header button {
-        width: 36px;
-
-        height: 34px;
-    }
-
-    .calendar-header h3 {
-        font-size: 16px;
+    .schedule-form-grid button {
+        grid-column: auto;
     }
 
     .calendar-weekdays {
@@ -2130,6 +1975,20 @@ button:active {
         border-left-width: 2px;
 
         border-radius: 5px;
+    }
+
+    .saved-schedule-item {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .saved-schedule-actions {
+        width: 100%;
+    }
+
+    .saved-schedule-actions button {
+        flex: 1;
     }
 
     .summary-calendar-main {
@@ -2179,7 +2038,6 @@ button:active {
 
     .summary-date-number {
         width: 21px;
-
         height: 21px;
 
         font-size: 10px;
@@ -2203,7 +2061,6 @@ button:active {
 
     .summary-event-dot {
         width: 5px;
-
         height: 5px;
 
         min-width: 5px;
@@ -2233,44 +2090,6 @@ button:active {
         font-size: 9px;
     }
 
-    #taskList li {
-        align-items: flex-start;
-
-        flex-direction: column;
-    }
-
-    .task-actions {
-        width: 100%;
-    }
-
-    .task-actions button {
-        flex: 1;
-    }
-
-    .saved-schedule-item {
-        align-items: flex-start;
-
-        flex-direction: column;
-    }
-
-    .saved-schedule-actions {
-        width: 100%;
-    }
-
-    .saved-schedule-actions button {
-        flex: 1;
-    }
-
-    .weekly-header {
-        grid-template-columns:
-            36px 1fr 36px;
-    }
-
-    .weekly-header button {
-        width: 36px;
-
-        height: 34px;
-    }
 }
 
 
@@ -2290,7 +2109,6 @@ button:active {
 
     .summary-date-number {
         width: 19px;
-
         height: 19px;
 
         font-size: 9px;
@@ -2309,4 +2127,5 @@ button:active {
 
         padding: 4px 1px;
     }
+
 }
