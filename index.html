@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
+
     <meta name="theme-color" content="#6f4e37">
 </head>
 
@@ -31,6 +32,11 @@
     <p id="motivationQuote" class="motivation-quote">
         "Small progress is still progress."
     </p>
+
+
+    <!-- =====================================================
+         MAIN TABS
+    ====================================================== -->
 
     <div class="main-tabs">
 
@@ -58,193 +64,430 @@
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          ASSIGNMENTS TAB
-    ========================= -->
+    ====================================================== -->
 
     <div id="assignmentsTab">
 
-        <div class="tracker-card">
+        <div class="assignment-layout">
 
-            <h2>Today's Progress</h2>
 
-            <div class="progress-summary">
+            <!-- =============================================
+                 LEFT — ADD TASK / REMINDER
+            ============================================== -->
 
-                <div class="progress-box">
-                    <span id="totalTasks">0</span>
-                    <small>Total</small>
+            <div class="assignment-creator">
+
+                <div class="creator-header">
+
+                    <h2>
+                        Add New
+                    </h2>
+
+                    <p>
+                        Keep track of what you need to do.
+                    </p>
+
                 </div>
 
-                <div class="progress-box">
-                    <span id="completedTasks">0</span>
-                    <small>Completed</small>
+
+                <!-- PROGRESS -->
+
+                <div class="compact-progress">
+
+                    <div class="progress-title">
+                        <span>Today's Progress</span>
+                        <strong id="progressText">
+                            0% Complete
+                        </strong>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div id="progressFill"></div>
+                    </div>
+
+                    <div class="progress-mini-stats">
+
+                        <span>
+                            <strong id="totalTasks">0</strong>
+                            Total
+                        </span>
+
+                        <span>
+                            <strong id="completedTasks">0</strong>
+                            Done
+                        </span>
+
+                        <span>
+                            <strong id="pendingTasks">0</strong>
+                            Pending
+                        </span>
+
+                    </div>
+
                 </div>
 
-                <div class="progress-box">
-                    <span id="pendingTasks">0</span>
-                    <small>Pending</small>
+
+                <!-- TYPE SWITCH -->
+
+                <div class="entry-type-tabs">
+
+                    <button
+                        type="button"
+                        id="taskTypeButton"
+                        class="entry-type-button active"
+                        onclick="showEntryType('task')"
+                    >
+                        📝 TASK
+                    </button>
+
+                    <button
+                        type="button"
+                        id="reminderTypeButton"
+                        class="entry-type-button"
+                        onclick="showEntryType('reminder')"
+                    >
+                        🔔 REMINDER
+                    </button>
+
                 </div>
 
-            </div>
 
+                <!-- =========================================
+                     TASK FORM
+                ========================================== -->
 
-            <div class="progress-bar">
-                <div id="progressFill"></div>
-            </div>
-
-            <p id="progressText">
-                0% Complete
-            </p>
-
-
-            <label for="subject">
-                Subject
-            </label>
-
-            <select id="subject">
-
-                <option value="CHEM 001 - General Chemistry">
-                    CHEM 001 - General Chemistry
-                </option>
-
-                <option value="MATH 003 - Basic Calculus">
-                    MATH 003 - Basic Calculus
-                </option>
-
-                <option value="CMPE 011 - Computer Fundamentals and Programming">
-                    CMPE 011 - Computer Fundamentals and Programming
-                </option>
-
-                <option value="CWTS 001 - Civic Welfare Training Service 1">
-                    CWTS 001 - Civic Welfare Training Service 1
-                </option>
-
-                <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
-                    GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
-                </option>
-
-                <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
-                    GEED 032 - Filipinolohiya at Pambansang Kaunlaran
-                </option>
-
-                <option value="INEN 101 - Introduction to Industrial Engineering">
-                    INEN 101 - Introduction to Industrial Engineering
-                </option>
-
-                <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
-                    PATHFIT 1 - Physical Activity Towards Health and Fitness 1
-                </option>
-
-            </select>
-
-
-            <label for="task">
-                Topic
-            </label>
-
-            <input
-                type="text"
-                id="task"
-                placeholder="Enter a school topic"
-            >
-
-
-            <label for="dueDate">
-                Due Date
-            </label>
-
-            <input
-                type="date"
-                id="dueDate"
-            >
-
-
-            <label for="priority">
-                Priority
-            </label>
-
-            <select id="priority">
-
-                <option value="High">
-                    High
-                </option>
-
-                <option
-                    value="Medium"
-                    selected
+                <div
+                    id="taskForm"
+                    class="entry-form"
                 >
-                    Medium
-                </option>
 
-                <option value="Low">
-                    Low
-                </option>
+                    <label for="subject">
+                        Subject
+                    </label>
 
-            </select>
+                    <select id="subject">
 
+                        <option value="CHEM 001 - General Chemistry">
+                            CHEM 001 - General Chemistry
+                        </option>
 
-            <button
-                id="addTaskButton"
-                onclick="addTask()"
-            >
-                Add Task
-            </button>
+                        <option value="MATH 003 - Basic Calculus">
+                            MATH 003 - Basic Calculus
+                        </option>
 
+                        <option value="CMPE 011 - Computer Fundamentals and Programming">
+                            CMPE 011 - Computer Fundamentals and Programming
+                        </option>
 
-            <label for="dateFilter">
-                Filter by Date
-            </label>
+                        <option value="CWTS 001 - Civic Welfare Training Service 1">
+                            CWTS 001 - Civic Welfare Training Service 1
+                        </option>
 
-            <select
-                id="dateFilter"
-                onchange="handleDateFilter()"
-            >
+                        <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
+                            GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
+                        </option>
 
-                <option value="All">
-                    All Dates
-                </option>
+                        <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
+                            GEED 032 - Filipinolohiya at Pambansang Kaunlaran
+                        </option>
 
-                <option value="Today">
-                    Today
-                </option>
+                        <option value="INEN 101 - Introduction to Industrial Engineering">
+                            INEN 101 - Introduction to Industrial Engineering
+                        </option>
 
-                <option value="Next7">
-                    Next 7 Days
-                </option>
+                        <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
+                            PATHFIT 1 - Physical Activity Towards Health and Fitness 1
+                        </option>
 
-                <option value="Overdue">
-                    Overdue
-                </option>
-
-                <option value="Specific">
-                    Specific Date
-                </option>
-
-            </select>
+                    </select>
 
 
-            <input
-                type="date"
-                id="specificDate"
-                onchange="displayTasks()"
-                style="display: none;"
-            >
+                    <label for="task">
+                        Topic
+                    </label>
+
+                    <input
+                        type="text"
+                        id="task"
+                        placeholder="Enter a school topic"
+                    >
 
 
-            <ul id="taskList"></ul>
+                    <label for="dueDate">
+                        Due Date
+                    </label>
 
-            <p id="taskCounter">
-                0 Tasks
-            </p>
+                    <input
+                        type="date"
+                        id="dueDate"
+                    >
+
+
+                    <label for="priority">
+                        Priority
+                    </label>
+
+                    <select id="priority">
+
+                        <option value="Urgent">
+                            🔴 Urgent
+                        </option>
+
+                        <option value="High">
+                            🟠 High
+                        </option>
+
+                        <option
+                            value="Medium"
+                            selected
+                        >
+                            🟡 Medium
+                        </option>
+
+                        <option value="Low">
+                            🟢 Low
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        type="button"
+                        id="addTaskButton"
+                        onclick="addTask()"
+                    >
+                        Add Task
+                    </button>
+
+                </div>
+
+
+                <!-- =========================================
+                     REMINDER FORM
+                ========================================== -->
+
+                <div
+                    id="reminderForm"
+                    class="entry-form"
+                    style="display: none;"
+                >
+
+                    <label for="reminderSubject">
+                        Subject
+                        <span class="optional-label">
+                            Optional
+                        </span>
+                    </label>
+
+                    <select id="reminderSubject">
+
+                        <option value="">
+                            No Subject
+                        </option>
+
+                        <option value="CHEM 001 - General Chemistry">
+                            CHEM 001 - General Chemistry
+                        </option>
+
+                        <option value="MATH 003 - Basic Calculus">
+                            MATH 003 - Basic Calculus
+                        </option>
+
+                        <option value="CMPE 011 - Computer Fundamentals and Programming">
+                            CMPE 011 - Computer Fundamentals and Programming
+                        </option>
+
+                        <option value="CWTS 001 - Civic Welfare Training Service 1">
+                            CWTS 001 - Civic Welfare Training Service 1
+                        </option>
+
+                        <option value="GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig">
+                            GEED 004 - Mathematics in the Modern World/Matematika sa Makabagong Daigdig
+                        </option>
+
+                        <option value="GEED 032 - Filipinolohiya at Pambansang Kaunlaran">
+                            GEED 032 - Filipinolohiya at Pambansang Kaunlaran
+                        </option>
+
+                        <option value="INEN 101 - Introduction to Industrial Engineering">
+                            INEN 101 - Introduction to Industrial Engineering
+                        </option>
+
+                        <option value="PATHFIT 1 - Physical Activity Towards Health and Fitness 1">
+                            PATHFIT 1 - Physical Activity Towards Health and Fitness 1
+                        </option>
+
+                    </select>
+
+
+                    <label for="reminderText">
+                        Reminder
+                    </label>
+
+                    <textarea
+                        id="reminderText"
+                        rows="3"
+                        placeholder="e.g. Finish my Math solution"
+                    ></textarea>
+
+
+                    <label for="reminderDate">
+                        Reminder Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="reminderDate"
+                    >
+
+
+                    <button
+                        type="button"
+                        id="addReminderButton"
+                        onclick="addReminder()"
+                    >
+                        Add Reminder
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 RIGHT — TASKS / REMINDERS
+            ============================================== -->
+
+            <div class="assignment-list-panel">
+
+                <div class="assignment-list-header">
+
+                    <div>
+                        <h2>
+                            📋 My Tasks
+                        </h2>
+
+                        <p>
+                            Deadlines and reminders
+                        </p>
+                    </div>
+
+                    <span
+                        id="taskCounter"
+                        class="task-count-badge"
+                    >
+                        0 Tasks
+                    </span>
+
+                </div>
+
+
+                <!-- TYPE FILTER -->
+
+                <div class="task-filters">
+
+                    <div class="filter-group">
+
+                        <label for="typeFilter">
+                            Type
+                        </label>
+
+                        <select
+                            id="typeFilter"
+                            onchange="displayTasks()"
+                        >
+
+                            <option value="All">
+                                All
+                            </option>
+
+                            <option value="task">
+                                📝 Deadlines
+                            </option>
+
+                            <option value="reminder">
+                                🔔 Reminders
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="filter-group">
+
+                        <label for="dateFilter">
+                            Date
+                        </label>
+
+                        <select
+                            id="dateFilter"
+                            onchange="handleDateFilter()"
+                        >
+
+                            <option value="All">
+                                All Dates
+                            </option>
+
+                            <option value="Today">
+                                Today
+                            </option>
+
+                            <option value="Next7">
+                                Next 7 Days
+                            </option>
+
+                            <option value="Overdue">
+                                Overdue
+                            </option>
+
+                            <option value="Specific">
+                                Specific Date
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div
+                        class="filter-group specific-date-filter"
+                        id="specificDateGroup"
+                        style="display: none;"
+                    >
+
+                        <label for="specificDate">
+                            Select Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="specificDate"
+                            onchange="displayTasks()"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="taskList"
+                    class="task-list"
+                ></div>
+
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          CLASS SCHEDULE TAB
-    ========================= -->
+    ====================================================== -->
 
     <div
         id="scheduleTab"
@@ -255,6 +498,8 @@
             📅 Class Schedule
         </h2>
 
+
+        <!-- ADD SCHEDULE -->
 
         <div class="schedule-form schedule-form-grid">
 
@@ -306,20 +551,16 @@
 
 
             <select id="startTime">
-
                 <option value="">
                     Start Time
                 </option>
-
             </select>
 
 
             <select id="endTime">
-
                 <option value="">
                     End Time
                 </option>
-
             </select>
 
 
@@ -333,139 +574,173 @@
         </div>
 
 
-        <div class="schedule-tabs">
+        <!-- =============================================
+             CALENDAR + SAVED SCHEDULES
+        ============================================== -->
 
-            <button
-                class="schedule-tab active"
-                onclick="showScheduleView('calendar')"
-            >
-                📅 Calendar
-            </button>
-
-            <button
-                class="schedule-tab"
-                onclick="showScheduleView('weekly')"
-            >
-                🗓️ Weekly
-            </button>
-
-        </div>
+        <div class="schedule-main-layout">
 
 
-        <div id="calendarView">
+            <!-- LEFT -->
 
-            <div class="calendar-layout">
+            <div class="schedule-calendar-panel">
 
-                <div class="calendar-main">
+                <div class="schedule-tabs">
 
-                    <div class="calendar-header">
+                    <button
+                        class="schedule-tab active"
+                        onclick="showScheduleView('calendar')"
+                    >
+                        📅 Calendar
+                    </button>
 
-                        <button onclick="changeMonth(-1)">
+                    <button
+                        class="schedule-tab"
+                        onclick="showScheduleView('weekly')"
+                    >
+                        🗓️ Weekly
+                    </button>
+
+                </div>
+
+
+                <div id="calendarView">
+
+                    <div class="calendar-main">
+
+                        <div class="calendar-header">
+
+                            <button onclick="changeMonth(-1)">
+                                ◀
+                            </button>
+
+                            <h3 id="calendarMonth">
+                                Month
+                            </h3>
+
+                            <button onclick="changeMonth(1)">
+                                ▶
+                            </button>
+
+                        </div>
+
+
+                        <div class="calendar-weekdays">
+
+                            <div>Sun</div>
+                            <div>Mon</div>
+                            <div>Tue</div>
+                            <div>Wed</div>
+                            <div>Thu</div>
+                            <div>Fri</div>
+                            <div>Sat</div>
+
+                        </div>
+
+
+                        <div
+                            id="calendarGrid"
+                            class="calendar-grid"
+                        ></div>
+
+                    </div>
+
+
+                    <div
+                        id="scheduleDetails"
+                        class="schedule-details"
+                    >
+
+                        <div class="empty-details">
+
+                            <div>📅</div>
+
+                            <p>
+                                Select a class from the calendar to see details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="weeklyView"
+                    style="display: none;"
+                >
+
+                    <div class="weekly-header">
+
+                        <button onclick="changeWeek(-1)">
                             ◀
                         </button>
 
-                        <h3 id="calendarMonth">
-                            Month
+                        <h3 id="weeklyTitle">
+                            Week
                         </h3>
 
-                        <button onclick="changeMonth(1)">
+                        <button onclick="changeWeek(1)">
                             ▶
                         </button>
 
                     </div>
 
 
-                    <div class="calendar-weekdays">
+                    <div
+                        id="weeklyGrid"
+                        class="weekly-grid"
+                    ></div>
 
-                        <div>Sun</div>
-                        <div>Mon</div>
-                        <div>Tue</div>
-                        <div>Wed</div>
-                        <div>Thu</div>
-                        <div>Fri</div>
-                        <div>Sat</div>
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT -->
+
+            <div class="saved-schedules-panel">
+
+                <div class="saved-schedules-header">
+
+                    <div>
+
+                        <h3>
+                            📋 Saved Class Schedules
+                        </h3>
+
+                        <p>
+                            Your scheduled classes
+                        </p>
 
                     </div>
 
-
-                    <div
-                        id="calendarGrid"
-                        class="calendar-grid"
-                    ></div>
+                    <span
+                        id="scheduleCount"
+                        class="schedule-count-badge"
+                    >
+                        0
+                    </span>
 
                 </div>
 
 
                 <div
-                    id="scheduleDetails"
-                    class="schedule-details"
-                >
-
-                    <div class="empty-details">
-
-                        <div>
-                            📅
-                        </div>
-
-                        <p>
-                            Select a class from the calendar to see details.
-                        </p>
-
-                    </div>
-
-                </div>
+                    id="savedScheduleList"
+                    class="saved-schedule-list"
+                ></div>
 
             </div>
-
-        </div>
-
-
-        <div
-            id="weeklyView"
-            style="display: none;"
-        >
-
-            <div class="weekly-header">
-
-                <button onclick="changeWeek(-1)">
-                    ◀
-                </button>
-
-                <h3 id="weeklyTitle">
-                    Week
-                </h3>
-
-                <button onclick="changeWeek(1)">
-                    ▶
-                </button>
-
-            </div>
-
-
-            <div
-                id="weeklyGrid"
-                class="weekly-grid"
-            ></div>
-
-        </div>
-
-
-        <div class="saved-schedules">
-
-            <h3>
-                📋 Saved Class Schedules
-            </h3>
-
-            <div id="savedScheduleList"></div>
 
         </div>
 
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          SUMMARY TAB
-    ========================= -->
+    ====================================================== -->
 
     <div
         id="summaryTab"
@@ -479,8 +754,6 @@
 
         <div class="summary-calendar-layout">
 
-            <!-- SUMMARY CALENDAR -->
-
             <div class="summary-calendar-main">
 
                 <div class="summary-calendar-header">
@@ -492,11 +765,9 @@
                         ◀
                     </button>
 
-
                     <h3 id="summaryCalendarMonth">
                         Month
                     </h3>
-
 
                     <button
                         type="button"
@@ -529,8 +800,6 @@
             </div>
 
 
-            <!-- SUMMARY DETAILS -->
-
             <div
                 id="summaryDetails"
                 class="summary-details"
@@ -557,7 +826,9 @@
 </div>
 
 
-<!-- SUPABASE -->
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -566,48 +837,42 @@
 <script src="script.js"></script>
 
 
-<!-- PWA Service Worker -->
+<!-- =========================================================
+     SERVICE WORKER
+========================================================= -->
 
 <script>
 
-    if ("serviceWorker" in navigator) {
+if ("serviceWorker" in navigator) {
 
-        window.addEventListener(
-            "load",
-            function () {
+    window.addEventListener("load", function () {
 
-                navigator.serviceWorker
-                    .register("./sw.js")
+        navigator.serviceWorker
+            .register("./sw.js")
 
-                    .then(
-                        function (registration) {
+            .then(function (registration) {
 
-                            console.log(
-                                "Service Worker registered:",
-                                registration.scope
-                            );
+                console.log(
+                    "Service Worker registered:",
+                    registration.scope
+                );
 
-                        }
-                    )
+            })
 
-                    .catch(
-                        function (error) {
+            .catch(function (error) {
 
-                            console.error(
-                                "Service Worker registration failed:",
-                                error
-                            );
+                console.error(
+                    "Service Worker registration failed:",
+                    error
+                );
 
-                        }
-                    );
+            });
 
-            }
-        );
+    });
 
-    }
+}
 
 </script>
-
 
 </body>
 
