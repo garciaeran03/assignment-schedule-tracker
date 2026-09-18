@@ -200,6 +200,7 @@ function getItemType(item) {
 // ============================================================
 // LOAD CLOUD DATA
 // SUPABASE IS THE SOURCE OF TRUTH
+// LOCAL REMINDERS ARE PRESERVED
 // ============================================================
 
 async function loadCloudData() {
@@ -211,7 +212,23 @@ async function loadCloudData() {
     try {
 
         // ====================================================
-        // ASSIGNMENTS + REMINDERS
+        // PRESERVE LOCAL-ONLY REMINDERS
+        // ====================================================
+
+        const localItems =
+            JSON.parse(
+                localStorage.getItem("schoolTasks") || "[]"
+            );
+
+        const localReminders =
+            localItems.filter(item =>
+                getItemType(item) === "Reminder" &&
+                item.localOnly === true
+            );
+
+
+        // ====================================================
+        // ASSIGNMENTS / CLOUD TASKS
         // ====================================================
 
         const {
@@ -241,10 +258,12 @@ async function loadCloudData() {
 
         } else {
 
-            tasks =
-                (cloudTasks || []).map(item => ({
+            tasks = [
 
-                    id: item.id,
+                ...(cloudTasks || []).map(item => ({
+
+                    id:
+                        item.id,
 
                     subject:
                         item.subject || "",
@@ -270,7 +289,11 @@ async function loadCloudData() {
                     createdAt:
                         item.created_at
 
-                }));
+                })),
+
+                ...localReminders
+
+            ];
         }
 
 
@@ -307,7 +330,8 @@ async function loadCloudData() {
             schedules =
                 (cloudSchedules || []).map(schedule => ({
 
-                    id: schedule.id,
+                    id:
+                        schedule.id,
 
                     subject:
                         schedule.subject,
@@ -727,7 +751,9 @@ async function addTask() {
 
             type: "Task",
 
-            itemType: "Task"
+            itemType: "Task",
+
+            localOnly: false
 
         };
 
@@ -821,7 +847,10 @@ async function addTask() {
             getItemType(data),
 
         createdAt:
-            data.created_at
+            data.created_at,
+
+        localOnly:
+            false
 
     });
 
@@ -844,6 +873,10 @@ async function addTask() {
 
 // ============================================================
 // ADD REMINDER / UPDATE REMINDER
+// LOCAL ONLY
+// NO SUPABASE
+// NO DATE
+// NO ALARM
 // ============================================================
 
 async function addReminder() {
@@ -855,10 +888,6 @@ async function addReminder() {
         return;
     }
 
-    const supabase = getSupabase();
-
-    if (!supabase) return;
-
 
     const reminderText =
         document.getElementById(
@@ -868,7 +897,7 @@ async function addReminder() {
     const reminderSubject =
         document.getElementById(
             "reminderSubject"
-        ).value;
+        ).value.trim();
 
 
     if (!reminderText) {
@@ -882,7 +911,7 @@ async function addReminder() {
 
 
     // ========================================================
-    // EDIT EXISTING REMINDER
+    // EDIT EXISTING LOCAL REMINDER
     // ========================================================
 
     if (editingIndex !== -1) {
@@ -896,55 +925,12 @@ async function addReminder() {
         }
 
 
-        const {
-            error
-        } = await supabase
-            .from("assignments")
-            .update({
-
-                subject:
-                    reminderSubject || null,
-
-                task:
-                    reminderText,
-
-                due_date:
-                    null,
-
-                priority:
-                    null,
-
-                type:
-                    "reminder"
-
-            })
-            .eq(
-                "id",
-                existing.id
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            );
-
-
-        if (error) {
-
-            alert(
-                "Unable to update reminder: " +
-                error.message
-            );
-
-            return;
-        }
-
-
         tasks[editingIndex] = {
 
             ...existing,
 
             subject:
-                reminderSubject || "",
+                reminderSubject,
 
             task:
                 reminderText,
@@ -959,9 +945,18 @@ async function addReminder() {
                 "Reminder",
 
             itemType:
-                "Reminder"
+                "Reminder",
+
+            localOnly:
+                true
 
         };
+
+
+        localStorage.setItem(
+            "schoolTasks",
+            JSON.stringify(tasks)
+        );
 
 
         editingIndex = -1;
@@ -975,63 +970,24 @@ async function addReminder() {
 
 
     // ========================================================
-    // ADD NEW REMINDER
+    // ADD NEW LOCAL REMINDER
     // ========================================================
 
-    const {
-        data,
-        error
-    } = await supabase
-        .from("assignments")
-        .insert({
-
-            subject:
-                reminderSubject || null,
-
-            task:
-                reminderText,
-
-            due_date:
-                null,
-
-            priority:
-                null,
-
-            completed:
-                false,
-
-            type:
-                "reminder",
-
-            user_id:
-                currentUser.id
-
-        })
-        .select()
-        .single();
-
-
-    if (error) {
-
-        alert(
-            "Unable to add reminder: " +
-            error.message
-        );
-
-        return;
-    }
-
-
-    tasks.push({
+    const newReminder = {
 
         id:
-            data.id,
+            "local-reminder-" +
+            Date.now() +
+            "-" +
+            Math.random()
+                .toString(36)
+                .slice(2),
 
         subject:
-            data.subject || "",
+            reminderSubject,
 
         task:
-            data.task,
+            reminderText,
 
         dueDate:
             null,
@@ -1040,7 +996,7 @@ async function addReminder() {
             null,
 
         completed:
-            Boolean(data.completed),
+            false,
 
         type:
             "Reminder",
@@ -1048,10 +1004,18 @@ async function addReminder() {
         itemType:
             "Reminder",
 
-        createdAt:
-            data.created_at
+        localOnly:
+            true,
 
-    });
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+
+    tasks.push(
+        newReminder
+    );
 
 
     localStorage.setItem(
@@ -1252,8 +1216,7 @@ function displayTasks() {
 
     // ========================================================
     // DATE FILTER
-    // Reminders have no date, so date filters only apply
-    // to dated tasks.
+    // Reminders have no date.
     // ========================================================
 
     if (dateFilter === "Today") {
@@ -1665,16 +1628,43 @@ async function toggleTask(index) {
 
     if (!currentUser) return;
 
-    const supabase =
-        getSupabase();
-
-    if (!supabase) return;
-
 
     const item =
         tasks[index];
 
     if (!item) return;
+
+
+    // ========================================================
+    // LOCAL-ONLY REMINDER
+    // ========================================================
+
+    if (item.localOnly) {
+
+        item.completed =
+            !item.completed;
+
+
+        localStorage.setItem(
+            "schoolTasks",
+            JSON.stringify(tasks)
+        );
+
+
+        displayTasks();
+
+        return;
+    }
+
+
+    // ========================================================
+    // CLOUD TASK
+    // ========================================================
+
+    const supabase =
+        getSupabase();
+
+    if (!supabase) return;
 
 
     const newStatus =
@@ -1882,6 +1872,41 @@ async function deleteTask(index) {
 
     if (!confirmed) return;
 
+
+    // ========================================================
+    // LOCAL-ONLY REMINDER
+    // ========================================================
+
+    if (item.localOnly) {
+
+        tasks.splice(
+            index,
+            1
+        );
+
+
+        if (editingIndex === index) {
+            resetAssignmentForm();
+        }
+
+
+        localStorage.setItem(
+            "schoolTasks",
+            JSON.stringify(tasks)
+        );
+
+
+        displayTasks();
+
+        updateProgress();
+
+        return;
+    }
+
+
+    // ========================================================
+    // CLOUD TASK
+    // ========================================================
 
     const supabase =
         getSupabase();
