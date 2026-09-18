@@ -16,10 +16,6 @@
 
 <div class="container">
 
-    <!-- =========================
-         HEADER
-    ========================= -->
-
     <div class="cozy-header">
 
         <h1 id="greeting">
@@ -73,13 +69,13 @@
     </div>
 
 
-    <!-- ========================================================
+    <!-- =========================
          ASSIGNMENTS TAB
-    ======================================================== -->
+    ========================= -->
 
     <div id="assignmentsTab">
 
-        <!-- TODAY'S PROGRESS -->
+        <!-- PROGRESS -->
 
         <div class="tracker-card progress-card">
 
@@ -115,14 +111,11 @@
         </div>
 
 
-        <!-- ASSIGNMENT TWO-COLUMN LAYOUT -->
+        <!-- TASK / REMINDER LAYOUT -->
 
         <div class="assignment-layout">
 
-
-            <!-- =========================
-                 LEFT: ADD TASK / REMINDER
-            ========================= -->
+            <!-- LEFT: ADD ITEM -->
 
             <div class="assignment-form-panel">
 
@@ -132,8 +125,8 @@
                         Add New Task
                     </h2>
 
-                    <p>
-                        Add a deadline or a personal reminder.
+                    <p id="assignmentFormSubtitle">
+                        Add a school deadline or activity.
                     </p>
 
                 </div>
@@ -144,29 +137,27 @@
                 <div class="assignment-mode-tabs">
 
                     <button
+                        type="button"
                         id="taskModeButton"
                         class="assignment-mode-button active"
-                        type="button"
                         onclick="setAssignmentMode('task')"
                     >
-                        📝 TASK
+                        📝 Task
                     </button>
 
                     <button
+                        type="button"
                         id="reminderModeButton"
                         class="assignment-mode-button"
-                        type="button"
                         onclick="setAssignmentMode('reminder')"
                     >
-                        🔔 REMINDER
+                        🔔 Reminder
                     </button>
 
                 </div>
 
 
-                <!-- =========================
-                     TASK FORM
-                ========================= -->
+                <!-- TASK FORM -->
 
                 <div id="taskForm">
 
@@ -223,7 +214,7 @@
 
 
                     <label for="dueDate">
-                        Deadline
+                        Due Date
                     </label>
 
                     <input
@@ -261,20 +252,18 @@
 
 
                     <button
-                        id="addTaskButton"
-                        class="primary-form-button"
                         type="button"
+                        id="addTaskButton"
                         onclick="addTask()"
+                        class="primary-action-button"
                     >
-                        ➕ Add Task
+                        Add Task
                     </button>
 
                 </div>
 
 
-                <!-- =========================
-                     REMINDER FORM
-                ========================= -->
+                <!-- REMINDER FORM -->
 
                 <div
                     id="reminderForm"
@@ -340,21 +329,11 @@
                     </select>
 
 
-                    <label for="reminderDate">
-                        Remind Me On
-                    </label>
-
-                    <input
-                        type="date"
-                        id="reminderDate"
-                    >
-
-
                     <button
-                        id="addReminderButton"
-                        class="primary-form-button reminder-button"
                         type="button"
+                        id="addReminderButton"
                         onclick="addReminder()"
+                        class="primary-action-button reminder-action-button"
                     >
                         🔔 Add Reminder
                     </button>
@@ -362,12 +341,10 @@
                 </div>
 
 
-                <!-- CANCEL EDIT -->
-
                 <button
+                    type="button"
                     id="cancelAssignmentEditButton"
                     class="cancel-edit-button"
-                    type="button"
                     onclick="cancelAssignmentEdit()"
                     style="display:none;"
                 >
@@ -377,9 +354,7 @@
             </div>
 
 
-            <!-- =========================
-                 RIGHT: DEADLINES & REMINDERS
-            ========================= -->
+            <!-- RIGHT: LIST -->
 
             <div class="assignment-list-panel">
 
@@ -392,7 +367,7 @@
                         </h2>
 
                         <p>
-                            Keep track of what needs your attention.
+                            Keep track of what needs to be done.
                         </p>
 
                     </div>
@@ -419,11 +394,11 @@
                                 All
                             </option>
 
-                            <option value="task">
+                            <option value="Task">
                                 📝 Deadlines
                             </option>
 
-                            <option value="reminder">
+                            <option value="Reminder">
                                 🔔 Reminders
                             </option>
 
@@ -468,20 +443,12 @@
                     </div>
 
 
-                    <div class="filter-group specific-date-group">
-
-                        <label for="specificDate">
-                            Select Date
-                        </label>
-
-                        <input
-                            type="date"
-                            id="specificDate"
-                            onchange="displayTasks()"
-                            style="display:none;"
-                        >
-
-                    </div>
+                    <input
+                        type="date"
+                        id="specificDate"
+                        onchange="displayTasks()"
+                        style="display:none;"
+                    >
 
                 </div>
 
@@ -493,18 +460,12 @@
                     <ul id="taskList"></ul>
 
                     <div
-                        id="emptyTaskState"
-                        class="empty-task-state"
+                        id="emptyTaskList"
+                        class="empty-task-list"
                         style="display:none;"
                     >
-                        <div class="empty-task-icon">
-                            📝
-                        </div>
-
-                        <strong>
-                            Nothing here yet
-                        </strong>
-
+                        <div>✨</div>
+                        <strong>Nothing here yet</strong>
                         <p>
                             Add a task or reminder to get started.
                         </p>
@@ -513,10 +474,7 @@
                 </div>
 
 
-                <p
-                    id="taskCounter"
-                    class="task-counter"
-                >
+                <p id="taskCounter" class="task-counter">
                     0 Tasks
                 </p>
 
@@ -527,9 +485,9 @@
     </div>
 
 
-    <!-- ========================================================
+    <!-- =========================
          CLASS SCHEDULE TAB
-    ======================================================== -->
+    ========================= -->
 
     <div
         id="scheduleTab"
@@ -593,70 +551,66 @@
 
 
             <select id="startTime">
+
                 <option value="">
                     Start Time
                 </option>
+
             </select>
 
 
             <select id="endTime">
+
                 <option value="">
                     End Time
                 </option>
+
             </select>
 
 
             <button
-                id="addScheduleButton"
                 type="button"
+                id="addScheduleButton"
                 onclick="addSchedule()"
             >
-                ➕ Add Schedule
+                Add Schedule
             </button>
 
         </div>
 
 
-        <!-- SCHEDULE TABS -->
-
-        <div class="schedule-tabs">
-
-            <button
-                class="schedule-tab active"
-                type="button"
-                onclick="showScheduleView('calendar')"
-            >
-                📅 Calendar
-            </button>
-
-            <button
-                class="schedule-tab"
-                type="button"
-                onclick="showScheduleView('weekly')"
-            >
-                🗓️ Weekly
-            </button>
-
-        </div>
-
-
-        <!-- SCHEDULE TWO-COLUMN LAYOUT -->
+        <!-- SCHEDULE TWO COLUMN LAYOUT -->
 
         <div class="schedule-content-layout">
 
-
-            <!-- =========================
-                 LEFT SIDE
-            ========================= -->
+            <!-- LEFT -->
 
             <div class="schedule-main-column">
 
+                <div class="schedule-tabs">
 
-                <!-- CALENDAR VIEW -->
+                    <button
+                        type="button"
+                        class="schedule-tab active"
+                        onclick="showScheduleView('calendar')"
+                    >
+                        📅 Calendar
+                    </button>
 
-                <div
-                    id="calendarView"
-                >
+                    <button
+                        type="button"
+                        class="schedule-tab"
+                        onclick="showScheduleView('weekly')"
+                    >
+                        🗓️ Weekly
+                    </button>
+
+                </div>
+
+
+                <!-- CALENDAR -->
+
+                <div id="calendarView">
 
                     <div class="calendar-main-panel">
 
@@ -704,8 +658,6 @@
                     </div>
 
 
-                    <!-- SELECTED CLASS DETAILS -->
-
                     <div
                         id="scheduleDetails"
                         class="schedule-details"
@@ -713,9 +665,7 @@
 
                         <div class="empty-details">
 
-                            <div>
-                                📅
-                            </div>
+                            <div>📅</div>
 
                             <p>
                                 Select a class from the calendar
@@ -729,7 +679,7 @@
                 </div>
 
 
-                <!-- WEEKLY VIEW -->
+                <!-- WEEKLY -->
 
                 <div
                     id="weeklyView"
@@ -769,10 +719,7 @@
             </div>
 
 
-            <!-- =========================
-                 RIGHT SIDE
-                 SAVED SCHEDULES
-            ========================= -->
+            <!-- RIGHT -->
 
             <aside class="saved-schedules">
 
@@ -790,6 +737,13 @@
 
                     </div>
 
+                    <span
+                        id="scheduleCount"
+                        class="schedule-count"
+                    >
+                        0
+                    </span>
+
                 </div>
 
 
@@ -805,9 +759,9 @@
     </div>
 
 
-    <!-- ========================================================
+    <!-- =========================
          SUMMARY TAB
-    ======================================================== -->
+    ========================= -->
 
     <div
         id="summaryTab"
@@ -821,9 +775,6 @@
 
         <div class="summary-calendar-layout">
 
-
-            <!-- SUMMARY CALENDAR -->
-
             <div class="summary-calendar-main">
 
                 <div class="summary-calendar-header">
@@ -835,11 +786,9 @@
                         ◀
                     </button>
 
-
                     <h3 id="summaryCalendarMonth">
                         Month
                     </h3>
-
 
                     <button
                         type="button"
@@ -887,8 +836,6 @@
             </div>
 
 
-            <!-- SUMMARY DETAILS -->
-
             <div
                 id="summaryDetails"
                 class="summary-details"
@@ -896,9 +843,7 @@
 
                 <div class="summary-empty-details">
 
-                    <div>
-                        📊
-                    </div>
+                    <div>📊</div>
 
                     <p>
                         Select a subject from the calendar
@@ -929,35 +874,43 @@
 
 <script>
 
-if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator) {
 
-    window.addEventListener("load", function () {
+        window.addEventListener(
+            "load",
+            function () {
 
-        navigator.serviceWorker
-            .register("./sw.js")
-            .then(function (registration) {
+                navigator.serviceWorker
+                    .register("./sw.js")
+                    .then(
+                        function (registration) {
 
-                console.log(
-                    "Service Worker registered:",
-                    registration.scope
-                );
+                            console.log(
+                                "Service Worker registered:",
+                                registration.scope
+                            );
 
-            })
-            .catch(function (error) {
+                        }
+                    )
+                    .catch(
+                        function (error) {
 
-                console.error(
-                    "Service Worker registration failed:",
-                    error
-                );
+                            console.error(
+                                "Service Worker registration failed:",
+                                error
+                            );
 
-            });
+                        }
+                    );
 
-    });
+            }
+        );
 
-}
+    }
 
 </script>
 
 
 </body>
+
 </html>
