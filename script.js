@@ -1,26 +1,21 @@
 // ============================================================
-// ERAN'S STUDY HUB
+// MY SCHOOL TRACKER
 // ASSIGNMENTS + REMINDERS + CLASS SCHEDULE + SUMMARY
 // SUPABASE CLOUD SYNC
 // ============================================================
 
-
 let currentUser = null;
 
 let tasks = [];
-
 let schedules = [];
 
 let editingIndex = -1;
-
 let editingScheduleIndex = -1;
 
 let assignmentMode = "task";
 
 let calendarDate = new Date();
-
 let weeklyDate = new Date();
-
 let summaryDate = new Date();
 
 let selectedCalendarDate = null;
@@ -61,16 +56,11 @@ function createLoginScreen() {
     loginScreen.id = "loginScreen";
 
     loginScreen.innerHTML = `
-
         <div class="login-card">
 
-            <h2>
-                🎓 My School Tracker
-            </h2>
+            <h2>🎓 My School Tracker</h2>
 
-            <p>
-                Login to access your school tracker.
-            </p>
+            <p>Login to access your school tracker.</p>
 
             <input
                 type="email"
@@ -91,7 +81,6 @@ function createLoginScreen() {
             <p id="loginMessage"></p>
 
         </div>
-
     `;
 
     document.body.appendChild(loginScreen);
@@ -109,19 +98,16 @@ async function loginUser() {
     if (!supabase) return;
 
     const email =
-        document
-            .getElementById("loginEmail")
-            .value
-            .trim();
+        document.getElementById("loginEmail")
+        .value
+        .trim();
 
     const password =
-        document
-            .getElementById("loginPassword")
-            .value;
+        document.getElementById("loginPassword")
+        .value;
 
     const message =
         document.getElementById("loginMessage");
-
 
     if (!email || !password) {
 
@@ -131,35 +117,24 @@ async function loginUser() {
         return;
     }
 
-
-    message.textContent =
-        "Logging in...";
-
+    message.textContent = "Logging in...";
 
     const {
         data,
         error
-    } =
-        await supabase.auth.signInWithPassword({
-
-            email: email,
-
-            password: password
-
-        });
-
+    } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
 
     if (error) {
 
-        message.textContent =
-            error.message;
+        message.textContent = error.message;
 
         return;
     }
 
-
     currentUser = data.user;
-
 
     const loginScreen =
         document.getElementById("loginScreen");
@@ -168,11 +143,7 @@ async function loginUser() {
         loginScreen.remove();
     }
 
-
-    document.body.classList.remove(
-        "logged-out"
-    );
-
+    document.body.classList.remove("logged-out");
 
     await initializeTracker();
 }
@@ -197,28 +168,32 @@ async function logoutUser() {
 
 
 // ============================================================
-// NORMALIZE ASSIGNMENT TYPE
+// NORMALIZE ITEM TYPE
 // ============================================================
 
-function normalizeAssignmentType(type) {
+function getItemType(item) {
 
-    if (!type) {
-        return "task";
+    if (!item) {
+        return "Task";
     }
 
-    const value =
-        String(type).toLowerCase().trim();
-
+    const type =
+        String(
+            item.itemType ||
+            item.type ||
+            ""
+        )
+        .trim()
+        .toLowerCase();
 
     if (
-        value === "reminder" ||
-        value === "reminders"
+        type === "reminder" ||
+        type === "reminders"
     ) {
-        return "reminder";
+        return "Reminder";
     }
 
-
-    return "task";
+    return "Task";
 }
 
 
@@ -231,13 +206,9 @@ async function loadCloudData() {
 
     const supabase = getSupabase();
 
-    if (!supabase || !currentUser) {
-        return;
-    }
-
+    if (!supabase || !currentUser) return;
 
     try {
-
 
         // ====================================================
         // ASSIGNMENTS + REMINDERS
@@ -246,21 +217,20 @@ async function loadCloudData() {
         const {
             data: cloudTasks,
             error: taskError
-        } =
-            await supabase
-                .from("assignments")
-                .select("*")
-                .eq(
-                    "user_id",
-                    currentUser.id
-                )
-                .order(
-                    "due_date",
-                    {
-                        ascending: true
-                    }
-                );
-
+        } = await supabase
+            .from("assignments")
+            .select("*")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "due_date",
+                {
+                    ascending: true,
+                    nullsFirst: false
+                }
+            );
 
         if (taskError) {
 
@@ -272,37 +242,35 @@ async function loadCloudData() {
         } else {
 
             tasks =
-                (cloudTasks || []).map(
-                    task => ({
+                (cloudTasks || []).map(item => ({
 
-                        id:
-                            task.id,
+                    id: item.id,
 
-                        subject:
-                            task.subject || "",
+                    subject:
+                        item.subject || "",
 
-                        task:
-                            task.task || "",
+                    task:
+                        item.task || "",
 
-                        dueDate:
-                            task.due_date,
+                    dueDate:
+                        item.due_date || null,
 
-                        priority:
-                            task.priority || "Medium",
+                    priority:
+                        item.priority || "Medium",
 
-                        completed:
-                            Boolean(task.completed),
+                    completed:
+                        Boolean(item.completed),
 
-                        type:
-                            normalizeAssignmentType(
-                                task.type
-                            ),
+                    type:
+                        getItemType(item),
 
-                        createdAt:
-                            task.created_at
+                    itemType:
+                        getItemType(item),
 
-                    })
-                );
+                    createdAt:
+                        item.created_at
+
+                }));
         }
 
 
@@ -313,21 +281,19 @@ async function loadCloudData() {
         const {
             data: cloudSchedules,
             error: scheduleError
-        } =
-            await supabase
-                .from("class_schedules")
-                .select("*")
-                .eq(
-                    "user_id",
-                    currentUser.id
-                )
-                .order(
-                    "schedule_date",
-                    {
-                        ascending: true
-                    }
-                );
-
+        } = await supabase
+            .from("class_schedules")
+            .select("*")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "schedule_date",
+                {
+                    ascending: true
+                }
+            );
 
         if (scheduleError) {
 
@@ -339,29 +305,26 @@ async function loadCloudData() {
         } else {
 
             schedules =
-                (cloudSchedules || []).map(
-                    schedule => ({
+                (cloudSchedules || []).map(schedule => ({
 
-                        id:
-                            schedule.id,
+                    id: schedule.id,
 
-                        subject:
-                            schedule.subject,
+                    subject:
+                        schedule.subject,
 
-                        scheduleDate:
-                            schedule.schedule_date,
+                    scheduleDate:
+                        schedule.schedule_date,
 
-                        startTime:
-                            schedule.start_time,
+                    startTime:
+                        schedule.start_time,
 
-                        endTime:
-                            schedule.end_time,
+                    endTime:
+                        schedule.end_time,
 
-                        createdAt:
-                            schedule.created_at
+                    createdAt:
+                        schedule.created_at
 
-                    })
-                );
+                }));
         }
 
 
@@ -378,7 +341,6 @@ async function loadCloudData() {
             "classSchedules",
             JSON.stringify(schedules)
         );
-
 
     } catch (error) {
 
@@ -398,10 +360,7 @@ async function initializeTracker() {
 
     await loadCloudData();
 
-    setAssignmentMode(
-        "task",
-        false
-    );
+    setAssignmentMode("task");
 
     displayTasks();
 
@@ -435,31 +394,22 @@ function addLogoutButton() {
         return;
     }
 
-
     const button =
         document.createElement("button");
 
-    button.id =
-        "logoutButton";
+    button.id = "logoutButton";
 
-    button.textContent =
-        "Logout";
+    button.textContent = "Logout";
 
-    button.onclick =
-        logoutUser;
+    button.onclick = logoutUser;
 
+    button.style.marginTop = "15px";
 
     const container =
-        document.querySelector(
-            ".container"
-        );
-
+        document.querySelector(".container");
 
     if (container) {
-
-        container.appendChild(
-            button
-        );
+        container.appendChild(button);
     }
 }
 
@@ -490,38 +440,24 @@ function showMainTab(tab) {
             ".main-tab"
         );
 
-
     tabs.forEach(button => {
-
-        button.classList.remove(
-            "active"
-        );
-
+        button.classList.remove("active");
     });
 
 
     if (tab === "assignments") {
 
-        assignmentsTab.style.display =
-            "block";
+        assignmentsTab.style.display = "block";
 
-        scheduleTab.style.display =
-            "none";
+        scheduleTab.style.display = "none";
 
         if (summaryTab) {
-
-            summaryTab.style.display =
-                "none";
+            summaryTab.style.display = "none";
         }
-
 
         if (tabs[0]) {
-
-            tabs[0].classList.add(
-                "active"
-            );
+            tabs[0].classList.add("active");
         }
-
 
         displayTasks();
     }
@@ -529,26 +465,17 @@ function showMainTab(tab) {
 
     else if (tab === "schedule") {
 
-        assignmentsTab.style.display =
-            "none";
+        assignmentsTab.style.display = "none";
 
-        scheduleTab.style.display =
-            "block";
+        scheduleTab.style.display = "block";
 
         if (summaryTab) {
-
-            summaryTab.style.display =
-                "none";
+            summaryTab.style.display = "none";
         }
-
 
         if (tabs[1]) {
-
-            tabs[1].classList.add(
-                "active"
-            );
+            tabs[1].classList.add("active");
         }
-
 
         renderCalendar();
 
@@ -560,27 +487,17 @@ function showMainTab(tab) {
 
     else if (tab === "summary") {
 
-        assignmentsTab.style.display =
-            "none";
+        assignmentsTab.style.display = "none";
 
-        scheduleTab.style.display =
-            "none";
-
+        scheduleTab.style.display = "none";
 
         if (summaryTab) {
-
-            summaryTab.style.display =
-                "block";
+            summaryTab.style.display = "block";
         }
-
 
         if (tabs[2]) {
-
-            tabs[2].classList.add(
-                "active"
-            );
+            tabs[2].classList.add("active");
         }
-
 
         renderSummaryCalendar();
     }
@@ -591,16 +508,9 @@ function showMainTab(tab) {
 // ASSIGNMENT MODE
 // ============================================================
 
-function setAssignmentMode(
-    mode,
-    preserveEditing = true
-) {
+function setAssignmentMode(mode) {
 
-    assignmentMode =
-        mode === "reminder"
-            ? "reminder"
-            : "task";
-
+    assignmentMode = mode;
 
     const taskForm =
         document.getElementById(
@@ -627,134 +537,118 @@ function setAssignmentMode(
             "assignmentFormTitle"
         );
 
+    const subtitle =
+        document.getElementById(
+            "assignmentFormSubtitle"
+        );
 
-    if (!taskForm || !reminderForm) {
-        return;
-    }
 
+    if (mode === "task") {
 
-    if (assignmentMode === "task") {
+        if (taskForm) {
+            taskForm.style.display = "block";
+        }
 
-        taskForm.style.display =
-            "block";
-
-        reminderForm.style.display =
-            "none";
-
+        if (reminderForm) {
+            reminderForm.style.display = "none";
+        }
 
         if (taskButton) {
-
-            taskButton.classList.add(
-                "active"
-            );
+            taskButton.classList.add("active");
         }
-
 
         if (reminderButton) {
-
-            reminderButton.classList.remove(
-                "active"
-            );
+            reminderButton.classList.remove("active");
         }
 
-
         if (title) {
-
             title.textContent =
-                editingIndex !== -1 &&
-                preserveEditing
+                editingIndex !== -1
                     ? "Edit Task"
                     : "Add New Task";
         }
 
+        if (subtitle) {
+            subtitle.textContent =
+                "Add a school deadline or activity.";
+        }
+
     } else {
 
-        taskForm.style.display =
-            "none";
+        if (taskForm) {
+            taskForm.style.display = "none";
+        }
 
-        reminderForm.style.display =
-            "block";
-
+        if (reminderForm) {
+            reminderForm.style.display = "block";
+        }
 
         if (taskButton) {
-
-            taskButton.classList.remove(
-                "active"
-            );
+            taskButton.classList.remove("active");
         }
-
 
         if (reminderButton) {
-
-            reminderButton.classList.add(
-                "active"
-            );
+            reminderButton.classList.add("active");
         }
 
-
         if (title) {
-
             title.textContent =
-                editingIndex !== -1 &&
-                preserveEditing
+                editingIndex !== -1
                     ? "Edit Reminder"
                     : "Add Reminder";
+        }
+
+        if (subtitle) {
+            subtitle.textContent =
+                "Keep a simple checklist of things you need to remember.";
         }
     }
 }
 
 
 // ============================================================
-// ADD TASK / EDIT TASK
+// ADD TASK / UPDATE TASK
 // ============================================================
 
 async function addTask() {
 
     if (!currentUser) {
 
-        alert(
-            "Please login first."
-        );
+        alert("Please login first.");
 
         return;
     }
 
-
-    const supabase =
-        getSupabase();
+    const supabase = getSupabase();
 
     if (!supabase) return;
 
 
     const subject =
-        document
-            .getElementById("subject")
-            .value;
-
+        document.getElementById(
+            "subject"
+        ).value;
 
     const task =
-        document
-            .getElementById("task")
-            .value
-            .trim();
-
+        document.getElementById(
+            "task"
+        ).value.trim();
 
     const dueDate =
-        document
-            .getElementById("dueDate")
-            .value;
-
+        document.getElementById(
+            "dueDate"
+        ).value;
 
     const priority =
-        document
-            .getElementById("priority")
-            .value;
+        document.getElementById(
+            "priority"
+        ).value;
 
 
     if (!task || !dueDate) {
 
         alert(
-            "Please enter the topic and deadline."
+            "Please enter the topic and due date."
         );
 
         return;
@@ -762,7 +656,7 @@ async function addTask() {
 
 
     // ========================================================
-    // EDIT EXISTING TASK
+    // EDIT EXISTING ITEM
     // ========================================================
 
     if (editingIndex !== -1) {
@@ -770,46 +664,42 @@ async function addTask() {
         const existingTask =
             tasks[editingIndex];
 
-
         if (!existingTask) {
-
-            cancelAssignmentEdit();
-
+            editingIndex = -1;
             return;
         }
 
 
         const {
             error
-        } =
-            await supabase
-                .from("assignments")
-                .update({
+        } = await supabase
+            .from("assignments")
+            .update({
 
-                    subject:
-                        subject,
+                subject:
+                    subject,
 
-                    task:
-                        task,
+                task:
+                    task,
 
-                    due_date:
-                        dueDate,
+                due_date:
+                    dueDate,
 
-                    priority:
-                        priority,
+                priority:
+                    priority,
 
-                    type:
-                        "task"
+                type:
+                    "task"
 
-                })
-                .eq(
-                    "id",
-                    existingTask.id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
+            })
+            .eq(
+                "id",
+                existingTask.id
+            )
+            .eq(
+                "user_id",
+                currentUser.id
+            );
 
 
         if (error) {
@@ -827,27 +717,32 @@ async function addTask() {
 
             ...existingTask,
 
-            subject:
-                subject,
+            subject,
 
-            task:
-                task,
+            task,
 
-            dueDate:
-                dueDate,
+            dueDate,
 
-            priority:
-                priority,
+            priority,
 
-            type:
-                "task"
+            type: "Task",
+
+            itemType: "Task"
 
         };
 
 
         editingIndex = -1;
 
+        resetAssignmentForm();
 
+        displayTasks();
+
+        updateProgress();
+
+        renderSummaryCalendar();
+
+        return;
     }
 
 
@@ -855,83 +750,80 @@ async function addTask() {
     // ADD NEW TASK
     // ========================================================
 
-    else {
-
-        const {
-            data,
-            error
-        } =
-            await supabase
-                .from("assignments")
-                .insert({
-
-                    subject:
-                        subject,
-
-                    task:
-                        task,
-
-                    due_date:
-                        dueDate,
-
-                    priority:
-                        priority,
-
-                    completed:
-                        false,
-
-                    user_id:
-                        currentUser.id,
-
-                    type:
-                        "task"
-
-                })
-                .select()
-                .single();
-
-
-        if (error) {
-
-            alert(
-                "Unable to add task: " +
-                error.message
-            );
-
-            return;
-        }
-
-
-        tasks.push({
-
-            id:
-                data.id,
+    const {
+        data,
+        error
+    } = await supabase
+        .from("assignments")
+        .insert({
 
             subject:
-                data.subject,
+                subject,
 
             task:
-                data.task,
+                task,
 
-            dueDate:
-                data.due_date,
+            due_date:
+                dueDate,
 
             priority:
-                data.priority,
+                priority,
 
             completed:
-                Boolean(data.completed),
+                false,
 
             type:
-                normalizeAssignmentType(
-                    data.type
-                ),
+                "task",
 
-            createdAt:
-                data.created_at
+            user_id:
+                currentUser.id
 
-        });
+        })
+        .select()
+        .single();
+
+
+    if (error) {
+
+        alert(
+            "Unable to add task: " +
+            error.message
+        );
+
+        return;
     }
+
+
+    tasks.push({
+
+        id:
+            data.id,
+
+        subject:
+            data.subject,
+
+        task:
+            data.task,
+
+        dueDate:
+            data.due_date,
+
+        priority:
+            data.priority,
+
+        completed:
+            Boolean(data.completed),
+
+        type:
+            getItemType(data),
+
+        itemType:
+            getItemType(data),
+
+        createdAt:
+            data.created_at
+
+    });
 
 
     localStorage.setItem(
@@ -942,7 +834,6 @@ async function addTask() {
 
     resetAssignmentForm();
 
-
     displayTasks();
 
     updateProgress();
@@ -952,50 +843,38 @@ async function addTask() {
 
 
 // ============================================================
-// ADD REMINDER / EDIT REMINDER
+// ADD REMINDER / UPDATE REMINDER
 // ============================================================
 
 async function addReminder() {
 
     if (!currentUser) {
 
-        alert(
-            "Please login first."
-        );
+        alert("Please login first.");
 
         return;
     }
 
-
-    const supabase =
-        getSupabase();
+    const supabase = getSupabase();
 
     if (!supabase) return;
 
 
     const reminderText =
-        document
-            .getElementById("reminderText")
-            .value
-            .trim();
-
+        document.getElementById(
+            "reminderText"
+        ).value.trim();
 
     const reminderSubject =
-        document
-            .getElementById("reminderSubject")
-            .value;
+        document.getElementById(
+            "reminderSubject"
+        ).value;
 
 
-    const reminderDate =
-        document
-            .getElementById("reminderDate")
-            .value;
-
-
-    if (!reminderText || !reminderDate) {
+    if (!reminderText) {
 
         alert(
-            "Please enter the reminder and date."
+            "Please enter a reminder."
         );
 
         return;
@@ -1003,54 +882,50 @@ async function addReminder() {
 
 
     // ========================================================
-    // EDIT REMINDER
+    // EDIT EXISTING REMINDER
     // ========================================================
 
     if (editingIndex !== -1) {
 
-        const existingReminder =
+        const existing =
             tasks[editingIndex];
 
-
-        if (!existingReminder) {
-
-            cancelAssignmentEdit();
-
+        if (!existing) {
+            editingIndex = -1;
             return;
         }
 
 
         const {
             error
-        } =
-            await supabase
-                .from("assignments")
-                .update({
+        } = await supabase
+            .from("assignments")
+            .update({
 
-                    subject:
-                        reminderSubject,
+                subject:
+                    reminderSubject || null,
 
-                    task:
-                        reminderText,
+                task:
+                    reminderText,
 
-                    due_date:
-                        reminderDate,
+                due_date:
+                    null,
 
-                    priority:
-                        null,
+                priority:
+                    null,
 
-                    type:
-                        "reminder"
+                type:
+                    "reminder"
 
-                })
-                .eq(
-                    "id",
-                    existingReminder.id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
+            })
+            .eq(
+                "id",
+                existing.id
+            )
+            .eq(
+                "user_id",
+                currentUser.id
+            );
 
 
         if (error) {
@@ -1066,28 +941,36 @@ async function addReminder() {
 
         tasks[editingIndex] = {
 
-            ...existingReminder,
+            ...existing,
 
             subject:
-                reminderSubject,
+                reminderSubject || "",
 
             task:
                 reminderText,
 
             dueDate:
-                reminderDate,
+                null,
 
             priority:
                 null,
 
             type:
-                "reminder"
+                "Reminder",
+
+            itemType:
+                "Reminder"
 
         };
 
 
         editingIndex = -1;
 
+        resetAssignmentForm();
+
+        displayTasks();
+
+        return;
     }
 
 
@@ -1095,81 +978,80 @@ async function addReminder() {
     // ADD NEW REMINDER
     // ========================================================
 
-    else {
-
-        const {
-            data,
-            error
-        } =
-            await supabase
-                .from("assignments")
-                .insert({
-
-                    subject:
-                        reminderSubject,
-
-                    task:
-                        reminderText,
-
-                    due_date:
-                        reminderDate,
-
-                    priority:
-                        null,
-
-                    completed:
-                        false,
-
-                    user_id:
-                        currentUser.id,
-
-                    type:
-                        "reminder"
-
-                })
-                .select()
-                .single();
-
-
-        if (error) {
-
-            alert(
-                "Unable to add reminder: " +
-                error.message
-            );
-
-            return;
-        }
-
-
-        tasks.push({
-
-            id:
-                data.id,
+    const {
+        data,
+        error
+    } = await supabase
+        .from("assignments")
+        .insert({
 
             subject:
-                data.subject || "",
+                reminderSubject || null,
 
             task:
-                data.task,
+                reminderText,
 
-            dueDate:
-                data.due_date,
+            due_date:
+                null,
 
             priority:
-                data.priority,
+                null,
 
             completed:
-                Boolean(data.completed),
+                false,
 
             type:
                 "reminder",
 
-            createdAt:
-                data.created_at
+            user_id:
+                currentUser.id
 
-        });
+        })
+        .select()
+        .single();
+
+
+    if (error) {
+
+        alert(
+            "Unable to add reminder: " +
+            error.message
+        );
+
+        return;
     }
+
+
+    tasks.push({
+
+        id:
+            data.id,
+
+        subject:
+            data.subject || "",
+
+        task:
+            data.task,
+
+        dueDate:
+            null,
+
+        priority:
+            null,
+
+        completed:
+            Boolean(data.completed),
+
+        type:
+            "Reminder",
+
+        itemType:
+            "Reminder",
+
+        createdAt:
+            data.created_at
+
+    });
 
 
     localStorage.setItem(
@@ -1180,12 +1062,7 @@ async function addReminder() {
 
     resetAssignmentForm();
 
-
     displayTasks();
-
-    updateProgress();
-
-    renderSummaryCalendar();
 }
 
 
@@ -1197,40 +1074,32 @@ function resetAssignmentForm() {
 
     editingIndex = -1;
 
-
     const subject =
-        document.getElementById(
-            "subject"
-        );
+        document.getElementById("subject");
 
     const task =
-        document.getElementById(
-            "task"
-        );
+        document.getElementById("task");
 
     const dueDate =
-        document.getElementById(
-            "dueDate"
-        );
+        document.getElementById("dueDate");
 
     const priority =
-        document.getElementById(
-            "priority"
-        );
+        document.getElementById("priority");
 
     const reminderText =
-        document.getElementById(
-            "reminderText"
-        );
+        document.getElementById("reminderText");
 
     const reminderSubject =
+        document.getElementById("reminderSubject");
+
+    const addTaskButton =
         document.getElementById(
-            "reminderSubject"
+            "addTaskButton"
         );
 
-    const reminderDate =
+    const cancelButton =
         document.getElementById(
-            "reminderDate"
+            "cancelAssignmentEditButton"
         );
 
 
@@ -1258,22 +1127,10 @@ function resetAssignmentForm() {
         reminderSubject.value = "";
     }
 
-    if (reminderDate) {
-        reminderDate.value = "";
-    }
-
-
-    const addTaskButton =
-        document.getElementById(
-            "addTaskButton"
-        );
-
     if (addTaskButton) {
-
         addTaskButton.textContent =
-            "➕ Add Task";
+            "Add Task";
     }
-
 
     const addReminderButton =
         document.getElementById(
@@ -1281,27 +1138,17 @@ function resetAssignmentForm() {
         );
 
     if (addReminderButton) {
-
         addReminderButton.textContent =
             "🔔 Add Reminder";
     }
 
-
-    const cancelButton =
-        document.getElementById(
-            "cancelAssignmentEditButton"
-        );
-
     if (cancelButton) {
-
         cancelButton.style.display =
             "none";
     }
 
-
     setAssignmentMode(
-        "task",
-        false
+        assignmentMode
     );
 }
 
@@ -1313,6 +1160,8 @@ function resetAssignmentForm() {
 function cancelAssignmentEdit() {
 
     resetAssignmentForm();
+
+    setAssignmentMode("task");
 }
 
 
@@ -1329,8 +1178,13 @@ function displayTasks() {
 
     if (!list) return;
 
-
     list.innerHTML = "";
+
+
+    const emptyMessage =
+        document.getElementById(
+            "emptyTaskList"
+        );
 
 
     const typeFilterElement =
@@ -1338,33 +1192,21 @@ function displayTasks() {
             "typeFilter"
         );
 
-    const dateFilterElement =
-        document.getElementById(
-            "dateFilter"
-        );
-
-    const specificDateElement =
-        document.getElementById(
-            "specificDate"
-        );
-
-
     const typeFilter =
         typeFilterElement
             ? typeFilterElement.value
             : "All";
 
 
-    const filter =
-        dateFilterElement
-            ? dateFilterElement.value
-            : "All";
-
+    const dateFilter =
+        document.getElementById(
+            "dateFilter"
+        ).value;
 
     const specificDate =
-        specificDateElement
-            ? specificDateElement.value
-            : "";
+        document.getElementById(
+            "specificDate"
+        ).value;
 
 
     const today =
@@ -1378,40 +1220,46 @@ function displayTasks() {
     );
 
 
+    let filteredTasks =
+        [...tasks];
+
+
     // ========================================================
     // TYPE FILTER
     // ========================================================
 
-    let filteredTasks =
-        tasks.filter(item => {
+    if (typeFilter === "Task") {
 
-            const itemType =
-                normalizeAssignmentType(
-                    item.type
-                );
-
-
-            if (
-                typeFilter !== "All" &&
-                itemType !== typeFilter
-            ) {
-                return false;
-            }
+        filteredTasks =
+            filteredTasks.filter(
+                item =>
+                    getItemType(item) ===
+                    "Task"
+            );
+    }
 
 
-            return true;
-        });
+    else if (typeFilter === "Reminder") {
+
+        filteredTasks =
+            filteredTasks.filter(
+                item =>
+                    getItemType(item) ===
+                    "Reminder"
+            );
+    }
 
 
     // ========================================================
     // DATE FILTER
+    // Reminders have no date, so date filters only apply
+    // to dated tasks.
     // ========================================================
 
-    if (filter === "Today") {
+    if (dateFilter === "Today") {
 
         const todayString =
             formatDateInput(today);
-
 
         filteredTasks =
             filteredTasks.filter(
@@ -1422,7 +1270,7 @@ function displayTasks() {
     }
 
 
-    else if (filter === "Next7") {
+    else if (dateFilter === "Next7") {
 
         const sevenDays =
             new Date(today);
@@ -1433,47 +1281,53 @@ function displayTasks() {
 
 
         filteredTasks =
-            filteredTasks.filter(
-                item => {
+            filteredTasks.filter(item => {
 
-                    const due =
-                        parseLocalDate(
-                            item.dueDate
-                        );
-
-
-                    return (
-                        due >= today &&
-                        due <= sevenDays
-                    );
+                if (!item.dueDate) {
+                    return false;
                 }
-            );
+
+                const due =
+                    parseLocalDate(
+                        item.dueDate
+                    );
+
+                return (
+                    due >= today &&
+                    due <= sevenDays
+                );
+
+            });
+
     }
 
 
-    else if (filter === "Overdue") {
+    else if (dateFilter === "Overdue") {
 
         filteredTasks =
-            filteredTasks.filter(
-                item => {
+            filteredTasks.filter(item => {
 
-                    const due =
-                        parseLocalDate(
-                            item.dueDate
-                        );
-
-
-                    return (
-                        due < today &&
-                        !item.completed
-                    );
+                if (!item.dueDate) {
+                    return false;
                 }
-            );
+
+                const due =
+                    parseLocalDate(
+                        item.dueDate
+                    );
+
+                return (
+                    due < today &&
+                    !item.completed
+                );
+
+            });
+
     }
 
 
     else if (
-        filter === "Specific" &&
+        dateFilter === "Specific" &&
         specificDate
     ) {
 
@@ -1488,68 +1342,52 @@ function displayTasks() {
 
     // ========================================================
     // SORT
+    // Reminders without date go after dated tasks.
     // ========================================================
 
-    filteredTasks.sort(
-        (a, b) => {
+    filteredTasks.sort((a, b) => {
 
-            const dateCompare =
-                parseLocalDate(
-                    a.dueDate
-                ) -
-                parseLocalDate(
-                    b.dueDate
-                );
-
-
-            if (dateCompare !== 0) {
-                return dateCompare;
-            }
-
-
-            return (
-                normalizeAssignmentType(
-                    a.type
-                ) === "reminder"
-                    ? 1
-                    : -1
-            );
+        if (!a.dueDate && !b.dueDate) {
+            return 0;
         }
-    );
+
+        if (!a.dueDate) {
+            return 1;
+        }
+
+        if (!b.dueDate) {
+            return -1;
+        }
+
+        return (
+            parseLocalDate(a.dueDate) -
+            parseLocalDate(b.dueDate)
+        );
+    });
 
 
     // ========================================================
     // EMPTY STATE
     // ========================================================
 
-    const emptyState =
-        document.getElementById(
-            "emptyTaskState"
-        );
+    if (filteredTasks.length === 0) {
 
-
-    if (
-        filteredTasks.length === 0
-    ) {
-
-        if (emptyState) {
-
-            emptyState.style.display =
+        if (emptyMessage) {
+            emptyMessage.style.display =
                 "block";
         }
 
     } else {
 
-        if (emptyState) {
-
-            emptyState.style.display =
+        if (emptyMessage) {
+            emptyMessage.style.display =
                 "none";
         }
     }
 
 
     // ========================================================
-    // RENDER
+    // DISPLAY
     // ========================================================
 
     filteredTasks.forEach(item => {
@@ -1557,162 +1395,161 @@ function displayTasks() {
         const actualIndex =
             tasks.indexOf(item);
 
-
         const itemType =
-            normalizeAssignmentType(
-                item.type
-            );
-
+            getItemType(item);
 
         const li =
-            document.createElement(
-                "li"
-            );
+            document.createElement("li");
 
 
-        const priorityClass =
-            getPriorityClass(
-                item.priority
-            );
-
-
-        if (
-            itemType === "reminder"
-        ) {
-
-            li.className =
-                "reminder-item" +
-                (
-                    item.completed
-                        ? " completed"
-                        : ""
-                );
-
-        } else {
-
-            li.className =
-                priorityClass +
-                (
-                    item.completed
-                        ? " completed"
-                        : ""
-                );
+        if (item.completed) {
+            li.classList.add("completed");
         }
 
 
-        const subjectText =
-            item.subject
-                ? escapeHtml(
-                    item.subject
-                )
-                : "General Reminder";
+        if (itemType === "Reminder") {
 
-
-        if (
-            itemType === "reminder"
-        ) {
-
-            li.innerHTML = `
-
-                <div class="task-info">
-
-                    <span class="task-type-badge reminder">
-                        🔔 Reminder
-                    </span>
-
-                    <strong>
-                        ${escapeHtml(item.task)}
-                    </strong>
-
-                    ${
-                        item.subject
-                            ? `
-                                <small>
-                                    📚 ${subjectText}
-                                </small>
-                              `
-                            : ""
-                    }
-
-                    <small>
-                        📅 ${formatDisplayDate(
-                            item.dueDate
-                        )}
-                    </small>
-
-                </div>
-
-
-                <div class="task-actions">
-
-                    <button
-                        onclick="toggleTask(${actualIndex})"
-                        title="${
-                            item.completed
-                                ? "Mark as pending"
-                                : "Mark as completed"
-                        }"
-                    >
-                        ${
-                            item.completed
-                                ? "↩️"
-                                : "✅"
-                        }
-                    </button>
-
-                    <button
-                        onclick="editTask(${actualIndex})"
-                        title="Edit"
-                    >
-                        ✏️
-                    </button>
-
-                    <button
-                        onclick="deleteTask(${actualIndex})"
-                        title="Delete"
-                    >
-                        🗑️
-                    </button>
-
-                </div>
-
-            `;
+            li.classList.add(
+                "reminder-item"
+            );
 
         } else {
 
+            li.classList.add(
+                "task-item"
+            );
+        }
+
+
+        // ====================================================
+        // REMINDER
+        // ====================================================
+
+        if (itemType === "Reminder") {
+
+            const subjectText =
+                item.subject
+                    ? escapeHtml(
+                        item.subject
+                    )
+                    : "Personal Reminder";
+
+
             li.innerHTML = `
 
                 <div class="task-info">
 
-                    <span class="task-type-badge deadline">
-                        📝 Deadline
-                    </span>
+                    <div class="item-title-row">
 
-                    <strong>
-                        ${escapeHtml(item.task)}
-                    </strong>
+                        <span class="item-type-badge reminder">
+                            🔔 Reminder
+                        </span>
 
-                    <small>
+                        <strong class="item-title">
+                            ${escapeHtml(
+                                item.task
+                            )}
+                        </strong>
+
+                    </div>
+
+                    <div class="task-meta">
                         📚 ${subjectText}
-                    </small>
+                    </div>
 
-                    <small>
+                </div>
+
+
+                <div class="task-actions">
+
+                    <button
+                        class="reminder-check-button"
+                        onclick="toggleTask(${actualIndex})"
+                        title="${
+                            item.completed
+                                ? "Mark as not done"
+                                : "Mark as done"
+                        }"
+                    >
+                        ${
+                            item.completed
+                                ? "↩️"
+                                : "☐"
+                        }
+                    </button>
+
+                    <button
+                        onclick="editTask(${actualIndex})"
+                        title="Edit"
+                    >
+                        ✏️
+                    </button>
+
+                    <button
+                        onclick="deleteTask(${actualIndex})"
+                        title="Delete"
+                    >
+                        🗑️
+                    </button>
+
+                </div>
+
+            `;
+
+        }
+
+
+        // ====================================================
+        // TASK / DEADLINE
+        // ====================================================
+
+        else {
+
+            const priorityClass =
+                getPriorityClass(
+                    item.priority
+                );
+
+            const priorityText =
+                getPriorityText(
+                    item.priority
+                );
+
+
+            li.innerHTML = `
+
+                <div class="task-info">
+
+                    <div class="item-title-row">
+
+                        <span class="item-type-badge task">
+                            📝 Deadline
+                        </span>
+
+                        <strong class="item-title">
+                            ${escapeHtml(
+                                item.task
+                            )}
+                        </strong>
+
+                    </div>
+
+                    <div class="task-meta">
+                        📚 ${escapeHtml(
+                            item.subject
+                        )}
+                    </div>
+
+                    <div class="task-meta">
                         📅 ${formatDisplayDate(
                             item.dueDate
                         )}
-                    </small>
+                    </div>
 
                     <span
-                        class="priority-badge ${getPriorityName(
-                            item.priority
-                        )}"
+                        class="priority-badge ${priorityClass}"
                     >
-                        ${getPriorityIcon(
-                            item.priority
-                        )}
-                        ${escapeHtml(
-                            item.priority || "Medium"
-                        )}
+                        ${priorityText}
                     </span>
 
                 </div>
@@ -1752,6 +1589,7 @@ function displayTasks() {
                 </div>
 
             `;
+
         }
 
 
@@ -1760,70 +1598,23 @@ function displayTasks() {
     });
 
 
-    // ========================================================
-    // COUNTER
-    // ========================================================
-
     const counter =
         document.getElementById(
             "taskCounter"
         );
 
-
     if (counter) {
 
-        const deadlineCount =
-            filteredTasks.filter(
-                item =>
-                    normalizeAssignmentType(
-                        item.type
-                    ) === "task"
-            ).length;
+        const count =
+            filteredTasks.length;
 
-
-        const reminderCount =
-            filteredTasks.filter(
-                item =>
-                    normalizeAssignmentType(
-                        item.type
-                    ) === "reminder"
-            ).length;
-
-
-        if (
-            typeFilter === "task"
-        ) {
-
-            counter.textContent =
-                deadlineCount +
-                (
-                    deadlineCount === 1
-                        ? " Deadline"
-                        : " Deadlines"
-                );
-
-        } else if (
-            typeFilter === "reminder"
-        ) {
-
-            counter.textContent =
-                reminderCount +
-                (
-                    reminderCount === 1
-                        ? " Reminder"
-                        : " Reminders"
-                );
-
-        } else {
-
-            counter.textContent =
-                filteredTasks.length +
-                (
-                    filteredTasks.length === 1
-                        ? " Item"
-                        : " Items"
-                );
-        }
+        counter.textContent =
+            count +
+            (
+                count === 1
+                    ? " Item"
+                    : " Items"
+            );
     }
 
 
@@ -1838,12 +1629,9 @@ function displayTasks() {
 function handleDateFilter() {
 
     const filter =
-        document
-            .getElementById(
-                "dateFilter"
-            )
-            .value;
-
+        document.getElementById(
+            "dateFilter"
+        ).value;
 
     const specificDate =
         document.getElementById(
@@ -1851,9 +1639,7 @@ function handleDateFilter() {
         );
 
 
-    if (
-        filter === "Specific"
-    ) {
+    if (filter === "Specific") {
 
         specificDate.style.display =
             "block";
@@ -1879,7 +1665,6 @@ async function toggleTask(index) {
 
     if (!currentUser) return;
 
-
     const supabase =
         getSupabase();
 
@@ -1898,23 +1683,22 @@ async function toggleTask(index) {
 
     const {
         error
-    } =
-        await supabase
-            .from("assignments")
-            .update({
+    } = await supabase
+        .from("assignments")
+        .update({
 
-                completed:
-                    newStatus
+            completed:
+                newStatus
 
-            })
-            .eq(
-                "id",
-                item.id
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            );
+        })
+        .eq(
+            "id",
+            item.id
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        );
 
 
     if (error) {
@@ -1963,79 +1747,7 @@ function editTask(index) {
 
 
     const itemType =
-        normalizeAssignmentType(
-            item.type
-        );
-
-
-    if (
-        itemType === "reminder"
-    ) {
-
-        document.getElementById(
-            "reminderText"
-        ).value =
-            item.task || "";
-
-
-        document.getElementById(
-            "reminderSubject"
-        ).value =
-            item.subject || "";
-
-
-        document.getElementById(
-            "reminderDate"
-        ).value =
-            item.dueDate || "";
-
-
-        document.getElementById(
-            "addReminderButton"
-        ).textContent =
-            "💾 Save Reminder";
-
-
-        setAssignmentMode(
-            "reminder"
-        );
-
-    } else {
-
-        document.getElementById(
-            "subject"
-        ).value =
-            item.subject || "";
-
-
-        document.getElementById(
-            "task"
-        ).value =
-            item.task || "";
-
-
-        document.getElementById(
-            "dueDate"
-        ).value =
-            item.dueDate || "";
-
-
-        document.getElementById(
-            "priority"
-        ).value =
-            item.priority || "Medium";
-
-
-        document.getElementById(
-            "addTaskButton"
-        ).textContent =
-            "💾 Save Task";
-
-
-        setAssignmentMode(
-            "task"
-        );
-    }
+        getItemType(item);
 
 
     const cancelButton =
@@ -2045,28 +1757,99 @@ function editTask(index) {
 
 
     if (cancelButton) {
-
         cancelButton.style.display =
             "block";
     }
 
 
-    const formPanel =
-        document.querySelector(
-            ".assignment-form-panel"
+    // ========================================================
+    // EDIT REMINDER
+    // ========================================================
+
+    if (itemType === "Reminder") {
+
+        const reminderText =
+            document.getElementById(
+                "reminderText"
+            );
+
+        const reminderSubject =
+            document.getElementById(
+                "reminderSubject"
+            );
+
+        if (reminderText) {
+            reminderText.value =
+                item.task || "";
+        }
+
+        if (reminderSubject) {
+            reminderSubject.value =
+                item.subject || "";
+        }
+
+
+        setAssignmentMode(
+            "reminder"
         );
 
 
-    if (formPanel) {
+        const addReminderButton =
+            document.getElementById(
+                "addReminderButton"
+            );
 
-        formPanel.scrollIntoView({
+        if (addReminderButton) {
+            addReminderButton.textContent =
+                "Save Reminder";
+        }
 
-            behavior: "smooth",
-
-            block: "start"
-
-        });
     }
+
+
+    // ========================================================
+    // EDIT TASK
+    // ========================================================
+
+    else {
+
+        document.getElementById(
+            "subject"
+        ).value =
+            item.subject || "";
+
+        document.getElementById(
+            "task"
+        ).value =
+            item.task || "";
+
+        document.getElementById(
+            "dueDate"
+        ).value =
+            item.dueDate || "";
+
+        document.getElementById(
+            "priority"
+        ).value =
+            item.priority || "Medium";
+
+
+        setAssignmentMode(
+            "task"
+        );
+
+
+        document.getElementById(
+            "addTaskButton"
+        ).textContent =
+            "Save Changes";
+    }
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
 
@@ -2086,14 +1869,12 @@ async function deleteTask(index) {
 
 
     const itemType =
-        normalizeAssignmentType(
-            item.type
-        );
+        getItemType(item);
 
 
     const confirmed =
         confirm(
-            itemType === "reminder"
+            itemType === "Reminder"
                 ? "Delete this reminder?"
                 : "Delete this assignment?"
         );
@@ -2111,19 +1892,18 @@ async function deleteTask(index) {
     const {
         data: deletedRows,
         error
-    } =
-        await supabase
-            .from("assignments")
-            .delete()
-            .eq(
-                "id",
-                item.id
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .select("id");
+    } = await supabase
+        .from("assignments")
+        .delete()
+        .eq(
+            "id",
+            item.id
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        )
+        .select("id");
 
 
     if (error) {
@@ -2132,7 +1912,6 @@ async function deleteTask(index) {
             "Assignment delete error:",
             error
         );
-
 
         alert(
             "Unable to delete item:\n\n" +
@@ -2151,7 +1930,6 @@ async function deleteTask(index) {
         console.error(
             "Assignment was not deleted from Supabase.",
             {
-
                 itemId:
                     item.id,
 
@@ -2160,10 +1938,8 @@ async function deleteTask(index) {
 
                 deletedRows:
                     deletedRows
-
             }
         );
-
 
         alert(
             "The item was NOT deleted from the cloud.\n\n" +
@@ -2180,24 +1956,15 @@ async function deleteTask(index) {
     );
 
 
+    if (editingIndex === index) {
+        resetAssignmentForm();
+    }
+
+
     localStorage.setItem(
         "schoolTasks",
         JSON.stringify(tasks)
     );
-
-
-    if (
-        editingIndex === index
-    ) {
-
-        resetAssignmentForm();
-
-    } else if (
-        editingIndex > index
-    ) {
-
-        editingIndex--;
-    }
 
 
     displayTasks();
@@ -2209,9 +1976,63 @@ async function deleteTask(index) {
 
 
 // ============================================================
+// PRIORITY
+// ============================================================
+
+function getPriorityClass(priority) {
+
+    const value =
+        String(
+            priority || ""
+        )
+        .toLowerCase();
+
+
+    if (value === "urgent") {
+        return "priority-urgent";
+    }
+
+    if (value === "high") {
+        return "priority-high";
+    }
+
+    if (value === "low") {
+        return "priority-low";
+    }
+
+    return "priority-medium";
+}
+
+
+function getPriorityText(priority) {
+
+    const value =
+        String(
+            priority || "Medium"
+        )
+        .toLowerCase();
+
+
+    if (value === "urgent") {
+        return "🔴 Urgent";
+    }
+
+    if (value === "high") {
+        return "🟠 High";
+    }
+
+    if (value === "low") {
+        return "🟢 Low";
+    }
+
+    return "🟡 Medium";
+}
+
+
+// ============================================================
 // PROGRESS
-// ONLY FORMAL DEADLINES COUNT
-// REMINDERS DO NOT AFFECT ACADEMIC PROGRESS
+// Only formal deadlines/tasks count.
+// Reminders are separate checklists.
 // ============================================================
 
 function updateProgress() {
@@ -2219,9 +2040,8 @@ function updateProgress() {
     const deadlineTasks =
         tasks.filter(
             item =>
-                normalizeAssignmentType(
-                    item.type
-                ) === "task"
+                getItemType(item) ===
+                "Task"
         );
 
 
@@ -2257,21 +2077,16 @@ function updateProgress() {
 
 
     if (totalElement) {
-
         totalElement.textContent =
             total;
     }
 
-
     if (completedElement) {
-
         completedElement.textContent =
             completed;
     }
 
-
     if (pendingElement) {
-
         pendingElement.textContent =
             pending;
     }
@@ -2316,80 +2131,6 @@ function updateProgress() {
 
 
 // ============================================================
-// PRIORITY HELPERS
-// ============================================================
-
-function getPriorityName(priority) {
-
-    if (!priority) {
-        return "medium";
-    }
-
-
-    return String(priority)
-        .toLowerCase()
-        .replace(/\s+/g, "-");
-}
-
-
-function getPriorityClass(priority) {
-
-    const name =
-        getPriorityName(
-            priority
-        );
-
-
-    if (
-        name === "urgent"
-    ) {
-        return "priority-urgent";
-    }
-
-
-    if (
-        name === "high"
-    ) {
-        return "priority-high";
-    }
-
-
-    if (
-        name === "low"
-    ) {
-        return "priority-low";
-    }
-
-
-    return "priority-medium";
-}
-
-
-function getPriorityIcon(priority) {
-
-    const name =
-        getPriorityName(
-            priority
-        );
-
-
-    if (name === "urgent") {
-        return "🔴";
-    }
-
-    if (name === "high") {
-        return "🟠";
-    }
-
-    if (name === "low") {
-        return "🟢";
-    }
-
-    return "🟡";
-}
-
-
-// ============================================================
 // TIME DROPDOWNS
 // ============================================================
 
@@ -2406,9 +2147,7 @@ function populateTimeDropdowns() {
         );
 
 
-    if (!start || !end) {
-        return;
-    }
+    if (!start || !end) return;
 
 
     start.innerHTML =
@@ -2432,7 +2171,6 @@ function populateTimeDropdowns() {
 
             const value =
                 `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-
 
             const label =
                 formatTime(value);
@@ -2474,16 +2212,14 @@ function populateTimeDropdowns() {
 
 
 // ============================================================
-// ADD CLASS SCHEDULE
+// ADD / UPDATE CLASS SCHEDULE
 // ============================================================
 
 async function addSchedule() {
 
     if (!currentUser) {
 
-        alert(
-            "Please login first."
-        );
+        alert("Please login first.");
 
         return;
     }
@@ -2500,18 +2236,15 @@ async function addSchedule() {
             "scheduleSubject"
         ).value;
 
-
     const scheduleDate =
         document.getElementById(
             "scheduleDate"
         ).value;
 
-
     const startTime =
         document.getElementById(
             "startTime"
         ).value;
-
 
     const endTime =
         document.getElementById(
@@ -2534,9 +2267,7 @@ async function addSchedule() {
     }
 
 
-    if (
-        startTime >= endTime
-    ) {
+    if (startTime >= endTime) {
 
         alert(
             "End time must be later than start time."
@@ -2550,9 +2281,7 @@ async function addSchedule() {
     // EDIT
     // ========================================================
 
-    if (
-        editingScheduleIndex !== -1
-    ) {
+    if (editingScheduleIndex !== -1) {
 
         const existing =
             schedules[
@@ -2562,32 +2291,31 @@ async function addSchedule() {
 
         const {
             error
-        } =
-            await supabase
-                .from("class_schedules")
-                .update({
+        } = await supabase
+            .from("class_schedules")
+            .update({
 
-                    subject:
-                        subject,
+                subject:
+                    subject,
 
-                    schedule_date:
-                        scheduleDate,
+                schedule_date:
+                    scheduleDate,
 
-                    start_time:
-                        startTime,
+                start_time:
+                    startTime,
 
-                    end_time:
-                        endTime
+                end_time:
+                    endTime
 
-                })
-                .eq(
-                    "id",
-                    existing.id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
+            })
+            .eq(
+                "id",
+                existing.id
+            )
+            .eq(
+                "user_id",
+                currentUser.id
+            );
 
 
         if (error) {
@@ -2625,42 +2353,41 @@ async function addSchedule() {
         document.getElementById(
             "addScheduleButton"
         ).textContent =
-            "➕ Add Schedule";
+            "Add Schedule";
+    }
 
 
-    } else {
+    // ========================================================
+    // ADD
+    // ========================================================
 
-
-        // ====================================================
-        // ADD
-        // ====================================================
+    else {
 
         const {
             data,
             error
-        } =
-            await supabase
-                .from("class_schedules")
-                .insert({
+        } = await supabase
+            .from("class_schedules")
+            .insert({
 
-                    subject:
-                        subject,
+                subject:
+                    subject,
 
-                    schedule_date:
-                        scheduleDate,
+                schedule_date:
+                    scheduleDate,
 
-                    start_time:
-                        startTime,
+                start_time:
+                    startTime,
 
-                    end_time:
-                        endTime,
+                end_time:
+                    endTime,
 
-                    user_id:
-                        currentUser.id
+                user_id:
+                    currentUser.id
 
-                })
-                .select()
-                .single();
+            })
+            .select()
+            .single();
 
 
         if (error) {
@@ -2700,9 +2427,7 @@ async function addSchedule() {
 
     localStorage.setItem(
         "classSchedules",
-        JSON.stringify(
-            schedules
-        )
+        JSON.stringify(schedules)
     );
 
 
@@ -2710,16 +2435,13 @@ async function addSchedule() {
         "scheduleSubject"
     ).value = "";
 
-
     document.getElementById(
         "scheduleDate"
     ).value = "";
 
-
     document.getElementById(
         "startTime"
     ).value = "";
-
 
     document.getElementById(
         "endTime"
@@ -2758,17 +2480,16 @@ function showScheduleView(view) {
         );
 
 
-    tabs.forEach(
-        button =>
-            button.classList.remove(
-                "active"
-            )
-    );
+    tabs.forEach(button => {
+
+        button.classList.remove(
+            "active"
+        );
+
+    });
 
 
-    if (
-        view === "calendar"
-    ) {
+    if (view === "calendar") {
 
         calendarView.style.display =
             "block";
@@ -2778,7 +2499,6 @@ function showScheduleView(view) {
 
 
         if (tabs[0]) {
-
             tabs[0].classList.add(
                 "active"
             );
@@ -2797,7 +2517,6 @@ function showScheduleView(view) {
 
 
         if (tabs[1]) {
-
             tabs[1].classList.add(
                 "active"
             );
@@ -2827,14 +2546,11 @@ function getScheduleColorClass(
                         b.startTime
                     );
 
-
                 if (
                     startCompare !== 0
                 ) {
-
                     return startCompare;
                 }
-
 
                 return a.endTime.localeCompare(
                     b.endTime
@@ -2884,9 +2600,7 @@ function renderCalendar() {
         );
 
 
-    if (!grid || !title) {
-        return;
-    }
+    if (!grid || !title) return;
 
 
     grid.innerHTML = "";
@@ -2956,7 +2670,6 @@ function renderCalendar() {
                 "div"
             );
 
-
         cell.className =
             "calendar-day";
 
@@ -2987,14 +2700,11 @@ function renderCalendar() {
                 "div"
             );
 
-
         dayNumber.className =
             "day-number";
 
-
         dayNumber.textContent =
             day;
-
 
         cell.appendChild(
             dayNumber
@@ -3016,14 +2726,11 @@ function renderCalendar() {
                                 b.startTime
                             );
 
-
                         if (
                             startCompare !== 0
                         ) {
-
                             return startCompare;
                         }
-
 
                         return a.endTime.localeCompare(
                             b.endTime
@@ -3116,10 +2823,6 @@ function renderCalendar() {
 }
 
 
-// ============================================================
-// CHANGE MONTH
-// ============================================================
-
 function changeMonth(direction) {
 
     calendarDate.setMonth(
@@ -3127,13 +2830,12 @@ function changeMonth(direction) {
         direction
     );
 
-
     renderCalendar();
 }
 
 
 // ============================================================
-// SHOW SCHEDULE DETAILS
+// SCHEDULE DETAILS
 // ============================================================
 
 function showScheduleDetails(
@@ -3196,14 +2898,9 @@ function showScheduleDetails(
             </div>
 
         </div>
-
     `;
 }
 
-
-// ============================================================
-// SHOW EMPTY DATE DETAILS
-// ============================================================
 
 function showDateDetails(
     dateString
@@ -3222,9 +2919,7 @@ function showDateDetails(
 
         <div class="empty-details">
 
-            <div>
-                📅
-            </div>
+            <div>📅</div>
 
             <h3>
                 ${formatDisplayDate(
@@ -3237,7 +2932,6 @@ function showDateDetails(
             </p>
 
         </div>
-
     `;
 }
 
@@ -3259,9 +2953,7 @@ function renderWeekly() {
         );
 
 
-    if (!grid || !title) {
-        return;
-    }
+    if (!grid || !title) return;
 
 
     grid.innerHTML = "";
@@ -3317,7 +3009,6 @@ function renderWeekly() {
 
 
     const days = [
-
         "Monday",
         "Tuesday",
         "Wednesday",
@@ -3325,7 +3016,6 @@ function renderWeekly() {
         "Friday",
         "Saturday",
         "Sunday"
-
     ];
 
 
@@ -3405,14 +3095,11 @@ function renderWeekly() {
                                     b.startTime
                                 );
 
-
                             if (
                                 startCompare !== 0
                             ) {
-
                                 return startCompare;
                             }
-
 
                             return a.endTime.localeCompare(
                                 b.endTime
@@ -3430,14 +3117,11 @@ function renderWeekly() {
                         "div"
                     );
 
-
                 empty.className =
                     "weekly-empty";
 
-
                 empty.textContent =
                     "No class";
-
 
                 column.appendChild(
                     empty
@@ -3518,19 +3202,12 @@ function renderWeekly() {
 }
 
 
-// ============================================================
-// CHANGE WEEK
-// ============================================================
-
-function changeWeek(
-    direction
-) {
+function changeWeek(direction) {
 
     weeklyDate.setDate(
         weeklyDate.getDate() +
         direction * 7
     );
-
 
     renderWeekly();
 }
@@ -3554,6 +3231,19 @@ function displaySavedSchedules() {
     list.innerHTML = "";
 
 
+    const count =
+        document.getElementById(
+            "scheduleCount"
+        );
+
+
+    if (count) {
+
+        count.textContent =
+            schedules.length;
+    }
+
+
     if (
         schedules.length === 0
     ) {
@@ -3561,6 +3251,10 @@ function displaySavedSchedules() {
         list.innerHTML = `
 
             <div class="empty-schedules">
+
+                📅
+
+                <br><br>
 
                 No saved class schedules yet.
 
@@ -3585,7 +3279,6 @@ function displaySavedSchedules() {
                 if (
                     dateCompare !== 0
                 ) {
-
                     return dateCompare;
                 }
 
@@ -3678,9 +3371,7 @@ function displaySavedSchedules() {
 // EDIT SCHEDULE
 // ============================================================
 
-function editSchedule(
-    index
-) {
+function editSchedule(index) {
 
     const schedule =
         schedules[index];
@@ -3726,31 +3417,17 @@ function editSchedule(
     document.getElementById(
         "addScheduleButton"
     ).textContent =
-        "💾 Save Changes";
+        "Save Changes";
 
 
-    const form =
-        document.querySelector(
-            ".schedule-form"
-        );
-
-
-    if (form) {
-
-        form.scrollIntoView({
-
-            behavior: "smooth",
-
-            block: "start"
-
-        });
-    }
+    document.getElementById(
+        "scheduleSubject"
+    ).scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
 }
 
-
-// ============================================================
-// EDIT SCHEDULE BY ID
-// ============================================================
 
 function editScheduleById(
     id
@@ -3764,22 +3441,15 @@ function editScheduleById(
         );
 
 
-    if (
-        index === -1
-    ) {
-        return;
-    }
+    if (index === -1) return;
 
 
-    editSchedule(
-        index
-    );
+    editSchedule(index);
 }
 
 
 // ============================================================
 // DELETE SCHEDULE
-// VERIFIED SUPABASE DELETE
 // ============================================================
 
 async function deleteSchedule(
@@ -3815,19 +3485,18 @@ async function deleteSchedule(
     const {
         data: deletedRows,
         error
-    } =
-        await supabase
-            .from("class_schedules")
-            .delete()
-            .eq(
-                "id",
-                schedule.id
-            )
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .select("id");
+    } = await supabase
+        .from("class_schedules")
+        .delete()
+        .eq(
+            "id",
+            schedule.id
+        )
+        .eq(
+            "user_id",
+            currentUser.id
+        )
+        .select("id");
 
 
     if (error) {
@@ -3836,7 +3505,6 @@ async function deleteSchedule(
             "Schedule delete error:",
             error
         );
-
 
         alert(
             "Unable to delete schedule:\n\n" +
@@ -3855,7 +3523,6 @@ async function deleteSchedule(
         console.error(
             "Schedule was not deleted from Supabase.",
             {
-
                 scheduleId:
                     schedule.id,
 
@@ -3864,10 +3531,8 @@ async function deleteSchedule(
 
                 deletedRows:
                     deletedRows
-
             }
         );
-
 
         alert(
             "The class schedule was NOT deleted from the cloud.\n\n" +
@@ -3886,9 +3551,7 @@ async function deleteSchedule(
 
     localStorage.setItem(
         "classSchedules",
-        JSON.stringify(
-            schedules
-        )
+        JSON.stringify(schedules)
     );
 
 
@@ -3913,9 +3576,7 @@ async function deleteSchedule(
 
             <div class="empty-details">
 
-                <div>
-                    📅
-                </div>
+                <div>📅</div>
 
                 <p>
                     Select a class from the calendar
@@ -3929,10 +3590,6 @@ async function deleteSchedule(
 }
 
 
-// ============================================================
-// DELETE SCHEDULE BY ID
-// ============================================================
-
 async function deleteScheduleById(
     id
 ) {
@@ -3945,11 +3602,7 @@ async function deleteScheduleById(
         );
 
 
-    if (
-        index === -1
-    ) {
-        return;
-    }
+    if (index === -1) return;
 
 
     await deleteSchedule(
@@ -3966,9 +3619,7 @@ function getSubjectCode(
     subject
 ) {
 
-    if (!subject) {
-        return "";
-    }
+    if (!subject) return "";
 
 
     const dashIndex =
@@ -4044,17 +3695,16 @@ function getSubjectColorClass(
 
 // ============================================================
 // SUMMARY
-// ONLY FORMAL DEADLINES ARE SHOWN
-// REMINDERS STAY IN ASSIGNMENTS
+// Only formal Tasks / Deadlines appear.
+// Reminders remain checklist-only.
 // ============================================================
 
 function getDeadlineTasks() {
 
     return tasks.filter(
-        task =>
-            normalizeAssignmentType(
-                task.type
-            ) === "task"
+        item =>
+            getItemType(item) ===
+            "Task"
     );
 }
 
@@ -4071,8 +3721,128 @@ function renderSummaryCalendar() {
         );
 
 
-    if (!summaryTab) {
-        return;
+    if (!summaryTab) return;
+
+
+    let calendarLayout =
+        document.getElementById(
+            "summaryCalendarLayout"
+        );
+
+
+    if (!calendarLayout) {
+
+        summaryTab.innerHTML = `
+
+            <h2>
+                📊 Monthly Summary
+            </h2>
+
+            <div
+                id="summaryCalendarLayout"
+                class="summary-calendar-layout"
+            >
+
+                <div class="summary-calendar-main">
+
+                    <div class="summary-calendar-header">
+
+                        <button
+                            onclick="changeSummaryMonth(-1)"
+                        >
+                            ◀
+                        </button>
+
+                        <h3
+                            id="summaryCalendarMonth"
+                        >
+                            Month
+                        </h3>
+
+                        <button
+                            onclick="changeSummaryMonth(1)"
+                        >
+                            ▶
+                        </button>
+
+                    </div>
+
+
+                    <div class="summary-calendar-weekdays">
+
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+
+                    </div>
+
+
+                    <div
+                        id="summaryCalendarGrid"
+                        class="summary-calendar-grid"
+                    ></div>
+
+
+                    <div class="summary-legend">
+
+                        <div class="summary-legend-item">
+
+                            <span
+                                class="summary-legend-dot schedule"
+                            ></span>
+
+                            Class Schedule
+
+                        </div>
+
+
+                        <div class="summary-legend-item">
+
+                            <span
+                                class="summary-legend-dot assignment"
+                            ></span>
+
+                            Assignment Deadline
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="summaryDetails"
+                    class="summary-details"
+                >
+
+                    <div
+                        class="summary-empty-details"
+                    >
+
+                        <div>📅</div>
+
+                        <p>
+                            Select a subject
+                            to see its details.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+
+        calendarLayout =
+            document.getElementById(
+                "summaryCalendarLayout"
+            );
     }
 
 
@@ -4087,9 +3857,7 @@ function renderSummaryCalendar() {
         );
 
 
-    if (!grid || !title) {
-        return;
-    }
+    if (!grid || !title) return;
 
 
     grid.innerHTML = "";
@@ -4128,10 +3896,6 @@ function renderSummaryCalendar() {
         ).getDate();
 
 
-    const deadlineTasks =
-        getDeadlineTasks();
-
-
     for (
         let i = 0;
         i < firstDay;
@@ -4143,15 +3907,17 @@ function renderSummaryCalendar() {
                 "div"
             );
 
-
         empty.className =
             "summary-calendar-day empty";
-
 
         grid.appendChild(
             empty
         );
     }
+
+
+    const deadlineTasks =
+        getDeadlineTasks();
 
 
     for (
@@ -4210,10 +3976,6 @@ function renderSummaryCalendar() {
         );
 
 
-        // ====================================================
-        // SCHEDULE EVENTS
-        // ====================================================
-
         const daySchedules =
             schedules
                 .filter(
@@ -4229,14 +3991,11 @@ function renderSummaryCalendar() {
                                 b.startTime
                             );
 
-
                         if (
                             startCompare !== 0
                         ) {
-
                             return startCompare;
                         }
-
 
                         return a.endTime.localeCompare(
                             b.endTime
@@ -4301,14 +4060,12 @@ function renderSummaryCalendar() {
                     function() {
 
                         showSummarySubjectDetails(
-
                             dateString,
-
                             getSubjectCode(
                                 schedule.subject
                             )
-
                         );
+
                     }
                 );
 
@@ -4317,33 +4074,12 @@ function renderSummaryCalendar() {
                     `${schedule.subject} • ${formatTime(schedule.startTime)} - ${formatTime(schedule.endTime)}`;
 
 
-                event.onclick =
-                    function(eventObject) {
-
-                        eventObject.stopPropagation();
-
-                        showSummarySubjectDetails(
-
-                            dateString,
-
-                            getSubjectCode(
-                                schedule.subject
-                            )
-
-                        );
-                    };
-
-
                 cell.appendChild(
                     event
                 );
             }
         );
 
-
-        // ====================================================
-        // DEADLINE EVENTS
-        // ====================================================
 
         const dayTasks =
             deadlineTasks.filter(
@@ -4409,37 +4145,18 @@ function renderSummaryCalendar() {
                     function() {
 
                         showSummarySubjectDetails(
-
                             dateString,
-
                             getSubjectCode(
                                 task.subject
                             )
-
                         );
+
                     }
                 );
 
 
                 event.title =
                     `Assignment: ${task.task}`;
-
-
-                event.onclick =
-                    function(eventObject) {
-
-                        eventObject.stopPropagation();
-
-                        showSummarySubjectDetails(
-
-                            dateString,
-
-                            getSubjectCode(
-                                task.subject
-                            )
-
-                        );
-                    };
 
 
                 cell.appendChild(
@@ -4477,7 +4194,6 @@ function changeSummaryMonth(
         summaryDate.getMonth() +
         direction
     );
-
 
     renderSummaryCalendar();
 }
@@ -4523,11 +4239,11 @@ function showSummaryDateDetails(
 
         details.innerHTML = `
 
-            <div class="summary-empty-details">
+            <div
+                class="summary-empty-details"
+            >
 
-                <div>
-                    📅
-                </div>
+                <div>📅</div>
 
                 <h3>
                     ${formatDisplayDate(
@@ -4604,9 +4320,7 @@ function showSummaryDateDetails(
                         🕐 ${formatTime(
                             schedule.startTime
                         )}
-
                         -
-
                         ${formatTime(
                             schedule.endTime
                         )}
@@ -4661,8 +4375,7 @@ function showSummaryDateDetails(
 
                         Priority:
                         ${escapeHtml(
-                            task.priority ||
-                            "Medium"
+                            task.priority
                         )}
 
                         ${
@@ -4709,7 +4422,8 @@ function showSummarySubjectDetails(
                 dateString &&
                 getSubjectCode(
                     schedule.subject
-                ) === subjectCode
+                ) ===
+                subjectCode
         );
 
 
@@ -4720,7 +4434,8 @@ function showSummarySubjectDetails(
                 dateString &&
                 getSubjectCode(
                     task.subject
-                ) === subjectCode
+                ) ===
+                subjectCode
         );
 
 
@@ -4802,9 +4517,7 @@ function showSummarySubjectDetails(
                         🕐 ${formatTime(
                             schedule.startTime
                         )}
-
                         -
-
                         ${formatTime(
                             schedule.endTime
                         )}
@@ -4846,8 +4559,7 @@ function showSummarySubjectDetails(
 
                         Priority:
                         ${escapeHtml(
-                            task.priority ||
-                            "Medium"
+                            task.priority
                         )}
 
                         ${
@@ -4878,7 +4590,6 @@ function parseLocalDate(
 ) {
 
     if (!dateString) {
-
         return new Date();
     }
 
@@ -4888,13 +4599,9 @@ function parseLocalDate(
 
 
     return new Date(
-
         Number(parts[0]),
-
         Number(parts[1]) - 1,
-
         Number(parts[2])
-
     );
 }
 
@@ -4906,7 +4613,6 @@ function formatDateInput(
     const year =
         date.getFullYear();
 
-
     const month =
         String(
             date.getMonth() + 1
@@ -4914,7 +4620,6 @@ function formatDateInput(
             2,
             "0"
         );
-
 
     const day =
         String(
@@ -5020,7 +4725,6 @@ function escapeHtml(
         value === null ||
         value === undefined
     ) {
-
         return "";
     }
 
@@ -5095,12 +4799,10 @@ function updateCozyHeader() {
             "greeting"
         );
 
-
     const timeElement =
         document.getElementById(
             "currentTime"
         );
-
 
     const dateElement =
         document.getElementById(
@@ -5190,9 +4892,7 @@ function setRandomMotivation() {
         );
 
 
-    if (!quoteElement) {
-        return;
-    }
+    if (!quoteElement) return;
 
 
     const randomIndex =
@@ -5255,7 +4955,6 @@ document.addEventListener(
             currentUser =
                 session.user;
 
-
             await initializeTracker();
 
         } else {
@@ -5270,9 +4969,9 @@ document.addEventListener(
                 session
             ) => {
 
-
                 if (
-                    event === "SIGNED_IN" &&
+                    event ===
+                    "SIGNED_IN" &&
                     session
                 ) {
 
@@ -5287,7 +4986,6 @@ document.addEventListener(
 
 
                     if (loginScreen) {
-
                         loginScreen.remove();
                     }
 
@@ -5297,7 +4995,8 @@ document.addEventListener(
 
 
                 if (
-                    event === "SIGNED_OUT"
+                    event ===
+                    "SIGNED_OUT"
                 ) {
 
                     currentUser =
@@ -5327,6 +5026,7 @@ if (
                 .register(
                     "./service-worker.js"
                 )
+
                 .then(
                     function(registration) {
 
@@ -5337,6 +5037,7 @@ if (
 
                     }
                 )
+
                 .catch(
                     function(error) {
 
