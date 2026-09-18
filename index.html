@@ -9,7 +9,6 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-
     <meta name="theme-color" content="#6f4e37">
 </head>
 
@@ -17,26 +16,36 @@
 
 <div class="container">
 
-    <h1 id="greeting">Good Morning, Sir Eran ☀️</h1>
+    <!-- =========================
+         HEADER
+    ========================= -->
 
-    <p class="subtitle">
-        Assignments & Class Schedule
-    </p>
+    <div class="cozy-header">
 
-    <div class="cozy-info">
-        <span id="currentTime">--:--</span>
-        <span>•</span>
-        <span id="currentDate">Loading date...</span>
+        <h1 id="greeting">
+            Good Morning, Sir Eran ☀️
+        </h1>
+
+        <p class="subtitle">
+            Assignments & Class Schedule
+        </p>
+
+        <div class="cozy-info">
+            <span id="currentTime">--:--</span>
+            <span>•</span>
+            <span id="currentDate">Loading date...</span>
+        </div>
+
+        <p id="motivationQuote" class="motivation-quote">
+            "Small progress is still progress."
+        </p>
+
     </div>
 
-    <p id="motivationQuote" class="motivation-quote">
-        "Small progress is still progress."
-    </p>
 
-
-    <!-- =====================================================
+    <!-- =========================
          MAIN TABS
-    ====================================================== -->
+    ========================= -->
 
     <div class="main-tabs">
 
@@ -64,89 +73,90 @@
     </div>
 
 
-    <!-- =====================================================
+    <!-- ========================================================
          ASSIGNMENTS TAB
-    ====================================================== -->
+    ======================================================== -->
 
     <div id="assignmentsTab">
+
+        <!-- TODAY'S PROGRESS -->
+
+        <div class="tracker-card progress-card">
+
+            <h2>Today's Progress</h2>
+
+            <div class="progress-summary">
+
+                <div class="progress-box">
+                    <span id="totalTasks">0</span>
+                    <small>Total</small>
+                </div>
+
+                <div class="progress-box">
+                    <span id="completedTasks">0</span>
+                    <small>Completed</small>
+                </div>
+
+                <div class="progress-box">
+                    <span id="pendingTasks">0</span>
+                    <small>Pending</small>
+                </div>
+
+            </div>
+
+            <div class="progress-bar">
+                <div id="progressFill"></div>
+            </div>
+
+            <p id="progressText">
+                0% Complete
+            </p>
+
+        </div>
+
+
+        <!-- ASSIGNMENT TWO-COLUMN LAYOUT -->
 
         <div class="assignment-layout">
 
 
-            <!-- =============================================
-                 LEFT — ADD TASK / REMINDER
-            ============================================== -->
+            <!-- =========================
+                 LEFT: ADD TASK / REMINDER
+            ========================= -->
 
-            <div class="assignment-creator">
+            <div class="assignment-form-panel">
 
-                <div class="creator-header">
+                <div class="panel-heading">
 
-                    <h2>
-                        Add New
+                    <h2 id="assignmentFormTitle">
+                        Add New Task
                     </h2>
 
                     <p>
-                        Keep track of what you need to do.
+                        Add a deadline or a personal reminder.
                     </p>
 
                 </div>
 
 
-                <!-- PROGRESS -->
+                <!-- MODE BUTTONS -->
 
-                <div class="compact-progress">
-
-                    <div class="progress-title">
-                        <span>Today's Progress</span>
-                        <strong id="progressText">
-                            0% Complete
-                        </strong>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div id="progressFill"></div>
-                    </div>
-
-                    <div class="progress-mini-stats">
-
-                        <span>
-                            <strong id="totalTasks">0</strong>
-                            Total
-                        </span>
-
-                        <span>
-                            <strong id="completedTasks">0</strong>
-                            Done
-                        </span>
-
-                        <span>
-                            <strong id="pendingTasks">0</strong>
-                            Pending
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <!-- TYPE SWITCH -->
-
-                <div class="entry-type-tabs">
+                <div class="assignment-mode-tabs">
 
                     <button
+                        id="taskModeButton"
+                        class="assignment-mode-button active"
                         type="button"
-                        id="taskTypeButton"
-                        class="entry-type-button active"
-                        onclick="showEntryType('task')"
+                        onclick="setAssignmentMode('task')"
                     >
                         📝 TASK
                     </button>
 
                     <button
+                        id="reminderModeButton"
+                        class="assignment-mode-button"
                         type="button"
-                        id="reminderTypeButton"
-                        class="entry-type-button"
-                        onclick="showEntryType('reminder')"
+                        onclick="setAssignmentMode('reminder')"
                     >
                         🔔 REMINDER
                     </button>
@@ -154,14 +164,11 @@
                 </div>
 
 
-                <!-- =========================================
+                <!-- =========================
                      TASK FORM
-                ========================================== -->
+                ========================= -->
 
-                <div
-                    id="taskForm"
-                    class="entry-form"
-                >
+                <div id="taskForm">
 
                     <label for="subject">
                         Subject
@@ -216,7 +223,7 @@
 
 
                     <label for="dueDate">
-                        Due Date
+                        Deadline
                     </label>
 
                     <input
@@ -254,25 +261,36 @@
 
 
                     <button
-                        type="button"
                         id="addTaskButton"
+                        class="primary-form-button"
+                        type="button"
                         onclick="addTask()"
                     >
-                        Add Task
+                        ➕ Add Task
                     </button>
 
                 </div>
 
 
-                <!-- =========================================
+                <!-- =========================
                      REMINDER FORM
-                ========================================== -->
+                ========================= -->
 
                 <div
                     id="reminderForm"
-                    class="entry-form"
-                    style="display: none;"
+                    style="display:none;"
                 >
+
+                    <label for="reminderText">
+                        Reminder
+                    </label>
+
+                    <input
+                        type="text"
+                        id="reminderText"
+                        placeholder="e.g. Finish my Math solution"
+                    >
+
 
                     <label for="reminderSubject">
                         Subject
@@ -322,19 +340,8 @@
                     </select>
 
 
-                    <label for="reminderText">
-                        Reminder
-                    </label>
-
-                    <textarea
-                        id="reminderText"
-                        rows="3"
-                        placeholder="e.g. Finish my Math solution"
-                    ></textarea>
-
-
                     <label for="reminderDate">
-                        Reminder Date
+                        Remind Me On
                     </label>
 
                     <input
@@ -344,49 +351,58 @@
 
 
                     <button
-                        type="button"
                         id="addReminderButton"
+                        class="primary-form-button reminder-button"
+                        type="button"
                         onclick="addReminder()"
                     >
-                        Add Reminder
+                        🔔 Add Reminder
                     </button>
 
                 </div>
 
+
+                <!-- CANCEL EDIT -->
+
+                <button
+                    id="cancelAssignmentEditButton"
+                    class="cancel-edit-button"
+                    type="button"
+                    onclick="cancelAssignmentEdit()"
+                    style="display:none;"
+                >
+                    Cancel Edit
+                </button>
+
             </div>
 
 
-            <!-- =============================================
-                 RIGHT — TASKS / REMINDERS
-            ============================================== -->
+            <!-- =========================
+                 RIGHT: DEADLINES & REMINDERS
+            ========================= -->
 
             <div class="assignment-list-panel">
 
-                <div class="assignment-list-header">
+                <div class="list-panel-header">
 
                     <div>
+
                         <h2>
-                            📋 My Tasks
+                            📋 Deadlines & Reminders
                         </h2>
 
                         <p>
-                            Deadlines and reminders
+                            Keep track of what needs your attention.
                         </p>
-                    </div>
 
-                    <span
-                        id="taskCounter"
-                        class="task-count-badge"
-                    >
-                        0 Tasks
-                    </span>
+                    </div>
 
                 </div>
 
 
-                <!-- TYPE FILTER -->
+                <!-- FILTERS -->
 
-                <div class="task-filters">
+                <div class="assignment-filters">
 
                     <div class="filter-group">
 
@@ -452,11 +468,7 @@
                     </div>
 
 
-                    <div
-                        class="filter-group specific-date-filter"
-                        id="specificDateGroup"
-                        style="display: none;"
-                    >
+                    <div class="filter-group specific-date-group">
 
                         <label for="specificDate">
                             Select Date
@@ -466,6 +478,7 @@
                             type="date"
                             id="specificDate"
                             onchange="displayTasks()"
+                            style="display:none;"
                         >
 
                     </div>
@@ -473,10 +486,39 @@
                 </div>
 
 
-                <div
-                    id="taskList"
-                    class="task-list"
-                ></div>
+                <!-- LIST -->
+
+                <div class="assignment-list-scroll">
+
+                    <ul id="taskList"></ul>
+
+                    <div
+                        id="emptyTaskState"
+                        class="empty-task-state"
+                        style="display:none;"
+                    >
+                        <div class="empty-task-icon">
+                            📝
+                        </div>
+
+                        <strong>
+                            Nothing here yet
+                        </strong>
+
+                        <p>
+                            Add a task or reminder to get started.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <p
+                    id="taskCounter"
+                    class="task-counter"
+                >
+                    0 Tasks
+                </p>
 
             </div>
 
@@ -485,13 +527,13 @@
     </div>
 
 
-    <!-- =====================================================
+    <!-- ========================================================
          CLASS SCHEDULE TAB
-    ====================================================== -->
+    ======================================================== -->
 
     <div
         id="scheduleTab"
-        style="display: none;"
+        style="display:none;"
     >
 
         <h2>
@@ -499,7 +541,7 @@
         </h2>
 
 
-        <!-- ADD SCHEDULE -->
+        <!-- SCHEDULE FORM -->
 
         <div class="schedule-form schedule-form-grid">
 
@@ -566,51 +608,64 @@
 
             <button
                 id="addScheduleButton"
+                type="button"
                 onclick="addSchedule()"
             >
-                Add Schedule
+                ➕ Add Schedule
             </button>
 
         </div>
 
 
-        <!-- =============================================
-             CALENDAR + SAVED SCHEDULES
-        ============================================== -->
+        <!-- SCHEDULE TABS -->
 
-        <div class="schedule-main-layout">
+        <div class="schedule-tabs">
 
+            <button
+                class="schedule-tab active"
+                type="button"
+                onclick="showScheduleView('calendar')"
+            >
+                📅 Calendar
+            </button>
 
-            <!-- LEFT -->
+            <button
+                class="schedule-tab"
+                type="button"
+                onclick="showScheduleView('weekly')"
+            >
+                🗓️ Weekly
+            </button>
 
-            <div class="schedule-calendar-panel">
-
-                <div class="schedule-tabs">
-
-                    <button
-                        class="schedule-tab active"
-                        onclick="showScheduleView('calendar')"
-                    >
-                        📅 Calendar
-                    </button>
-
-                    <button
-                        class="schedule-tab"
-                        onclick="showScheduleView('weekly')"
-                    >
-                        🗓️ Weekly
-                    </button>
-
-                </div>
+        </div>
 
 
-                <div id="calendarView">
+        <!-- SCHEDULE TWO-COLUMN LAYOUT -->
 
-                    <div class="calendar-main">
+        <div class="schedule-content-layout">
+
+
+            <!-- =========================
+                 LEFT SIDE
+            ========================= -->
+
+            <div class="schedule-main-column">
+
+
+                <!-- CALENDAR VIEW -->
+
+                <div
+                    id="calendarView"
+                >
+
+                    <div class="calendar-main-panel">
 
                         <div class="calendar-header">
 
-                            <button onclick="changeMonth(-1)">
+                            <button
+                                type="button"
+                                onclick="changeMonth(-1)"
+                            >
                                 ◀
                             </button>
 
@@ -618,7 +673,10 @@
                                 Month
                             </h3>
 
-                            <button onclick="changeMonth(1)">
+                            <button
+                                type="button"
+                                onclick="changeMonth(1)"
+                            >
                                 ▶
                             </button>
 
@@ -646,6 +704,8 @@
                     </div>
 
 
+                    <!-- SELECTED CLASS DETAILS -->
+
                     <div
                         id="scheduleDetails"
                         class="schedule-details"
@@ -653,10 +713,13 @@
 
                         <div class="empty-details">
 
-                            <div>📅</div>
+                            <div>
+                                📅
+                            </div>
 
                             <p>
-                                Select a class from the calendar to see details.
+                                Select a class from the calendar
+                                to see details.
                             </p>
 
                         </div>
@@ -666,14 +729,19 @@
                 </div>
 
 
+                <!-- WEEKLY VIEW -->
+
                 <div
                     id="weeklyView"
-                    style="display: none;"
+                    style="display:none;"
                 >
 
                     <div class="weekly-header">
 
-                        <button onclick="changeWeek(-1)">
+                        <button
+                            type="button"
+                            onclick="changeWeek(-1)"
+                        >
                             ◀
                         </button>
 
@@ -681,7 +749,10 @@
                             Week
                         </h3>
 
-                        <button onclick="changeWeek(1)">
+                        <button
+                            type="button"
+                            onclick="changeWeek(1)"
+                        >
                             ▶
                         </button>
 
@@ -698,9 +769,12 @@
             </div>
 
 
-            <!-- RIGHT -->
+            <!-- =========================
+                 RIGHT SIDE
+                 SAVED SCHEDULES
+            ========================= -->
 
-            <div class="saved-schedules-panel">
+            <aside class="saved-schedules">
 
                 <div class="saved-schedules-header">
 
@@ -711,17 +785,10 @@
                         </h3>
 
                         <p>
-                            Your scheduled classes
+                            Your upcoming classes
                         </p>
 
                     </div>
-
-                    <span
-                        id="scheduleCount"
-                        class="schedule-count-badge"
-                    >
-                        0
-                    </span>
 
                 </div>
 
@@ -731,20 +798,20 @@
                     class="saved-schedule-list"
                 ></div>
 
-            </div>
+            </aside>
 
         </div>
 
     </div>
 
 
-    <!-- =====================================================
+    <!-- ========================================================
          SUMMARY TAB
-    ====================================================== -->
+    ======================================================== -->
 
     <div
         id="summaryTab"
-        style="display: none;"
+        style="display:none;"
     >
 
         <h2>
@@ -753,6 +820,9 @@
 
 
         <div class="summary-calendar-layout">
+
+
+            <!-- SUMMARY CALENDAR -->
 
             <div class="summary-calendar-main">
 
@@ -765,9 +835,11 @@
                         ◀
                     </button>
 
+
                     <h3 id="summaryCalendarMonth">
                         Month
                     </h3>
+
 
                     <button
                         type="button"
@@ -797,22 +869,40 @@
                     class="summary-calendar-grid"
                 ></div>
 
+
+                <div class="summary-legend">
+
+                    <div class="summary-legend-item">
+                        <span class="summary-legend-dot schedule"></span>
+                        Class Schedule
+                    </div>
+
+                    <div class="summary-legend-item">
+                        <span class="summary-legend-dot assignment"></span>
+                        Assignment Deadline
+                    </div>
+
+                </div>
+
             </div>
 
+
+            <!-- SUMMARY DETAILS -->
 
             <div
                 id="summaryDetails"
                 class="summary-details"
             >
 
-                <div class="empty-details">
+                <div class="summary-empty-details">
 
                     <div>
                         📊
                     </div>
 
                     <p>
-                        Select a subject from the calendar to see details.
+                        Select a subject from the calendar
+                        to see details.
                     </p>
 
                 </div>
@@ -826,9 +916,7 @@
 </div>
 
 
-<!-- =========================================================
-     SUPABASE
-========================================================= -->
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -837,9 +925,7 @@
 <script src="script.js"></script>
 
 
-<!-- =========================================================
-     SERVICE WORKER
-========================================================= -->
+<!-- PWA SERVICE WORKER -->
 
 <script>
 
@@ -849,7 +935,6 @@ if ("serviceWorker" in navigator) {
 
         navigator.serviceWorker
             .register("./sw.js")
-
             .then(function (registration) {
 
                 console.log(
@@ -858,7 +943,6 @@ if ("serviceWorker" in navigator) {
                 );
 
             })
-
             .catch(function (error) {
 
                 console.error(
@@ -874,6 +958,6 @@ if ("serviceWorker" in navigator) {
 
 </script>
 
-</body>
 
+</body>
 </html>
